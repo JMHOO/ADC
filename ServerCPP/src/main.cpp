@@ -9,7 +9,7 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
-#include "Glog.h"
+#include "GLog.h"
 
 
 int main(int argc, const char * argv[]) {

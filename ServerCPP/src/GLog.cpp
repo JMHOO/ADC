@@ -1,4 +1,5 @@
 #include "GLog.h"
+#include <stdio.h>
 #include <sys/time.h>
 #include <string.h>
 
@@ -91,7 +92,7 @@ void GlobalLog::generate_log_header(LogLevel level, char* strHeadContent, size_t
     gettimeofday(&tvTime, NULL);
 
     snprintf(date, 40, "%02u-%02u-%02u %02u:%02u:%02u.%03u ", tmLocalNow.tm_year+1900, tmLocalNow.tm_mon, tmLocalNow.tm_mday,
-             tmLocalNow.tm_hour, tmLocalNow.tm_min, tmLocalNow.tm_sec, tvTime.tv_usec/1000 );
+             tmLocalNow.tm_hour, tmLocalNow.tm_min, tmLocalNow.tm_sec, (unsigned int)tvTime.tv_usec/1000 );
     
     strcpy(strHeadContent,date);
     switch(level){
@@ -137,10 +138,10 @@ void GlobalLog::log_to_file(LogLevel level, const char* formatstr, va_list args)
     if( logfilePtr == NULL )
         return;
     
-    const uint MAX_BUFFER_SIZE = 8192;
+    const unsigned int MAX_BUFFER_SIZE = 8192;
     char buffer[MAX_BUFFER_SIZE], header[PATH_MAX];
-    memset(buffer, MAX_BUFFER_SIZE, 0);
-    memset(header, PATH_MAX, 0);
+    memset(buffer, 0, MAX_BUFFER_SIZE);
+    memset(header, 0, PATH_MAX);
     
     vsnprintf(buffer,MAX_BUFFER_SIZE,formatstr,args);
     strcat(buffer, "\n");
