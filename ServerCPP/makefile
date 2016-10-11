@@ -11,14 +11,14 @@ TARGET = ADCServer
 BIN_TARGET = ${BinaryDir}/${TARGET}
 
 CXX = g++
-CFLAGS = -g -Wall -I${IncludeDir}
+CFLAGS = -g -Wall -std=c++11 -I${IncludeDir}
 
 ${BIN_TARGET} : ${objects}
-	$(CXX) $(objects) -o $@
+	$(CXX) $(objects) -pthread -o $@
 
 ${ObjectDir}/%.o:${SourceDir}/%.cpp
 	$(CXX) $(CFLAGS) -c $< -o $@
 
 .PHONY : clean
 clean :
-	find ${ObjectDir} -name *.o -exec rm -rf {}
+	find ${ObjectDir} -name *.o -delete
