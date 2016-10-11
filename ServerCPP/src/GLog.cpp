@@ -1,6 +1,6 @@
 #include "GLog.h"
 #include <sys/time.h>
-#include <cstdarg>
+#include <string.h>
 
 #ifdef _DEBUG
 LogLevel GlobalLog::DEFAULT_LOG_LEVEL = LL_DEBUG;
@@ -11,7 +11,7 @@ LogLevel GlobalLog::DEFAULT_LOG_LEVEL = LL_INFO;
 GlobalLog::GlobalLog(const char* logName, LogLevel nlev)
 {
     _level = nlev;
-    memset(_logfile, PATH_MAX, 0);
+    memset(_logfile, 0, PATH_MAX);
     strcpy(_logName, logName);
 }
 

@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <limits.h>
+#include <cstdarg>
 
 enum LogLevel
 {
