@@ -14,11 +14,11 @@ CXX = g++
 CFLAGS = -g -Wall -I${IncludeDir}
 
 ${BIN_TARGET} : ${objects}
-    $(CXX) $(objects) -o $@
+	$(CXX) $(objects) -o $@
 
 ${ObjectDir}/%.o:${SourceDir}/%.cpp
-    $(CXX) $(CFLAGS) -c $< -o $@
+	$(CXX) $(CFLAGS) -c $< -o $@
 
 .PHONY : clean
 clean :
-    find ${ObjectDir} -name *.o -exec rm -rf {}
+	find ${ObjectDir} -name *.o -exec rm -rf {}
