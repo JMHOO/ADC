@@ -180,70 +180,64 @@ void ADCS::Utility::SginalIgnore( int n, ...)
 /*===========================================================================
  Let the caller process running in background. (Become to the daemon process.)
  The function Daemon(int, int) declared in "unistd.h" is Recommended.
- 
- RETURN VALUE:
- E_UTILITY__GET_RLIMIT - Fail to get the "RLIMIT_NOFILE" limitation.
- E_UTILITY__FORK_ERROR - fork() failed.
- E_UTILITY__IGNORE_SIGHUP - Fail to ignore the SIGHUP signal.		//-- It does not affect capture the SIGHUP signal in after.
- E_SUCCESS - Succeed.
  ===========================================================================*/
-URESULT ADCS::Utility::Daemon()
+bool ADCS::Utility::Daemon()
 {
     return 0;
-//    int					fd0, fd1, fd2;
-//    pid_t				pid;
-//    struct rlimit		rl;
-//    struct sigaction	sa;
-//    size_t				i;
-//    
-//    umask(0);
-//    
-//    if( getrlimit(RLIMIT_NOFILE, &rl) < 0 )
-//    {
-//        return E_UTILITY__GET_RLIMIT;
-//    }
-//    
-//    pid = fork();
-//    if( pid < 0 )
-//    {
-//        return E_UTILITY__FORK_ERROR;
-//    }
-//    else if( pid != 0 ) /* parent */
-//    {
-//        exit(0);
-//    }
-//    setsid();
-//    
-//    //-- signal ------
-//    sa.sa_handler = SIG_IGN;
-//    sigemptyset(&sa.sa_mask);
-//    sa.sa_flags = 0;
-//    
-//    if( sigaction(SIGHUP, &sa, NULL) < 0 )
-//    {
-//        return E_UTILITY__IGNORE_SIGHUP;
-//    }
-//    
-//    pid = fork();
-//    if( pid < 0 )
-//    {
-//        return E_UTILITY__FORK_ERROR;
-//    }
-//    else if( pid != 0 ) /* parent */
-//    {
-//        exit(0);
-//    }
-//    
-//    if (rl.rlim_max == RLIM_INFINITY)
-//        rl.rlim_max = 1024;
-//    for (i = 0; i < rl.rlim_max; i++)
-//        close(i);
-//    
-//    fd0 = open("/dev/null", O_RDWR);
-//    fd1 = dup(0);
-//    fd2 = dup(0);
-//    
-//    return E_SUCCESS;
+    int					fd0, fd1, fd2;
+    pid_t				pid;
+    struct rlimit		rl;
+    struct sigaction	sa;
+    size_t				i;
+    
+    umask(0);
+    
+    if( getrlimit(RLIMIT_NOFILE, &rl) < 0 )
+    {
+        return false;
+    }
+    
+    pid = fork();
+    if( pid < 0 )
+    {
+        return false;
+    }
+    else if( pid != 0 ) /* parent */
+    {
+        exit(0);
+    }
+    setsid();
+    
+    //-- signal ------
+    sa.sa_handler = SIG_IGN;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    
+    if( sigaction(SIGHUP, &sa, NULL) < 0 )
+    {
+        return false;
+    }
+    
+    pid = fork();
+    if( pid < 0 )
+    {
+        return false;
+    }
+    else if( pid != 0 ) /* parent */
+    {
+        exit(0);
+    }
+    
+    if (rl.rlim_max == RLIM_INFINITY)
+        rl.rlim_max = 1024;
+    for (i = 0; i < rl.rlim_max; i++)
+        close(i);
+    
+    fd0 = open("/dev/null", O_RDWR);
+    fd1 = dup(0);
+    fd2 = dup(0);
+    
+    return true;
 }
 
 ssize_t ADCS::Utility::ReadFile( int fd, void * buf, size_t count )
@@ -304,7 +298,7 @@ bool ADCS::Utility::SetSocketNoBlock( int socketfd )
         return false;
     }
     
-    if( fcntl( socketfd, F_SETFL, flags | O_NDELAY ) != 0 )	//-- <bits/fcntl.h>: #define O_NDELAY        O_NONBLOCK
+    if( fcntl( socketfd, F_SETFL, flags | O_NDELAY ) != 0 )	
     {
         return false;
     }

@@ -20,7 +20,7 @@ namespace ADCS
         void						ltoa (          long value, char *str, int radix );
         void						ultoa( unsigned long value, char *str, int radix );
         void						SginalIgnore( int n, ...);
-        URESULT						Daemon();
+        bool						Daemon();
         
         ssize_t						ReadFile(  int fd, void * buf, size_t count );
         ssize_t						WriteFile( int fd, void * buf, size_t count );

@@ -11,6 +11,7 @@
 		BF2059811DACA31B00B11921 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF20597C1DACA31B00B11921 /* main.cpp */; };
 		BF2059821DACA31B00B11921 /* Utility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF20597E1DACA31B00B11921 /* Utility.cpp */; };
 		BF2059841DACA33F00B11921 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = BF2059831DACA33F00B11921 /* makefile */; };
+		BF2059881DACB4EA00B11921 /* ThreadPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF2059871DACB4EA00B11921 /* ThreadPool.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -34,6 +35,9 @@
 		BF20597E1DACA31B00B11921 /* Utility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Utility.cpp; path = src/Utility.cpp; sourceTree = "<group>"; };
 		BF20597F1DACA31B00B11921 /* Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utility.h; path = src/Utility.h; sourceTree = "<group>"; };
 		BF2059831DACA33F00B11921 /* makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = makefile; sourceTree = "<group>"; };
+		BF2059861DACB40A00B11921 /* ThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadPool.h; path = src/ThreadPool.h; sourceTree = "<group>"; };
+		BF2059871DACB4EA00B11921 /* ThreadPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThreadPool.cpp; path = src/ThreadPool.cpp; sourceTree = "<group>"; };
+		BF2059891DACB55500B11921 /* ErrorCode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ErrorCode.h; path = src/ErrorCode.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,12 +71,15 @@
 		BF20596E1DAC9D5D00B11921 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				BF2059861DACB40A00B11921 /* ThreadPool.h */,
 				BF20597A1DACA31B00B11921 /* GLog.cpp */,
 				BF20597B1DACA31B00B11921 /* GLog.h */,
 				BF20597C1DACA31B00B11921 /* main.cpp */,
 				BF20597D1DACA31B00B11921 /* MTypes.h */,
 				BF20597E1DACA31B00B11921 /* Utility.cpp */,
 				BF20597F1DACA31B00B11921 /* Utility.h */,
+				BF2059871DACB4EA00B11921 /* ThreadPool.cpp */,
+				BF2059891DACB55500B11921 /* ErrorCode.h */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -138,6 +145,7 @@
 				BF2059811DACA31B00B11921 /* main.cpp in Sources */,
 				BF2059841DACA33F00B11921 /* makefile in Sources */,
 				BF2059801DACA31B00B11921 /* GLog.cpp in Sources */,
+				BF2059881DACB4EA00B11921 /* ThreadPool.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
