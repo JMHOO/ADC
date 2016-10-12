@@ -10,6 +10,7 @@
 #include "GLog.h"
 #include "Network.h"
 #include "ThreadPool.h"
+#include "ServerInterface.h"
 
 namespace ADCS
 {
@@ -52,7 +53,7 @@ namespace ADCS
     typedef CTCPAIOConnParam		TCPConnParam;
     
 
-    class CTCPAsyncIOServer
+    class CTCPAsyncIOServer : public IServer
     {
         friend class CTCPAIOConnParam;
         
@@ -71,9 +72,9 @@ namespace ADCS
         bool			AddJobToThreadPool( const CTCPAIOConnParam* pConnParam);
         
     public:
-
+        // from IServer interface
         virtual bool	Initialize(CThreadPool* pool, ILog *logger);
-        virtual bool	ServerMain();
+        virtual bool	Main();
         virtual bool	Close();
         
         const char*	GetIP() const {return listenIPv4;}
