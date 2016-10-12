@@ -13,6 +13,8 @@
 		BF2059841DACA33F00B11921 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = BF2059831DACA33F00B11921 /* makefile */; };
 		BF2059881DACB4EA00B11921 /* ThreadPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF2059871DACB4EA00B11921 /* ThreadPool.cpp */; };
 		BF20598C1DAD923100B11921 /* TCPAsyncIOServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF20598B1DAD923100B11921 /* TCPAsyncIOServer.cpp */; };
+		BF2059901DADBCD500B11921 /* SrvApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF20598F1DADBCD500B11921 /* SrvApp.cpp */; };
+		BF2059941DADE98100B11921 /* ServerInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF2059931DADE98100B11921 /* ServerInterface.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,6 +44,10 @@
 		BF20598A1DAD909700B11921 /* TCPAsyncIOServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TCPAsyncIOServer.h; path = src/TCPAsyncIOServer.h; sourceTree = "<group>"; };
 		BF20598B1DAD923100B11921 /* TCPAsyncIOServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TCPAsyncIOServer.cpp; path = src/TCPAsyncIOServer.cpp; sourceTree = "<group>"; };
 		BF20598D1DAD990E00B11921 /* Network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Network.h; path = src/Network.h; sourceTree = "<group>"; };
+		BF20598E1DADBCC200B11921 /* SrvApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SrvApp.h; path = src/SrvApp.h; sourceTree = "<group>"; };
+		BF20598F1DADBCD500B11921 /* SrvApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SrvApp.cpp; path = src/SrvApp.cpp; sourceTree = "<group>"; };
+		BF2059921DADE0B100B11921 /* ServerInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ServerInterface.h; path = src/ServerInterface.h; sourceTree = "<group>"; };
+		BF2059931DADE98100B11921 /* ServerInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ServerInterface.cpp; path = src/ServerInterface.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +81,8 @@
 		BF20596E1DAC9D5D00B11921 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				BF20598F1DADBCD500B11921 /* SrvApp.cpp */,
+				BF20598E1DADBCC200B11921 /* SrvApp.h */,
 				BF20598B1DAD923100B11921 /* TCPAsyncIOServer.cpp */,
 				BF20598A1DAD909700B11921 /* TCPAsyncIOServer.h */,
 				BF2059861DACB40A00B11921 /* ThreadPool.h */,
@@ -87,6 +95,8 @@
 				BF2059871DACB4EA00B11921 /* ThreadPool.cpp */,
 				BF2059891DACB55500B11921 /* ErrorCode.h */,
 				BF20598D1DAD990E00B11921 /* Network.h */,
+				BF2059921DADE0B100B11921 /* ServerInterface.h */,
+				BF2059931DADE98100B11921 /* ServerInterface.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -152,7 +162,9 @@
 				BF20598C1DAD923100B11921 /* TCPAsyncIOServer.cpp in Sources */,
 				BF2059811DACA31B00B11921 /* main.cpp in Sources */,
 				BF2059841DACA33F00B11921 /* makefile in Sources */,
+				BF2059941DADE98100B11921 /* ServerInterface.cpp in Sources */,
 				BF2059801DACA31B00B11921 /* GLog.cpp in Sources */,
+				BF2059901DADBCD500B11921 /* SrvApp.cpp in Sources */,
 				BF2059881DACB4EA00B11921 /* ThreadPool.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

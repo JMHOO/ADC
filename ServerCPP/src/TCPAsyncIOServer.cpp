@@ -59,7 +59,7 @@ namespace ADCS{
     }
 
 
-    bool CTCPAsyncIOServer::ServerMain()
+    bool CTCPAsyncIOServer::Main()
     {
         if( status != ServerStatus::Inited )
             return false;
