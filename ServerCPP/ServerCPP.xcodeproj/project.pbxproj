@@ -12,6 +12,7 @@
 		BF2059821DACA31B00B11921 /* Utility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF20597E1DACA31B00B11921 /* Utility.cpp */; };
 		BF2059841DACA33F00B11921 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = BF2059831DACA33F00B11921 /* makefile */; };
 		BF2059881DACB4EA00B11921 /* ThreadPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF2059871DACB4EA00B11921 /* ThreadPool.cpp */; };
+		BF20598C1DAD923100B11921 /* TCPAsyncIOServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF20598B1DAD923100B11921 /* TCPAsyncIOServer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +39,9 @@
 		BF2059861DACB40A00B11921 /* ThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadPool.h; path = src/ThreadPool.h; sourceTree = "<group>"; };
 		BF2059871DACB4EA00B11921 /* ThreadPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThreadPool.cpp; path = src/ThreadPool.cpp; sourceTree = "<group>"; };
 		BF2059891DACB55500B11921 /* ErrorCode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ErrorCode.h; path = src/ErrorCode.h; sourceTree = "<group>"; };
+		BF20598A1DAD909700B11921 /* TCPAsyncIOServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TCPAsyncIOServer.h; path = src/TCPAsyncIOServer.h; sourceTree = "<group>"; };
+		BF20598B1DAD923100B11921 /* TCPAsyncIOServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TCPAsyncIOServer.cpp; path = src/TCPAsyncIOServer.cpp; sourceTree = "<group>"; };
+		BF20598D1DAD990E00B11921 /* Network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Network.h; path = src/Network.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +75,8 @@
 		BF20596E1DAC9D5D00B11921 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				BF20598B1DAD923100B11921 /* TCPAsyncIOServer.cpp */,
+				BF20598A1DAD909700B11921 /* TCPAsyncIOServer.h */,
 				BF2059861DACB40A00B11921 /* ThreadPool.h */,
 				BF20597A1DACA31B00B11921 /* GLog.cpp */,
 				BF20597B1DACA31B00B11921 /* GLog.h */,
@@ -80,6 +86,7 @@
 				BF20597F1DACA31B00B11921 /* Utility.h */,
 				BF2059871DACB4EA00B11921 /* ThreadPool.cpp */,
 				BF2059891DACB55500B11921 /* ErrorCode.h */,
+				BF20598D1DAD990E00B11921 /* Network.h */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -142,6 +149,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF2059821DACA31B00B11921 /* Utility.cpp in Sources */,
+				BF20598C1DAD923100B11921 /* TCPAsyncIOServer.cpp in Sources */,
 				BF2059811DACA31B00B11921 /* main.cpp in Sources */,
 				BF2059841DACA33F00B11921 /* makefile in Sources */,
 				BF2059801DACA31B00B11921 /* GLog.cpp in Sources */,
