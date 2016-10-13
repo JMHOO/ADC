@@ -301,7 +301,7 @@ bool CServerApp::Stop()
 }
 
 
-CServerApp::CServerApp(): m_tcpServer(NULL), m_processor(NULL), m_pTcpThreadPool(NULL), m_pLogger(NULL)
+CServerApp::CServerApp(): m_tcpServer(NULL), m_pTcpThreadPool(NULL), m_pLogger(NULL),m_processor(NULL)
 {
     m_pLogger = new GlobalLog("TCP", LL_DEBUG);
 }
