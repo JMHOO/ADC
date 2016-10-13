@@ -186,18 +186,18 @@ namespace ADCS{
         //AIOControlBlock.aio_sigevent._sigev_un._sigev_thread._attribute = NULL;
     }
     
-    inline void	CTCPAIOConnParam::SetAIOBuffer( void * lpBuffer, size_t BufferLen )
+    void CTCPAIOConnParam::SetAIOBuffer( void * lpBuffer, size_t BufferLen )
     {
         AIOControlBlock.aio_buf = lpBuffer;
         AIOControlBlock.aio_nbytes = BufferLen;
     }
     
-    inline void	CTCPAIOConnParam::SetAIOCompletionHandler()
+    void CTCPAIOConnParam::SetAIOCompletionHandler()
     {
         AIOControlBlock.aio_sigevent.sigev_notify_function = CTCPAIOConnParam::AIOCompletionHandler;
     }
     
-    inline void CTCPAIOConnParam::CloseSession()
+    void CTCPAIOConnParam::CloseSession()
     {
         close( socketid );
         delete this;

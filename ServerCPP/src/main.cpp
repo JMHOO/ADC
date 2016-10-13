@@ -9,8 +9,7 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
-#include "GLog.h"
-#include "ThreadPool.h"
+#include "SrvApp.h"
 
 class TestExecutor: public ADCS::IExecuteor
 {
@@ -83,17 +82,30 @@ int TestThreadpool( )
 int main(int argc, const char * argv[]) {
     
    
-    ILog* pLog = new GlobalLog("test", LL_DEBUG);
-    pLog->Debug("hello my log");
-    sleep(1);
-    pLog->Info("important information %d", 11);
-    pLog->Trace("test dddd");
+    //ILog* pLog = new GlobalLog("test", LL_DEBUG);
+    //pLog->Debug("hello my log");
+    //sleep(1);
+    //pLog->Info("important information %d", 11);
+    //pLog->Trace("test dddd");
 
     
-    printf("begin test threadpool---->>>>>>");
-    TestThreadpool();
+    //printf("begin test threadpool---->>>>>>");
+    //TestThreadpool();
     
-    delete pLog;
+    //delete pLog;
+    
+    
+    // TCP ASyncIO Server
+    CServerApp server;
+    server.Start(15001);
+    
+    
+    
+    // for test only, sleep 10 minutes
+    struct timespec		ts;
+    ts.tv_sec = 10 * 60;	//-- 3 minutes.
+    ts.tv_nsec = 0;
+    nanosleep( &ts, NULL );
     
     return 0;
 }
