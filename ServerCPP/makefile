@@ -14,7 +14,7 @@ CXX = g++
 CFLAGS = -g -Wall -std=c++11 -I${IncludeDir}
 
 ${BIN_TARGET} : ${objects}
-	$(CXX) $(objects) -pthread -o $@
+	$(CXX) $(objects) -pthread -lrt -o $@
 
 ${ObjectDir}/%.o:${SourceDir}/%.cpp
 	$(CXX) $(CFLAGS) -c $< -o $@
