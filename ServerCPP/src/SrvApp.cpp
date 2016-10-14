@@ -91,7 +91,7 @@ bool TCPServerProcessor::Connect( ADCS::TCPConnParam* pCP )
     //-- read
     if( aio_read( &(pCP->AIOControlBlock) ) == -1 )
     {
-        if( m_logger )m_logger->Warning("TCP Processor [Connect]: aio_read() failed, close session.");
+        if( m_logger )m_logger->Warning("TCP Processor [Connect]: aio_read() failed, error code:%d, close session.", errno);
         delete pContext;
         pCP->CloseSession();
         return false;
@@ -172,7 +172,9 @@ bool TCPServerProcessor::Recv( ADCS::TCPConnParam* pCP )
     
     
     // Response to client
-    char responseMsg[] = "this is a response from tcp server";
+    char responseMsg[4096] = "TCPServer Response echo: ";
+    strcat(responseMsg, pContext->sBuffer + sizeof(ADCS::PACK_HEADER));
+    
     
     pCP->Event = ADCS::Events::EV_Send;
     pContext->lTotal = (ssize_t)(sizeof(ADCS::PACK_HEADER) + strlen(responseMsg));
@@ -267,9 +269,9 @@ bool UDPServerProcessor::ParseBuffer(char * buf, int len)
 {
     ADCS::PACK_HEADER *pHeader = (ADCS::PACK_HEADER*)buf;
     
-    if( ntohl(pHeader->Length) != (unsigned long)len )
+    if( (pHeader->Length) != (unsigned long)len )
     {
-        if( ntohl(pHeader->Length) > (unsigned long)len )
+        if( (pHeader->Length) > (unsigned long)len )
         {
             if(m_logger)m_logger->Error("UDPServerProcessor Parser: received data less than required, drop package.");
         }
@@ -281,7 +283,7 @@ bool UDPServerProcessor::ParseBuffer(char * buf, int len)
         return false;
     }
     
-    buf[ntohl(pHeader->Length)] = 0;
+    buf[(pHeader->Length)] = 0;
     
     // now we have package, deal with it.
     m_logger->Info("UDPServerProcessor Parser: got message from client -- %s", buf+sizeof(ADCS::PACK_HEADER));
@@ -314,8 +316,10 @@ bool UDPServerProcessor::Execute( void * pdata )
     
     
     // response to client
-    char responseMsg[] = "this is a response from udp server";
-    int nSendDataLen = int(strlen(responseMsg + sizeof(ADCS::PACK_HEADER)));
+    char responseMsg[4096] = "UDPServer Response echo: ";
+    strcat(responseMsg, pConnParam->Buffer + sizeof(ADCS::PACK_HEADER));
+
+    int nSendDataLen = (int)(strlen(responseMsg) + sizeof(ADCS::PACK_HEADER));
     int nTransferedLen = 0;
     
     ADCS::PACK_HEADER header;
@@ -339,11 +343,11 @@ bool UDPServerProcessor::Execute( void * pdata )
     {
         if( nSendDataLen > nTransferedLen )
         {
-            if(m_logger)m_logger->Error("UDPServerProcessor Execute: sent data less than required(excpet:%d, realsent:%d, close session.", nSendDataLen, nTransferedLen);
+            if(m_logger)m_logger->Error("UDPServerProcessor Execute: sent data less than required(excpet:%d, realsent:%d), close session.", nSendDataLen, nTransferedLen);
         }
         else
         {
-            if(m_logger)m_logger->Error("UDPServerProcessor Execute: sent data larger than requiredexcpet:%d, realsent:%d, close session.", nSendDataLen, nTransferedLen);
+            if(m_logger)m_logger->Error("UDPServerProcessor Execute: sent data larger than requiredexcpet:%d, realsent:%d), close session.", nSendDataLen, nTransferedLen);
             
         }
         pConnParam->CloseSession();
