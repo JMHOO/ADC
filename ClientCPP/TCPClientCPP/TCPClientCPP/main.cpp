@@ -31,7 +31,7 @@ int TestTCPClient( IClient &client, const char* ip, unsigned short port, long ti
     client.SetIP( ip );
     client.SetPort( port );
     
-    ptrPackage->Length = (unsigned int)(strlen( sInfo ) + sizeof(PACK_HEADER));
+    ptrPackage->Length = (unsigned int)htonl(strlen( sInfo ) + sizeof(PACK_HEADER));
     
      cout<<"connecting server -- "<<ip<<":"<<port<<" ..."<<endl;
     
@@ -41,7 +41,7 @@ int TestTCPClient( IClient &client, const char* ip, unsigned short port, long ti
         return 1;
     }
     
-    cout<<"Sending package to server, package size="<<ptrPackage->Length<<endl;
+    cout<<"Sending package to server, package size="<<ntohl(ptrPackage->Length)<<endl;
     // send package header first
     len = client.SendInfo( sBuffer, (int)(sizeof(PACK_HEADER)) );
     if( (int)(sizeof(PACK_HEADER)) != len )
@@ -66,7 +66,7 @@ int TestTCPClient( IClient &client, const char* ip, unsigned short port, long ti
     
     if( (int)(sizeof(PACK_HEADER)) > recvedlen )
     {
-        cout<<"Recv package header error. Expect to receive "<<sizeof(PACK_HEADER)<<" bytes, real receive "<<len<<" bytes."<<endl;
+        cout<<"Recv package header error. Expect to receive "<<sizeof(PACK_HEADER)<<" bytes, real receive "<<recvedlen<<" bytes."<<endl;
         client.Close();
         return 1;
     }
@@ -101,7 +101,7 @@ int TestUDPClient(IClient &client, const char* ip, unsigned short port, long tim
     client.SetIP( ip );
     client.SetPort( port );
     
-    unsigned int uiPackageLength = (unsigned int)(strlen(sInfo) + sizeof(PACK_HEADER));
+    unsigned int uiDataLength = (unsigned int)(strlen(sInfo) + sizeof(PACK_HEADER));
     
     cout<<"connecting server -- "<<ip<<":"<<port<<" ..."<<endl;
     
@@ -112,15 +112,15 @@ int TestUDPClient(IClient &client, const char* ip, unsigned short port, long tim
         return 1;
     }
     
-    ptrPackage->Length = uiPackageLength;
+    ptrPackage->Length = htonl(uiDataLength);
     memcpy( sBuffer + sizeof(PACK_HEADER), sInfo, strlen(sInfo) );
     
-    cout<<"Sending package to server, package size="<<uiPackageLength<<endl;
+    cout<<"Sending package to server, package size="<<uiDataLength<<endl;
     // sending whole package directly
-    len = client.SendInfo( sBuffer, (int)uiPackageLength );
-    if( (int)uiPackageLength != len )
+    len = client.SendInfo( sBuffer, (int)uiDataLength );
+    if( (int)uiDataLength != len )
     {
-        cout<<"Send package error. Expect to send "<<uiPackageLength<<" bytes, real send "<<len<<" bytes."<<endl;
+        cout<<"Send package error. Expect to send "<<uiDataLength<<" bytes, real send "<<len<<" bytes."<<endl;
         client.Close();
         return 1;
     }
@@ -143,7 +143,7 @@ int TestUDPClient(IClient &client, const char* ip, unsigned short port, long tim
         return 1;
     }
     
-    if( recvedlen < (int)(ptrPackage->Length) )		//-- The third.
+    if( recvedlen < (int)ntohl(ptrPackage->Length) )
     {
         cout<<"Recv package error. Package data is incomplete. Need receive "<<ptrPackage->Length<<" bytes, real receive "<<recvedlen<<" bytes. close session."<<endl;
         client.Close();

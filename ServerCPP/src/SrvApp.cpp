@@ -269,9 +269,9 @@ bool UDPServerProcessor::ParseBuffer(char * buf, int len)
 {
     ADCS::PACK_HEADER *pHeader = (ADCS::PACK_HEADER*)buf;
     
-    if( (pHeader->Length) != (unsigned long)len )
+    if( ntohl(pHeader->Length) != (unsigned long)len )
     {
-        if( (pHeader->Length) > (unsigned long)len )
+        if( ntohl(pHeader->Length) > (unsigned long)len )
         {
             if(m_logger)m_logger->Error("UDPServerProcessor Parser: received data less than required, drop package.");
         }
@@ -283,7 +283,7 @@ bool UDPServerProcessor::ParseBuffer(char * buf, int len)
         return false;
     }
     
-    buf[(pHeader->Length)] = 0;
+    buf[ntohl(pHeader->Length)] = 0;
     
     // now we have package, deal with it.
     m_logger->Info("UDPServerProcessor Parser: got message from client -- %s", buf+sizeof(ADCS::PACK_HEADER));
@@ -326,7 +326,7 @@ bool UDPServerProcessor::Execute( void * pdata )
     header.Version = 100;
     header.Type = 0;
     header.Reserve = 0;
-    header.Length = (unsigned int)nSendDataLen;
+    header.Length = (unsigned int)htonl(nSendDataLen);
 
     memcpy(pConnParam->Buffer, &header, sizeof(ADCS::PACK_HEADER));
     memcpy(pConnParam->Buffer + sizeof(ADCS::PACK_HEADER), responseMsg, strlen(responseMsg));
