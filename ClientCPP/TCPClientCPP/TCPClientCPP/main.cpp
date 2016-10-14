@@ -1,5 +1,7 @@
 
 #include <iostream>
+#include <netdb.h>
+#include <arpa/inet.h>
 #include "TCPClient.h"
 
 using namespace std;
@@ -79,15 +81,29 @@ int TestClient( IClient &client, const char* ip, unsigned short port, long timeO
 }
 int main(int argc, const char * argv[]) {
     
+    cout<<"PACKAGE HEADER SIZE="<<sizeof(PACK_HEADER)<<endl;
+    
+    char ip[32] = {0};
+    
+    struct hostent *host;
+    struct in_addr **addr_list;
+    host = gethostbyname("uw.umx.io");
+    addr_list = (struct in_addr **)host->h_addr_list;
+    
+    strcpy(ip, inet_ntoa(*addr_list[0]));
+           
+    cout << "Find server: uw.umx.io....." << ip << endl;
+    
     CTCPClient tcp_client;
     
-    char ip[] = "127.0.0.1";
+    
+    
     unsigned short port = 15001;
     long	timeOut = 10;
     int		retryTime = 9;
     
-    cout<<"Please input the: IP and port"<<endl<<"Example: 127.0.0.1 15001"<<endl;
-    cin>>ip>>port;
+    cout<<"Please input the: port"<<endl<<"Example: 15001"<<endl;
+    cin>>port;
     cin.clear();
     cin.sync();
     
