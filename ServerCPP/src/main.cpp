@@ -9,7 +9,15 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <string.h>
 #include "SrvApp.h"
+
+using namespace std;
+
+typedef int (*TestFunc)(int, const char* [] );
+
+int ShowHelp( int argc, const char* argv[] );
+int Threadpool_Test( int argc, const char* argv[] );
 
 class TestExecutor: public ADCS::IExecuteor
 {
@@ -30,7 +38,8 @@ public:
 };
 
 int id[1000];
-int TestThreadpool( )
+
+int Threadpool_Test( int argc, const char* argv[] )
 {
     ADCS::CThreadPool			pool;
     TestExecutor				executor;
@@ -79,6 +88,39 @@ int TestThreadpool( )
     return 0;
 }
 
+
+struct CTestEntry
+{
+    const char* command;
+    const char* desc;
+    TestFunc TestEntry;
+};
+
+CTestEntry g_Entries[] = {
+    { "help", (char*)"", ShowHelp },
+    { "threadpool", "Thread Pool", Threadpool_Test }
+};
+
+const int g_EntriesNumber = sizeof(g_Entries)/sizeof(CTestEntry);
+
+int ShowHelp( int argc, const char * argv[] )
+{
+    CTestEntry *ptr;
+    
+    cout<<"Command: help"<<endl<<"  -- Show the list."<<endl;
+    cout<<"Command: exit"<<endl<<"  -- Exit the process."<<endl;
+    
+    for( int i = 1; i < g_EntriesNumber; i++ )
+    {
+        ptr = &(g_Entries[i]);
+        
+        cout<<"Command: "<<ptr->command<<endl;
+        cout<<"  -- Test Unit: "<<ptr->desc<<endl;
+    }
+    
+    return 0;
+}
+
 int main(int argc, const char * argv[]) {
     
    
@@ -95,17 +137,62 @@ int main(int argc, const char * argv[]) {
     //delete pLog;
     
     
+    //cout<<"Enter port for service:"<<endl<<endl;
+    
+    string strPrefix = "ADC Server >>";
+    string command;
+    CTestEntry *ptr;
+    bool find = false;
+    
+    cout << "TCP server is started, port: 15001    --- type 'exit' to exit."<<endl;
     // TCP ASyncIO Server
     CServerApp server;
     server.Start(15001);
     
+    while(1)
+    {
+        cout<<strPrefix;
+        cin>>command;
+        cin.clear();
+        cin.sync();
+        
+        ptr = NULL;
+        find = false;
+
+        if( command == "exit" )
+            break;
+        
+        for( int i = 0; i < g_EntriesNumber; i++ )
+        {
+            ptr = &(g_Entries[i]);
+            if( command == ptr->command )
+            {
+                find = true;
+                break;
+            }
+        }
+        
+        if( find )
+        {
+            ptr->TestEntry( argc, argv );
+        }
+        else
+        {
+            cout<<"Bad Command! Please Retry!"<<endl;
+        }
+        
+        cout<<endl;
+        
+    }
     
+    //server.Stop();
     
+    /*
     // for test only, sleep 10 minutes
     struct timespec		ts;
     ts.tv_sec = 10 * 60;	//-- 3 minutes.
     ts.tv_nsec = 0;
     nanosleep( &ts, NULL );
-    
+    */
     return 0;
 }
