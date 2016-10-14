@@ -1,12 +1,12 @@
 SourceDir = ./src
 IncludeDir = ./src
 ObjectDir = ./obj
-BinaryDir = .
+BinaryDir = ../bin
 
 SourceFile = $(wildcard ${SourceDir}/*.cpp)
 objects = $(patsubst %.cpp,${ObjectDir}/%.o,$(notdir ${SourceFile}))
 
-TARGET = ADCServer
+TARGET = adcserver
 
 BIN_TARGET = ${BinaryDir}/${TARGET}
 
