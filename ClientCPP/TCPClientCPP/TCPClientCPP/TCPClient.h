@@ -29,7 +29,7 @@ public:
     virtual void SetTimeOut( long second ) {};
     virtual void SetRetryTime( int iRetryTime ) {};
     
-    virtual unsigned short GetTargetPort() const
+    virtual unsigned short GetPort() const
     {
         return Port;
     }

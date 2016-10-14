@@ -1,4 +1,8 @@
 #include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <arpa/inet.h>
 #include "TCPClient.h"
 
 CTCPClient::CTCPClient(): Socket(0), Port(0)
@@ -15,7 +19,7 @@ bool CTCPClient::SetIP( const char *ip )
     return true;
 }
 
-void CTCPClient::SetTargetPort( unsigned short port )
+void CTCPClient::SetPort( unsigned short port )
 {
     Port = port;
 }
@@ -24,9 +28,9 @@ void CTCPClient::SetTargetPort( unsigned short port )
 bool CTCPClient::Connect()
 {
     memset( &ServerAddr, 0, sizeof(ServerAddr) );
-    strServAddr.sin_family = AF_INET;
-    strServAddr.sin_addr.s_addr = inet_addr( sIP );
-    strServAddr.sin_port = htons( Port );
+    ServerAddr.sin_family = AF_INET;
+    ServerAddr.sin_addr.s_addr = inet_addr( sIP );
+    ServerAddr.sin_port = htons( Port );
     
     if( ServerAddr.sin_addr.s_addr == INADDR_NONE )
         return false;
@@ -50,16 +54,16 @@ int CTCPClient::SendInfo( char* sInfo, int nLen )
 {
     char* pBuffer = sInfo;
     int	nBytesSent = 0;
-    int nBytesTotal = iLen;
+    int nBytesTotal = nLen;
     
-    int	nRet = 0;
+    ssize_t	nRet = 0;
     while(true)
     {
         nRet = send( Socket, pBuffer, nBytesTotal, 0 );
         if( nRet > 0 )
         {
-            nBytesSent += iRet;
-            nBytesTotal -= iRet;
+            nBytesSent += nRet;
+            nBytesTotal -= nRet;
             if( nBytesTotal > 0 )
             {
                 pBuffer += nRet;
@@ -84,9 +88,9 @@ int CTCPClient::RecvInfo( char* sInfo, int nLen )
 {
     char* pBuffer = sInfo;
     int	nBytesReceived = 0;
-    int nBytesTotal = iLen;
+    int nBytesTotal = nLen;
     
-    int	nRet = 0;
+    ssize_t	nRet = 0;
     while(true)
     {
         nRet = recv( Socket, pBuffer, nBytesTotal, 0 );

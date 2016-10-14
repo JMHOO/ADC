@@ -2,6 +2,8 @@
 #include <iostream>
 #include "TCPClient.h"
 
+using namespace std;
+
 struct _PackageHeader_
 {
     unsigned int Version;			//-- Packet version.
@@ -18,10 +20,10 @@ int TestClient( IClient &client, const char* ip, unsigned short port, long timeO
     
     int	len, recvedlen;
     char sBuffer[4096];
-    PACK_HEADER *ptrPackage = (PtrPACK_HEADER *)szBuffer;
+    PACK_HEADER *ptrPackage = (PtrPACK_HEADER)sBuffer;
     
     client.SetRetryTime( retryTime );
-    clsClclientient.SetTimeOut( timeOut );
+    client.SetTimeOut( timeOut );
     client.SetIP( ip );
     client.SetPort( port );
     
@@ -34,7 +36,7 @@ int TestClient( IClient &client, const char* ip, unsigned short port, long timeO
     }
     
     // send package header first
-    len = client.SendInfo( szBuffer, (int)(sizeof(PACK_HEADER)) );
+    len = client.SendInfo( sBuffer, (int)(sizeof(PACK_HEADER)) );
     if( (int)(sizeof(PACK_HEADER)) != len )
     {
         cout<<"Send package header error. Expect to send "<<sizeof(PACK_HEADER)<<" bytes, real send "<<len<<" bytes."<<endl;
@@ -52,7 +54,7 @@ int TestClient( IClient &client, const char* ip, unsigned short port, long timeO
     }
     
     // receive message from server
-    recvedlen = client.RecvInfo( szBuffer, (int)(sizeof(PACK_HEADER)) );
+    recvedlen = client.RecvInfo( sBuffer, (int)(sizeof(PACK_HEADER)) );
     if( (int)(sizeof(PACK_HEADER)) > recvedlen )
     {
         cout<<"Recv package header error. Expect to receive "<<sizeof(PACK_HEADER)<<" bytes, real receive "<<len<<" bytes."<<endl;
@@ -60,7 +62,7 @@ int TestClient( IClient &client, const char* ip, unsigned short port, long timeO
         return 1;
     }
     
-    len = client.RecvInfo( szBuffer + recvedlen, (int)ntohl(ptrPackage->Length) - recvedlen );
+    len = client.RecvInfo( sBuffer + recvedlen, (int)ntohl(ptrPackage->Length) - recvedlen );
     if( len != (int)ntohl(ptrPackage->Length) - recvedlen )
     {
         cout<<"Recv package payload error. Expect to receive "<<(int)ntohl(ptrPackage->Length) - recvedlen<<" bytes, real receive "<<len<<" bytes."<<endl;
@@ -68,8 +70,8 @@ int TestClient( IClient &client, const char* ip, unsigned short port, long timeO
         return 1;
     }
     
-    szBuffer[ntohl(ptrPackage->Length)] = 0;
-    cout<<"Server response: "<<szBuffer + sizeof(PACK_HEADER)<<endl;
+    sBuffer[ntohl(ptrPackage->Length)] = 0;
+    cout<<"Server response: "<<sBuffer + sizeof(PACK_HEADER)<<endl;
     
     client.Close();
     
