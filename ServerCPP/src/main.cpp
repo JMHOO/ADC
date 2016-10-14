@@ -144,8 +144,11 @@ int main(int argc, const char * argv[]) {
     CTestEntry *ptr;
     bool find = false;
     
-    cout << "TCP server is started, port: 15001    --- type 'exit' to exit."<<endl;
-    // TCP ASyncIO Server
+    cout << "TCP server is started, 0.0.0.0:15001 LISTENING"<<endl;
+    cout << "UDP Server is started, 0.0.0.0:15002 LISTENING"<<endl;
+    cout << "--- type 'exit' to exit." << endl;
+    
+    // Server collection, start from port 15001, 15002....
     CServerApp server;
     server.Start(15001);
     

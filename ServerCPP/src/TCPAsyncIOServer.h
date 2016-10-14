@@ -74,7 +74,7 @@ namespace ADCS
         
     public:
         // from IServer interface
-        virtual bool	Initialize(CThreadPool* pool, ILog *logger);
+        virtual bool	Initialize(CThreadPool* pool, ILog *plogger);
         virtual bool	Main();
         virtual bool	Close();
         virtual bool    SetIP( const char *ip );

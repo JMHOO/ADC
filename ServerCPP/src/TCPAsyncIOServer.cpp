@@ -16,7 +16,7 @@ namespace ADCS{
         return true;
     }
 
-    bool CTCPAsyncIOServer::Initialize(CThreadPool* pool, ILog *logger)
+    bool CTCPAsyncIOServer::Initialize(CThreadPool* pool, ILog *plogger)
     {
         if( status != ServerStatus::Uninit )
             return false;
@@ -51,7 +51,7 @@ namespace ADCS{
         }
         
         threadPool = pool;
-        logger = logger;
+        logger = plogger;
         
         status = ServerStatus::Inited;
         

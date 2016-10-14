@@ -2,6 +2,7 @@
 #include <iostream>
 #include "SrvApp.h"
 #include "TCPAsyncIOServer.h"
+#include "UDPSyncIOServer.h"
 
 class TCPAIOContext
 {
@@ -22,7 +23,7 @@ public:
 class TCPServerProcessor: public ADCS::IExecuteor
 {
 private:
-    ILog*       m_logger;
+    ILog* m_logger;
 public:
     virtual bool Execute( void * pdata );
     bool Connect( ADCS::TCPConnParam* pCP );
@@ -31,6 +32,17 @@ public:
     bool Error  ( ADCS::TCPConnParam* pCP );
     
     TCPServerProcessor(ILog* logger) : m_logger(logger) {}
+};
+
+class UDPServerProcessor: public ADCS::IExecuteor
+{
+private:
+    ILog* m_logger;
+    bool ParseBuffer(char * buf, int len);
+public:
+    virtual bool Execute( void * pdata );
+    
+    UDPServerProcessor(ILog* logger) : m_logger(logger){}
 };
 
 bool TCPServerProcessor::Execute( void * pdata )
@@ -160,7 +172,7 @@ bool TCPServerProcessor::Recv( ADCS::TCPConnParam* pCP )
     
     
     // Response to client
-    char responseMsg[] = "this is a response from server";
+    char responseMsg[] = "this is a response from tcp server";
     
     pCP->Event = ADCS::Events::EV_Send;
     pContext->lTotal = (ssize_t)(sizeof(ADCS::PACK_HEADER) + strlen(responseMsg));
@@ -251,21 +263,138 @@ bool TCPServerProcessor::Error( ADCS::TCPConnParam* pCP )
 }
 
 
+bool UDPServerProcessor::ParseBuffer(char * buf, int len)
+{
+    ADCS::PACK_HEADER *pHeader = (ADCS::PACK_HEADER*)buf;
+    
+    if( ntohl(pHeader->Length) != (unsigned long)len )
+    {
+        if( ntohl(pHeader->Length) > (unsigned long)len )
+        {
+            if(m_logger)m_logger->Error("UDPServerProcessor Parser: received data less than required, drop package.");
+        }
+        else
+        {
+            if(m_logger)m_logger->Error("UDPServerProcessor Parser: received data larger than required, drop package.");
+            
+        }
+        return false;
+    }
+    
+    buf[ntohl(pHeader->Length)] = 0;
+    
+    // now we have package, deal with it.
+    m_logger->Info("UDPServerProcessor Parser: got message from client -- %s", buf+sizeof(ADCS::PACK_HEADER));
+   
+    return true;
+}
+
+bool UDPServerProcessor::Execute( void * pdata )
+{
+    ADCS::CUDPSyncIOConnParam *pConnParam = (ADCS::CUDPSyncIOConnParam*)pdata;
+    
+    if( pConnParam == NULL )
+    {
+        if(m_logger)m_logger->Info("UDPServerProcessor::Execute, connection param error.");
+        return false;
+    }
+    
+    if( pConnParam->BytesTransferred == 0 )
+    {
+        if(m_logger)m_logger->Info("UDPServerProcessor::Execute, no data received, close session.");
+        pConnParam->CloseSession();
+        return true;
+    }
+    if( !ParseBuffer(pConnParam->Buffer, pConnParam->BytesTransferred))
+    {
+        if(m_logger)m_logger->Info("UDPServerProcessor::Execute, processing package error, close session.");
+        pConnParam->CloseSession();
+        return false;
+    }
+    
+    
+    // response to client
+    char responseMsg[] = "this is a response from udp server";
+    int nSendDataLen = int(strlen(responseMsg + sizeof(ADCS::PACK_HEADER)));
+    int nTransferedLen = 0;
+    
+    ADCS::PACK_HEADER header;
+    header.Version = 100;
+    header.Type = 0;
+    header.Reserve = 0;
+    header.Length = (unsigned int)nSendDataLen;
+
+    memcpy(pConnParam->Buffer, &header, sizeof(ADCS::PACK_HEADER));
+    memcpy(pConnParam->Buffer + sizeof(ADCS::PACK_HEADER), responseMsg, strlen(responseMsg));
+    
+    // Send it out
+    nTransferedLen = pConnParam->Send( pConnParam->Buffer, nSendDataLen );
+    if( nTransferedLen == 0 )
+    {
+        if(m_logger)m_logger->Info("UDPServerProcessor::Execute, sending data error.");
+        pConnParam->CloseSession();
+        return true;
+    }
+    else if( nTransferedLen != nSendDataLen )
+    {
+        if( nSendDataLen > nTransferedLen )
+        {
+            if(m_logger)m_logger->Error("UDPServerProcessor Execute: sent data less than required(excpet:%d, realsent:%d, close session.", nSendDataLen, nTransferedLen);
+        }
+        else
+        {
+            if(m_logger)m_logger->Error("UDPServerProcessor Execute: sent data larger than requiredexcpet:%d, realsent:%d, close session.", nSendDataLen, nTransferedLen);
+            
+        }
+        pConnParam->CloseSession();
+        return false;
+    }
+    
+    // done, close session
+    pConnParam->CloseSession();
+    return true;
+}
+
+
+
+
 
 
 
 bool CServerApp::Start(unsigned short usPort)
 {
-    m_processor = new TCPServerProcessor(m_pLogger);
+    // Start TCP Server
+    m_tcpProcessor = new TCPServerProcessor(m_pTcpLogger);
     m_pTcpThreadPool = new ADCS::CThreadPool();
-    m_pTcpThreadPool->Init(*m_processor, 10, 20, 100);
+    m_pTcpThreadPool->Init(*m_tcpProcessor, 10, 20, 100);
     
     m_tcpServer = new ADCS::CTCPAsyncIOServer();
     m_tcpServer->SetIP("0.0.0.0");
     m_tcpServer->SetPort(usPort);
-    if(m_tcpServer->Start(m_pTcpThreadPool, m_pLogger))
+    if(m_tcpServer->Start(m_pTcpThreadPool, m_pTcpLogger))
     {
+        ADCS::CTCPAsyncIOServer* tcpserver = dynamic_cast<ADCS::CTCPAsyncIOServer*>(m_tcpServer);
+        if( m_pTcpLogger)m_pTcpLogger->Info("TCP Server started: %s:%d LISTEN.", tcpserver->GetIP(), tcpserver->GetPort());
         
+    }
+    else
+    {
+        return false;
+    }
+    
+    // Start UDP Server
+    m_udpProcessor = new UDPServerProcessor(m_pUdpLogger);
+    m_pUdpThreadPool = new ADCS::CThreadPool();
+    m_pUdpThreadPool->Init(*m_udpProcessor, 10, 20, 100);
+    
+    m_udpServer = new ADCS::CUDPSyncIOServer();
+    m_udpServer->SetIP("0.0.0.0");
+    m_udpServer->SetPort(usPort+1);
+    if( m_udpServer->Start(m_pUdpThreadPool, m_pUdpLogger))
+    {
+        ADCS::CUDPSyncIOServer* udpserver = dynamic_cast<ADCS::CUDPSyncIOServer*>(m_udpServer);
+        if( m_pUdpLogger)m_pUdpLogger->Info("UDP Server started: %s:%d LISTEN.", udpserver->GetIP(), udpserver->GetPort());
+       
     }
     else
     {
@@ -284,10 +413,10 @@ bool CServerApp::Stop()
         m_tcpServer = NULL;
     }
     
-    if( m_processor)
+    if( m_tcpProcessor)
     {
-        delete m_processor;
-        m_processor = NULL;
+        delete m_tcpProcessor;
+        m_tcpProcessor = NULL;
     }
     
     if( m_pTcpThreadPool)
@@ -297,16 +426,39 @@ bool CServerApp::Stop()
         m_pTcpThreadPool = NULL;
     }
     
+    if( m_udpServer)
+    {
+        m_udpServer->Stop();
+        delete m_udpServer;
+        m_udpServer = NULL;
+    }
+    
+    if( m_udpProcessor)
+    {
+        delete m_udpProcessor;
+        m_udpProcessor = NULL;
+    }
+    
+    if( m_pUdpThreadPool)
+    {
+        m_pUdpThreadPool->Destory();
+        delete m_pUdpThreadPool;
+        m_pUdpThreadPool = NULL;
+    }
+    
     return true;
 }
 
 
-CServerApp::CServerApp(): m_tcpServer(NULL), m_pTcpThreadPool(NULL), m_pLogger(NULL),m_processor(NULL)
+CServerApp::CServerApp(): m_tcpServer(NULL), m_pTcpThreadPool(NULL), m_tcpProcessor(NULL),m_pTcpLogger(NULL),
+    m_udpServer(NULL), m_pUdpThreadPool(NULL), m_udpProcessor(NULL), m_pUdpLogger(NULL)
 {
-    m_pLogger = new GlobalLog("TCP", LL_DEBUG);
+    m_pTcpLogger = new GlobalLog("TCP", LL_DEBUG);
+    m_pUdpLogger = new GlobalLog("UDP", LL_DEBUG);
 }
 
 CServerApp::~CServerApp()
 {
-    delete m_pLogger;
+    delete m_pTcpLogger;
+    delete m_pUdpLogger;
 }
