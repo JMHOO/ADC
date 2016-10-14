@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include "TCPClient.h"
 
-CTCPClient::CTCPClient(): Socket(0), Port(0)
+CTCPClient::CTCPClient(): socketid(0), port(0)
 {
     strcpy( sIP, "127.0.0.1" );
 }
@@ -19,30 +19,30 @@ bool CTCPClient::SetIP( const char *ip )
     return true;
 }
 
-void CTCPClient::SetPort( unsigned short port )
+void CTCPClient::SetPort( unsigned short sport )
 {
-    Port = port;
+    port = sport;
 }
 
 
 bool CTCPClient::Connect()
 {
-    memset( &ServerAddr, 0, sizeof(ServerAddr) );
-    ServerAddr.sin_family = AF_INET;
-    ServerAddr.sin_addr.s_addr = inet_addr( sIP );
-    ServerAddr.sin_port = htons( Port );
+    memset( &serverAddr, 0, sizeof(serverAddr) );
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_addr.s_addr = inet_addr( sIP );
+    serverAddr.sin_port = htons( port );
     
-    if( ServerAddr.sin_addr.s_addr == INADDR_NONE )
+    if( serverAddr.sin_addr.s_addr == INADDR_NONE )
         return false;
     
-    Socket = socket( AF_INET, SOCK_STREAM, 0 );
-    if( Socket < 0 )
+    socketid = socket( AF_INET, SOCK_STREAM, 0 );
+    if( socketid < 0 )
         return false;
     
-    if( connect( Socket, ( struct sockaddr * )&ServerAddr, sizeof( ServerAddr ) ) != 0 )
+    if( connect( socketid, ( struct sockaddr * )&serverAddr, sizeof( serverAddr ) ) != 0 )
     {
-        close( Socket );
-        Socket = 0;
+        close(socketid);
+        socketid = 0;
         return false;
     }
     
@@ -59,7 +59,7 @@ int CTCPClient::SendInfo( char* sInfo, int nLen )
     ssize_t	nRet = 0;
     while(true)
     {
-        nRet = send( Socket, pBuffer, nBytesTotal, 0 );
+        nRet = send( socketid, pBuffer, nBytesTotal, 0 );
         if( nRet > 0 )
         {
             nBytesSent += nRet;
@@ -93,7 +93,7 @@ int CTCPClient::RecvInfo( char* sInfo, int nLen )
     ssize_t	nRet = 0;
     while(true)
     {
-        nRet = recv( Socket, pBuffer, nBytesTotal, 0 );
+        nRet = recv( socketid, pBuffer, nBytesTotal, 0 );
         if( nRet > 0 )
         {
             nBytesReceived += nRet;
@@ -121,8 +121,8 @@ int CTCPClient::RecvInfo( char* sInfo, int nLen )
 
 bool CTCPClient::Close()
 {
-    shutdown( Socket, 2 );
-    close( Socket );
-    Socket = 0;
+    shutdown( socketid, 2 );
+    close( socketid );
+    socketid = 0;
     return true;
 }

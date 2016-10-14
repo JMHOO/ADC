@@ -1,7 +1,7 @@
 
 
-#ifndef TCPClient_h
-#define TCPClient_h
+#ifndef __TCPClient_H_
+#define __TCPClient_H_
 
 #include "IClient.h"
 #include <sys/socket.h>
@@ -10,11 +10,12 @@
 
 class CTCPClient : public IClient
 {
-    int					Socket;
-    struct sockaddr_in	ServerAddr;
+private:
+    int socketid;
+    struct sockaddr_in serverAddr;
     
-    char				sIP[16];
-    unsigned short		Port;
+    char sIP[16];
+    unsigned short port;
     
 public:
     CTCPClient();
@@ -25,13 +26,13 @@ public:
     }
     
     virtual bool SetIP( const char * ip );
-    virtual void SetPort( unsigned short port );
+    virtual void SetPort( unsigned short sport );
     virtual void SetTimeOut( long second ) {};
     virtual void SetRetryTime( int iRetryTime ) {};
     
     virtual unsigned short GetPort() const
     {
-        return Port;
+        return port;
     }
     virtual const char* GetIPAddr() const
     {
