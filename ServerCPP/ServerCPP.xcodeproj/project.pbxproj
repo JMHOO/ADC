@@ -21,6 +21,8 @@
 		BF71604B1DB1B79100F09E59 /* SocketHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF71604A1DB1B79100F09E59 /* SocketHelper.cpp */; };
 		BF71604E1DB1CE0E00F09E59 /* UDPSyncProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF71604D1DB1CE0E00F09E59 /* UDPSyncProcessor.cpp */; };
 		BF7160511DB1CEF700F09E59 /* TCPAsyncIOProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160501DB1CEF700F09E59 /* TCPAsyncIOProcessor.cpp */; };
+		BF7160581DB282F200F09E59 /* PackageInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160571DB282F200F09E59 /* PackageInterface.cpp */; };
+		BF7160611DB2957D00F09E59 /* jsonkvPackage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160601DB2957D00F09E59 /* jsonkvPackage.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -66,6 +68,11 @@
 		BF71604D1DB1CE0E00F09E59 /* UDPSyncProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UDPSyncProcessor.cpp; path = src/UDPSyncProcessor.cpp; sourceTree = "<group>"; };
 		BF71604F1DB1CEE600F09E59 /* TCPAsyncIOProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TCPAsyncIOProcessor.h; path = src/TCPAsyncIOProcessor.h; sourceTree = "<group>"; };
 		BF7160501DB1CEF700F09E59 /* TCPAsyncIOProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TCPAsyncIOProcessor.cpp; path = src/TCPAsyncIOProcessor.cpp; sourceTree = "<group>"; };
+		BF7160521DB2100100F09E59 /* json.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = json.hpp; path = src/json.hpp; sourceTree = "<group>"; };
+		BF7160561DB282E300F09E59 /* PackageInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PackageInterface.h; path = src/PackageInterface.h; sourceTree = "<group>"; };
+		BF7160571DB282F200F09E59 /* PackageInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PackageInterface.cpp; path = src/PackageInterface.cpp; sourceTree = "<group>"; };
+		BF71605F1DB2956D00F09E59 /* jsonkvPackage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = jsonkvPackage.h; path = src/jsonkvPackage.h; sourceTree = "<group>"; };
+		BF7160601DB2957D00F09E59 /* jsonkvPackage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = jsonkvPackage.cpp; path = src/jsonkvPackage.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +106,10 @@
 		BF20596E1DAC9D5D00B11921 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				BF7160551DB282B100F09E59 /* Package */,
+				BF7160541DB2816600F09E59 /* Framework */,
+				BF7160531DB2814200F09E59 /* Processors */,
+				BF7160521DB2100100F09E59 /* json.hpp */,
 				BF20598F1DADBCD500B11921 /* SrvApp.cpp */,
 				BF20598E1DADBCC200B11921 /* SrvApp.h */,
 				BF20598B1DAD923100B11921 /* TCPAsyncIOServer.cpp */,
@@ -107,20 +118,8 @@
 				BF7160441DB1A79000F09E59 /* TCPSyncIOServer.cpp */,
 				BF71603D1DB0847700F09E59 /* UDPSyncIOServer.h */,
 				BF71603E1DB08B6A00F09E59 /* UDPSyncIOServer.cpp */,
-				BF7160461DB1AD0900F09E59 /* TCPSyncProcessor.h */,
-				BF7160471DB1AD1800F09E59 /* TCPSyncProcessor.cpp */,
-				BF71604C1DB1CDFC00F09E59 /* UDPSyncProcessor.h */,
-				BF71604D1DB1CE0E00F09E59 /* UDPSyncProcessor.cpp */,
-				BF71604F1DB1CEE600F09E59 /* TCPAsyncIOProcessor.h */,
-				BF7160501DB1CEF700F09E59 /* TCPAsyncIOProcessor.cpp */,
-				BF2059861DACB40A00B11921 /* ThreadPool.h */,
-				BF20597A1DACA31B00B11921 /* GLog.cpp */,
-				BF20597B1DACA31B00B11921 /* GLog.h */,
 				BF20597C1DACA31B00B11921 /* main.cpp */,
 				BF20597D1DACA31B00B11921 /* MTypes.h */,
-				BF20597E1DACA31B00B11921 /* Utility.cpp */,
-				BF20597F1DACA31B00B11921 /* Utility.h */,
-				BF2059871DACB4EA00B11921 /* ThreadPool.cpp */,
 				BF2059891DACB55500B11921 /* ErrorCode.h */,
 				BF20598D1DAD990E00B11921 /* Network.h */,
 				BF2059921DADE0B100B11921 /* ServerInterface.h */,
@@ -129,6 +128,43 @@
 				BF71604A1DB1B79100F09E59 /* SocketHelper.cpp */,
 			);
 			name = src;
+			sourceTree = "<group>";
+		};
+		BF7160531DB2814200F09E59 /* Processors */ = {
+			isa = PBXGroup;
+			children = (
+				BF7160461DB1AD0900F09E59 /* TCPSyncProcessor.h */,
+				BF7160471DB1AD1800F09E59 /* TCPSyncProcessor.cpp */,
+				BF71604C1DB1CDFC00F09E59 /* UDPSyncProcessor.h */,
+				BF71604D1DB1CE0E00F09E59 /* UDPSyncProcessor.cpp */,
+				BF71604F1DB1CEE600F09E59 /* TCPAsyncIOProcessor.h */,
+				BF7160501DB1CEF700F09E59 /* TCPAsyncIOProcessor.cpp */,
+			);
+			name = Processors;
+			sourceTree = "<group>";
+		};
+		BF7160541DB2816600F09E59 /* Framework */ = {
+			isa = PBXGroup;
+			children = (
+				BF2059861DACB40A00B11921 /* ThreadPool.h */,
+				BF20597A1DACA31B00B11921 /* GLog.cpp */,
+				BF20597B1DACA31B00B11921 /* GLog.h */,
+				BF20597E1DACA31B00B11921 /* Utility.cpp */,
+				BF20597F1DACA31B00B11921 /* Utility.h */,
+				BF2059871DACB4EA00B11921 /* ThreadPool.cpp */,
+			);
+			name = Framework;
+			sourceTree = "<group>";
+		};
+		BF7160551DB282B100F09E59 /* Package */ = {
+			isa = PBXGroup;
+			children = (
+				BF7160561DB282E300F09E59 /* PackageInterface.h */,
+				BF7160571DB282F200F09E59 /* PackageInterface.cpp */,
+				BF71605F1DB2956D00F09E59 /* jsonkvPackage.h */,
+				BF7160601DB2957D00F09E59 /* jsonkvPackage.cpp */,
+			);
+			name = Package;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -197,6 +233,8 @@
 				BF71604B1DB1B79100F09E59 /* SocketHelper.cpp in Sources */,
 				BF2059841DACA33F00B11921 /* makefile in Sources */,
 				BF2059941DADE98100B11921 /* ServerInterface.cpp in Sources */,
+				BF7160611DB2957D00F09E59 /* jsonkvPackage.cpp in Sources */,
+				BF7160581DB282F200F09E59 /* PackageInterface.cpp in Sources */,
 				BF2059801DACA31B00B11921 /* GLog.cpp in Sources */,
 				BF2059901DADBCD500B11921 /* SrvApp.cpp in Sources */,
 				BF2059881DACB4EA00B11921 /* ThreadPool.cpp in Sources */,

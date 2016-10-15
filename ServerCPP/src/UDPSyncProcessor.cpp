@@ -2,6 +2,7 @@
 #include "UDPSyncProcessor.h"
 #include "Network.h"
 #include "UDPSyncIOServer.h"
+#include "PackageInterface.h"
 
 bool UDPServerProcessor::ParseBuffer(char * buf, int len)
 {
@@ -24,7 +25,7 @@ bool UDPServerProcessor::ParseBuffer(char * buf, int len)
     buf[ntohl(pHeader->Length)] = 0;
     
     // now we have package, deal with it.
-    m_logger->Info("UDPServerProcessor Parser: got message from client -- %s", buf+sizeof(ADCS::PACK_HEADER));
+    //m_logger->Info("UDPServerProcessor Parser: got message from client -- %s", buf+sizeof(ADCS::PACK_HEADER));
     
     return true;
 }
@@ -52,7 +53,52 @@ bool UDPServerProcessor::Execute( void * pdata )
         return false;
     }
     
+    // now we have package, deal with it.
+    bool bRet = true;
+    ADCS::PACK_HEADER *pHeader = (ADCS::PACK_HEADER*)pConnParam->Buffer;
+    IPacket* packet = IPacket::CreatePackage(pConnParam->Buffer, ntohl(pHeader->Length), pConnParam->socketid);
+    if( packet )
+    {
+        packet->Process();
+        const char* ptrResponse = nullptr;
+        unsigned long ulResponseLength = 0;
+        packet->ToBytes(ptrResponse, ulResponseLength);
+        
+        // send whole package
+        int nTransferedLen = pConnParam->Send( pConnParam->Buffer, (int)ulResponseLength );
+        if( nTransferedLen == 0 )
+        {
+            if(m_logger)m_logger->Info("UDPServerProcessor::Execute, sending data error.");
+            pConnParam->CloseSession();
+            bRet = true;
+        }
+        else if( nTransferedLen != (int)ulResponseLength )
+        {
+            if( (int)ulResponseLength > nTransferedLen )
+            {
+                if(m_logger)m_logger->Error("UDPServerProcessor Execute: sent data less than required(excpet:%d, realsent:%d), close session.", ulResponseLength, nTransferedLen);
+            }
+            else
+            {
+                if(m_logger)m_logger->Error("UDPServerProcessor Execute: sent data larger than requiredexcpet:%d, realsent:%d), close session.", ulResponseLength, nTransferedLen);
+                
+            }
+            pConnParam->CloseSession();
+            bRet = false;
+        }
+        
+        delete packet;
+    }
+    else
+    {
+        if(m_logger)m_logger->Error("TCPSyncServer Invalid packet, dropped it. Content: %s", pConnParam->Buffer+sizeof(ADCS::PACK_HEADER));
+    }
     
+    pConnParam->CloseSession();
+    return bRet;
+    
+    
+    /* test code
     // response to client
     char responseMsg[4096] = "UDPServer Response echo: ";
     strcat(responseMsg, pConnParam->Buffer + sizeof(ADCS::PACK_HEADER));
@@ -95,5 +141,6 @@ bool UDPServerProcessor::Execute( void * pdata )
     // done, close session
     pConnParam->CloseSession();
     return true;
+     */
 }
 

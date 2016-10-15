@@ -50,9 +50,9 @@ bool CTCPClient::Connect()
 }
 
 
-int CTCPClient::SendInfo( char* sInfo, int nLen )
+int CTCPClient::SendInfo( const char* sInfo, int nLen )
 {
-    char* pBuffer = sInfo;
+    const char* pBuffer = sInfo;
     int	nBytesSent = 0;
     int nBytesTotal = nLen;
     

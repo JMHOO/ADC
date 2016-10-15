@@ -184,7 +184,7 @@ void ADCS::Utility::SginalIgnore( int n, ...)
 bool ADCS::Utility::Daemon()
 {
     return 0;
-    int					fd0, fd1, fd2;
+    int					fd1, fd2;
     pid_t				pid;
     struct rlimit		rl;
     struct sigaction	sa;
@@ -233,7 +233,7 @@ bool ADCS::Utility::Daemon()
     for (i = 0; i < rl.rlim_max; i++)
         close(i);
     
-    fd0 = open("/dev/null", O_RDWR);
+    open("/dev/null", O_RDWR);
     fd1 = dup(0);
     fd2 = dup(0);
     
@@ -288,19 +288,4 @@ ssize_t ADCS::Utility::WriteFile( int fd, void * buf, size_t count )
     }
     
     return ssizeAllWriteBytes;
-}
-
-bool ADCS::Utility::SetSocketNoBlock( int socketfd )
-{
-    int flags = fcntl( socketfd, F_GETFL );
-    if( flags < 0 )
-    {
-        return false;
-    }
-    
-    if( fcntl( socketfd, F_SETFL, flags | O_NDELAY ) != 0 )	
-    {
-        return false;
-    }
-    return true;
 }

@@ -2,8 +2,8 @@
 #include "TCPSyncProcessor.h"
 #include "Network.h"
 #include "TCPSyncIOServer.h"
-
 #include "SocketHelper.h"
+#include "PackageInterface.h"
 
 bool TCPSyncServerProcessor::Execute( void * pdata )
 {
@@ -54,11 +54,32 @@ bool TCPSyncServerProcessor::Execute( void * pdata )
     
     
     // we got the whold package, deal with it
+    IPacket* packet = IPacket::CreatePackage(sBuffer, ntohl(ptrHeader->Length), pConnParam->socketid);
+    if( packet )
+    {
+        packet->Process();
+        const char* ptrResponse = nullptr;
+        unsigned long ulResponseLength = 0;
+        packet->ToBytes(ptrResponse, ulResponseLength);
+        
+        // send whole package
+        len = tcpHelper.SendInfo( pConnParam->socketid, ptrResponse, (int)ulResponseLength );
+        if( (int)ulResponseLength != len )
+        {
+            if(m_logger)m_logger->Error("TCPSyncServerProcessor::Execute, sending package header error. Expect to send %d bytes, in fact, it sent %d bytes", ulResponseLength, len);
+            tcpHelper.Close(pConnParam->socketid);
+            delete pConnParam;
+            //return true;
+        }
+        
+        delete packet;
+    }
+    else
+    {
+        if(m_logger)m_logger->Error("TCPSyncServer Invalid packet, dropped it. Content: %s", sBuffer+sizeof(ADCS::PACK_HEADER));
+    }
     
-    // ......
-    if(m_logger)m_logger->Info("TCPSyncServer: got one package --- %s", sBuffer+sizeof(ADCS::PACK_HEADER));
-    
-    
+    /* test code, just echo response
     // response to client
     char responseMsg[4096] = "TCPServer Response echo: ";
     strcat(responseMsg, sBuffer + sizeof(ADCS::PACK_HEADER));
@@ -93,6 +114,7 @@ bool TCPSyncServerProcessor::Execute( void * pdata )
         delete pConnParam;
         return true;
     }
+     */
 
     return true;
 }

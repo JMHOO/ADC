@@ -10,9 +10,9 @@ namespace ADCS
         int	nRetryTime;
         
     public:
-        int	SendInfoRaw( int Socket, char* szInfo, int iLen );
+        int	SendInfoRaw( int Socket, const char* szInfo, int iLen );
         int	RecvInfoRaw( int Socket, char* szInfo, int iLen );
-        int	SendInfo( int Socket, char* szInfo, int iLen );
+        int	SendInfo( int Socket, const char* szInfo, int iLen );
         int	RecvInfo( int Socket, char* szInfo, int iLen );
         bool SetSocketProperty( int Socket );
         

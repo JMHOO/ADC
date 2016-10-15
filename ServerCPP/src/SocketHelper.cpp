@@ -33,7 +33,7 @@ namespace ADCS
         return true;
     }
 
-    int CTCPHelper::SendInfoRaw( int Socket, char* szInfo, int iLen )
+    int CTCPHelper::SendInfoRaw( int Socket, const char* szInfo, int iLen )
     {
         struct timeval tv;
         fd_set fdWrite;
@@ -71,9 +71,9 @@ namespace ADCS
         return iRet;
     }
 
-    int CTCPHelper::SendInfo( int Socket, char* szInfo, int iLen )
+    int CTCPHelper::SendInfo( int Socket, const char* szInfo, int iLen )
     {
-        char* pBuffer = szInfo;
+        const char* pBuffer = szInfo;
         int	nBytesTransferred = 0;
         int	nBytesForTransfer = iLen;
         

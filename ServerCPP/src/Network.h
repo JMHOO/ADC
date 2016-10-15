@@ -28,6 +28,8 @@ namespace ADCS
     } __attribute__((aligned(4)));
     
     typedef	_PackageHeader_	PACK_HEADER, *PtrPACK_HEADER;
+    
+    const unsigned int LENGTH_PACKHEADER = sizeof(PACK_HEADER);
 }
 
 
