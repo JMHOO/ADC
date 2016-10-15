@@ -10,12 +10,17 @@
 class TCPServerProcessor;
 class UDPServerProcessor;
 
+class TCPServerProcessor;
+class UDPServerProcessor;
+class TCPSyncServerProcessor;
+
 class CServerApp
 {
 private:
     ADCS::IServer*      m_tcpServer;
     ADCS::CThreadPool*  m_pTcpThreadPool;
-    TCPServerProcessor* m_tcpProcessor;
+    //TCPServerProcessor* m_tcpProcessor;
+    TCPSyncServerProcessor* m_tcpProcessor;
     ILog*               m_pTcpLogger;
 
     ADCS::IServer*      m_udpServer;

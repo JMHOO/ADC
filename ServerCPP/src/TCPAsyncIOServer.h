@@ -1,5 +1,5 @@
-#ifndef _ADCS__TCP_SYNCIO_SERVER_H_
-#define _ADCS__TCP_SYNCIO_SERVER_H_
+#ifndef _ADCS__TCP_ASYNCIO_SERVER_H_
+#define _ADCS__TCP_ASYNCIO_SERVER_H_
 
 #include <aio.h>
 #include <signal.h>
