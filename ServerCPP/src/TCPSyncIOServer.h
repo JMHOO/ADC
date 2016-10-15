@@ -28,8 +28,8 @@ namespace ADCS
         ILog            *logger;
         unsigned short	port;
         char            listenIPv4[16];
-        ServerStatus    status;
         int             iListenQueueLen;
+        ServerStatus    status;
         
         bool Clear();
         
