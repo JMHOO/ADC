@@ -16,7 +16,7 @@ void jsonkvPacket::Process()
 {
     if( m_json_request.is_array())
     {
-        for(int i = 0; i < m_json_request.size(); i++)
+        for(size_t i = 0; i < m_json_request.size(); i++)
         {
             m_json_result.push_back(__process_one_operation__(m_json_request[i]));
         }
@@ -72,7 +72,7 @@ bool jsonkvPacket::IsValid() const
     
     if(m_json_request.is_array())
     {
-        for(int i = 0; i < m_json_request.size(); i++)
+        for(size_t i = 0; i < m_json_request.size(); i++)
         {
             auto j = m_json_request[i];
             if(j["jsonkv"] == "1.0")
