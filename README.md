@@ -1,4 +1,4 @@
-# ADCServer
+# Applied Distributed Computing - Project
 
 <h3>Protocol</h3>
 
@@ -72,5 +72,5 @@ EVERY package contains a header and a JSON payload. The header was composed by 4
 <P>
 Server will check every UDP package, if the package is larger or less than expected, the package will be dropped.
 
-Client should check every response package. If the received package does not match the origin length or there is no response under appropriate timeout, client have the responsibility to resend this request.
+Client should check every response package. If the received package does not match the original length or there is no response under appropriate timeout, client have the responsibility to resend this request.
 </P>
