@@ -3,7 +3,7 @@
 <h3>Protocol</h3>
 
 <P>
-ALL package contains a header and a payload. The header was composed by 4 varibles: version, type, length and reserve.
+EVERY package contains a header and a JSON payload. The header was composed by 4 varibles: version, type, length and reserve.
 </P>
 
 <table>
@@ -43,7 +43,7 @@ ALL package contains a header and a payload. The header was composed by 4 varibl
   <p>
       <table>
         <tr><td>version</td><td>1.0</td></tr>
-        <tr><td>result</td><td>put / get / delete</td></tr>
+        <tr><td>result</td><td> </td></tr>
         <tr><td>result - value</td><td>only 'get' operation will return value<br>otherwise value = 0 or empty</td></tr>
         <tr><td>result - code</td><td> success : code == 0<br>errors: code > 0</td></tr>
         <tr><td>result - message</td><td>success : message is empty<br>errors: server will explain</td></tr>
