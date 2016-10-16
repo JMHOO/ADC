@@ -12,6 +12,7 @@ bool TCPSyncServerProcessor::Execute( void * pdata )
     int	len = 0;
     int	recvedlen = 0;
     char sBuffer[1024];
+    memset(sBuffer, 0, 1024);
     ADCS::PACK_HEADER *ptrHeader = (ADCS::PACK_HEADER *)sBuffer;
     
     ADCS::CTCPSIOConnParam *pConnParam = (ADCS::CTCPSIOConnParam*)pdata;

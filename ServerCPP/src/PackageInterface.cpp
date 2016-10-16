@@ -44,7 +44,8 @@ IPacket::IPacket(const char* pData, unsigned int nDataLen, int clientSocket)
         {// it seems we have data, create package
             m_data.length = m_header.Length - ADCS::LENGTH_PACKHEADER;
             
-            m_data.data = new char[m_data.length];
+            m_data.data = new char[m_data.length+1];
+            memset(m_data.data, 0, m_data.length+1);
             memcpy(m_data.data, pData+ADCS::LENGTH_PACKHEADER, m_data.length);
         }
         else
