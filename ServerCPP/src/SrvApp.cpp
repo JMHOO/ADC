@@ -7,7 +7,7 @@
 #include "TCPSyncProcessor.h"
 #include "TCPAsyncIOProcessor.h"
 #include "UDPSyncProcessor.h"
-
+#include "KVServer.h"
 
 bool CServerApp::Start(unsigned short usPort)
 {
@@ -52,6 +52,11 @@ bool CServerApp::Start(unsigned short usPort)
         return false;
     }
     
+    // initialize KVServer
+    if(!CKVServer::Create())
+    {
+        //.....
+    }
     return true;
 }
 
@@ -96,6 +101,8 @@ bool CServerApp::Stop()
         delete m_pUdpThreadPool;
         m_pUdpThreadPool = NULL;
     }
+    
+    CKVServer::Destory();
     
     return true;
 }

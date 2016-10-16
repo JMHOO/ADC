@@ -12,15 +12,16 @@ namespace ADCS
             Network = 1024,
             ThreadPool = 2048,
             Helper = 4096,
-            Other = 8192,
+            KVStore = 8192,
+            Other = 10240,
         };
         
         enum class General : unsigned int
         {
             OK = 0,
-            SUCCESS = OK,
-            FAILED = 1,
-            OVERFLOW = 2,
+            Success = OK,
+            Failed = 1,
+            Overflowed = 2,
             
         };
 
@@ -37,8 +38,18 @@ namespace ADCS
             Bind,
             Listen,
             InvalidIP,
+        };
+            
+        enum class KVStore : unsigned int
+        {
+            Success = (unsigned int)CodeBase::KVStore + 1,
+            KeyNotExist,
+            InvalidKey,
+            ValueTooLong,
             
         };
+            
+        const char* Explain(unsigned int code);
     }
 }
 

@@ -23,6 +23,8 @@
 		BF7160511DB1CEF700F09E59 /* TCPAsyncIOProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160501DB1CEF700F09E59 /* TCPAsyncIOProcessor.cpp */; };
 		BF7160581DB282F200F09E59 /* PackageInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160571DB282F200F09E59 /* PackageInterface.cpp */; };
 		BF7160611DB2957D00F09E59 /* jsonkvPackage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160601DB2957D00F09E59 /* jsonkvPackage.cpp */; };
+		BF7160641DB2C81B00F09E59 /* KVServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160631DB2C81B00F09E59 /* KVServer.cpp */; };
+		BF7160661DB312F200F09E59 /* ErrorCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160651DB312F200F09E59 /* ErrorCode.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -73,6 +75,9 @@
 		BF7160571DB282F200F09E59 /* PackageInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PackageInterface.cpp; path = src/PackageInterface.cpp; sourceTree = "<group>"; };
 		BF71605F1DB2956D00F09E59 /* jsonkvPackage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = jsonkvPackage.h; path = src/jsonkvPackage.h; sourceTree = "<group>"; };
 		BF7160601DB2957D00F09E59 /* jsonkvPackage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = jsonkvPackage.cpp; path = src/jsonkvPackage.cpp; sourceTree = "<group>"; };
+		BF7160621DB2C80E00F09E59 /* KVServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = KVServer.h; path = src/KVServer.h; sourceTree = "<group>"; };
+		BF7160631DB2C81B00F09E59 /* KVServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KVServer.cpp; path = src/KVServer.cpp; sourceTree = "<group>"; };
+		BF7160651DB312F200F09E59 /* ErrorCode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ErrorCode.cpp; path = src/ErrorCode.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,11 +126,14 @@
 				BF20597C1DACA31B00B11921 /* main.cpp */,
 				BF20597D1DACA31B00B11921 /* MTypes.h */,
 				BF2059891DACB55500B11921 /* ErrorCode.h */,
+				BF7160651DB312F200F09E59 /* ErrorCode.cpp */,
 				BF20598D1DAD990E00B11921 /* Network.h */,
 				BF2059921DADE0B100B11921 /* ServerInterface.h */,
 				BF2059931DADE98100B11921 /* ServerInterface.cpp */,
 				BF7160491DB1B77F00F09E59 /* SocketHelper.h */,
 				BF71604A1DB1B79100F09E59 /* SocketHelper.cpp */,
+				BF7160621DB2C80E00F09E59 /* KVServer.h */,
+				BF7160631DB2C81B00F09E59 /* KVServer.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -227,9 +235,11 @@
 				BF2059821DACA31B00B11921 /* Utility.cpp in Sources */,
 				BF7160481DB1AD1800F09E59 /* TCPSyncProcessor.cpp in Sources */,
 				BF20598C1DAD923100B11921 /* TCPAsyncIOServer.cpp in Sources */,
+				BF7160641DB2C81B00F09E59 /* KVServer.cpp in Sources */,
 				BF2059811DACA31B00B11921 /* main.cpp in Sources */,
 				BF7160451DB1A79000F09E59 /* TCPSyncIOServer.cpp in Sources */,
 				BF71603F1DB08B6A00F09E59 /* UDPSyncIOServer.cpp in Sources */,
+				BF7160661DB312F200F09E59 /* ErrorCode.cpp in Sources */,
 				BF71604B1DB1B79100F09E59 /* SocketHelper.cpp in Sources */,
 				BF2059841DACA33F00B11921 /* makefile in Sources */,
 				BF2059941DADE98100B11921 /* ServerInterface.cpp in Sources */,

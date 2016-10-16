@@ -21,6 +21,11 @@ IPacket* IPacket::CreatePackage(const char* sdata, unsigned int uiDataLen, int c
             {
                 // jsonkv package
                 packet = new jsonkvPacket(sdata, uiDataLen, clientSocket);
+                if( packet && !packet->IsValid() )
+                {
+                    delete packet;
+                    packet = nullptr;
+                }
             }
         }
     }

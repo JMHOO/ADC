@@ -1,10 +1,19 @@
 #include "jsonkvPackage.h"
+#include "KVServer.h"
+#include <string.h>
+#include "ErrorCode.h"
 
 using namespace nlohmann;
+using namespace ADCS;
 
 jsonkvPacket::jsonkvPacket(const char* pData, unsigned int nDataLen, int clientSocket) : IPacket(pData, nDataLen, clientSocket)
 {
-    m_json_request = json::parse(m_data.data);
+    try{
+        m_json_request = json::parse(m_data.data);
+    }catch(...)
+    {
+        // paser json error
+    }
 }
 
 jsonkvPacket::~jsonkvPacket()
@@ -43,19 +52,50 @@ json jsonkvPacket::__process_one_operation__(json jrequest)
         jresult["result"]["message"] = "Unsupported protocol";
     }
     
+    CKVServer* kvserver = CKVServer::GetInstance();
+    if( !kvserver)
+    {
+        jresult["result"]["code"] = "1024";
+        jresult["result"]["code"] = "Internal Server Error";
+        return jresult;
+    }
+    
     std::string kvOperator = jrequest["operate"];
     if( kvOperator == "put")
     {
-        jresult["result"]["message"] = "put success";
+        ErrorCode::KVStore code = kvserver->SetValue(jrequest["key"], jrequest["value"]);
+        if( code == ErrorCode::KVStore::Success )
+        {
+            jresult["result"]["message"] = "put success";
+        }
     }
     else if(kvOperator == "get")
     {
-        jresult["result"]["value"] = "999";
-        jresult["result"]["message"] = "get success";
+        std::string strValue = "";
+        ErrorCode::KVStore code = kvserver->GetValue(jrequest["key"], strValue);
+        if( code == ErrorCode::KVStore::Success )
+        {
+            jresult["result"]["value"] = strValue;
+            jresult["result"]["message"] = "get success";
+        }
+        else
+        {
+            jresult["result"]["code"] = std::to_string((int)code);
+            jresult["result"]["message"] = ErrorCode::Explain((unsigned int)code);
+        }
     }
     else if(kvOperator == "delete")
     {
-        jresult["result"]["message"] = "delete success";
+        ErrorCode::KVStore code = kvserver->Delete(jrequest["key"]);
+        if( code == ErrorCode::KVStore::Success )
+        {
+            jresult["result"]["message"] = "Delete Success";
+        }
+        else
+        {
+            jresult["result"]["code"] = std::to_string((int)code);
+            jresult["result"]["message"] = ErrorCode::Explain((unsigned int)code);
+        }
     }
     else
     {
