@@ -3,7 +3,8 @@
 <h3>Protocol</h3>
 
 <P>
-EVERY package contains a header and a JSON payload. The header was composed by 4 varibles: version, type, length and reserve.
+EVERY package contains a header and a JSON payload. The header was composed by 4 variables: version, type, length and reserve. 
+The header.Length = len(Header itself) + len(JSON payload).
 </P>
 
 <table>
@@ -22,6 +23,31 @@ EVERY package contains a header and a JSON payload. The header was composed by 4
         <td width=60%>JSON payload</td>
     </tr>
 </table>
+<P>
+For example: 
+<blockquote>
+{"jsonkv":"1.0","operate":"put","key":"1“,"value":”999“,"id":”1“}
+</blockquote>
+</P>
+<P>
+The length of JSON itself is 65, and the Header's size is an constant which always be 16. In this case, the bytes stream of this package looks like this:
+<table>
+    <tr>
+        <td>Version</td>
+        <td>Type</td>
+        <td>Length</td>
+        <td>Reserve</td>
+        <td>JSON payload</td>
+    </tr>
+    <tr>
+        <td>0</td>
+        <td>0</td>
+        <td>81</td>
+        <td>0</td>
+        <td>{"jsonkv":"1.0","operate":"put","key":"1“,"value":”999“,"id":”1“}</td>
+    </tr>
+</table>
+</P>
 
 <h3>JSON format request</h3>
   <p> <-- {"jsonkv": version, "operate": operations, "key": key, "value": value, "id": operation id}</p>
