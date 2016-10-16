@@ -26,7 +26,7 @@ The header.Length = len(Header itself) + len(JSON payload).
 <P>
 For example: 
 <blockquote>
-{"jsonkv":"1.0","operate":"put","key":"1“,"value":”999“,"id":”1“}
+{"jsonkv":"1.0","operate":"put","key":"tomato","value":"999","id":"1"}
 </blockquote>
 </P>
 <P>
@@ -44,7 +44,7 @@ The length of JSON itself is 65, and the Header's size is an constant which alwa
         <td>0</td>
         <td>81</td>
         <td>0</td>
-        <td>{"jsonkv":"1.0","operate":"put","key":"1“,"value":”999“,"id":”1“}</td>
+        <td>{"jsonkv":"1.0","operate":"put","key":"1","value":"999","id":"1"}</td>
     </tr>
 </table>
 </P>
@@ -62,7 +62,7 @@ The length of JSON itself is 65, and the Header's size is an constant which alwa
   </p> 
   <blockquote>
     Example:
-     {"jsonkv": "1.0", "operate": "put", "key": "1“, "value": ”999“, "id": ”1“}
+     {"jsonkv":"1.0","operate":"put","key":"1","value":"999","id":"1"}
   </blockquote>
 <h3>JSON format response</h3>
   <p> --> {"jsonkv": version, "result": {"value": value, "code": code, "message": message}, "id": operation id}</p>
@@ -83,8 +83,8 @@ The length of JSON itself is 65, and the Header's size is an constant which alwa
 
   <h2>batch operations</h2>
    [
-   <p>{"jsonkv": "1.0", "operate": "put", "key": "1“, "value": ”999“, "id": ”1“},</p>
-   <p>{"jsonkv": "1.0", "operate": "get", "key": "2“, "value": ”“, "id": ”2“}</p>
+   <p>{"jsonkv":"1.0","operate":"put","key":"1","value":"999","id":"1"},</p>
+   <p>{"jsonkv":"1.0","operate":"get","key":"2“,"value":"","id":"2"}</p>
    ]
    </p>
   <h2>batch operations response</h2>
