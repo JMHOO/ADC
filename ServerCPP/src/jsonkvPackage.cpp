@@ -8,13 +8,17 @@ using namespace ADCS;
 
 jsonkvPacket::jsonkvPacket(const char* pData, unsigned int nDataLen, int clientSocket) : IPacket(pData, nDataLen, clientSocket)
 {
-    try{
+    try
+    {
         m_json_request = json::parse(m_data.data);
-    }catch(std::invalid_argument arg)
+    }
+    catch(std::invalid_argument arg)
     {
         printf("parser json error: %s", arg.std::exception::what());
         // paser json error
     }
+    catch(...)
+    { }
 }
 
 jsonkvPacket::~jsonkvPacket()
