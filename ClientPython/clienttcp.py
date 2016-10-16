@@ -2,16 +2,23 @@ from socket import *
 import struct
 import json
 import binascii
+from array import *
 
 PACK_HEADER_LENGTH = 16
 #json:[{'operate': "" ,'key':"", 'value':""}]
-msg1 = [{'operate':"put", 'key':"1",'value':"12345"}]
-msg2 = [{'operate':"get", 'key':"1",'value':"null"}]
-msg3 = [{'operate':"delete", 'key':"null",'value':"null"}]
+msg1 = {'jsonkv':'1.0','operate':'put','key':'apple','value':'www.apple.com','id':'1'}
+msg2 = [{"jsonkv":"1.0","id":"1","operate":"get","key":"apple","value":"null"}]
+msg3 = [{'jsonkv':'1.0','operate':"delete",'key':"apple",'value':"null","id":"1"}]
 
-jmsg1 = json.dumps(msg1)
-jmsg2 = json.dumps(msg2)
-jmsg3 = json.dumps(msg3)
+#jmsg1 = json.dumps(msg1)
+#jmsg2 = json.dumps(msg2)
+#jmsg3 = json.dumps(msg3)
+json_msg=[]
+json_msg.append(json.dumps(msg1))
+json_msg.append(json.dumps(msg2))
+json_msg.append(json.dumps(msg3))
+
+#host = 'localhost'
 host = '73.140.72.152'
 port = 15001
 bufsiz = 1024
@@ -19,10 +26,10 @@ bufsiz = 1024
 tcpCliSock = socket(AF_INET, SOCK_STREAM)
 #link to the server
 tcpCliSock.connect((host, port))
-while True:
+for x in range(0,3):
     #wait for input
     #data = raw_input('> ')
-    data = jmsg2;
+    data = json_msg[x]
     # PackageHeader defination
     #struct _PackageHeader_
     #{
