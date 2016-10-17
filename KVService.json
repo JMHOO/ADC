@@ -1,0 +1,35 @@
+[
+ {
+    "name": "Put",
+    "params": [
+        "key",
+        "value"
+    ],
+    "returns": {
+        "code": 0,
+        "message": "success"
+    }
+ },
+ {
+    "name": "Get",
+    "params": [
+        "key"
+    ],
+    "returns": {
+        "code": 0,
+        "message": "success",
+        "value": "0"
+    }
+ },
+ {
+    "name": "Delete",
+    "params": [
+        "key"
+    ],
+    "returns": {
+        "code": 0,
+        "message": "success"
+    }
+ }
+]
+

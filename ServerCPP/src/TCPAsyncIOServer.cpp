@@ -16,7 +16,7 @@ namespace ADCS{
         return true;
     }
 
-    bool CTCPAsyncIOServer::Initialize(CThreadPool* pool, ILog *logger)
+    bool CTCPAsyncIOServer::Initialize(CThreadPool* pool, ILog *plogger)
     {
         if( status != ServerStatus::Uninit )
             return false;
@@ -51,7 +51,7 @@ namespace ADCS{
         }
         
         threadPool = pool;
-        logger = logger;
+        logger = plogger;
         
         status = ServerStatus::Inited;
         
@@ -186,18 +186,18 @@ namespace ADCS{
         //AIOControlBlock.aio_sigevent._sigev_un._sigev_thread._attribute = NULL;
     }
     
-    inline void	CTCPAIOConnParam::SetAIOBuffer( void * lpBuffer, size_t BufferLen )
+    void CTCPAIOConnParam::SetAIOBuffer( void * lpBuffer, size_t BufferLen )
     {
         AIOControlBlock.aio_buf = lpBuffer;
         AIOControlBlock.aio_nbytes = BufferLen;
     }
     
-    inline void	CTCPAIOConnParam::SetAIOCompletionHandler()
+    void CTCPAIOConnParam::SetAIOCompletionHandler()
     {
         AIOControlBlock.aio_sigevent.sigev_notify_function = CTCPAIOConnParam::AIOCompletionHandler;
     }
     
-    inline void CTCPAIOConnParam::CloseSession()
+    void CTCPAIOConnParam::CloseSession()
     {
         close( socketid );
         delete this;

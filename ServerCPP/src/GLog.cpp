@@ -73,7 +73,7 @@ FILE* GlobalLog::open_log_file()
     localtime_r(&tmNow, &tmLocal);
     
     //Make log file and name
-    snprintf(_logfile, PATH_MAX, "./%s.%02u%02u%02u.log", _logName, tmLocal.tm_year+1900, tmLocal.tm_mon, tmLocal.tm_mday);
+    snprintf(_logfile, PATH_MAX, "./%s.%02u%02u%02u.log", _logName, tmLocal.tm_year+1900, tmLocal.tm_mon+1, tmLocal.tm_mday);
 
     return fopen(_logfile, "a");
 }
@@ -91,7 +91,7 @@ void GlobalLog::generate_log_header(LogLevel level, char* strHeadContent, size_t
     struct timeval tvTime;
     gettimeofday(&tvTime, NULL);
 
-    snprintf(date, 40, "%02u-%02u-%02u %02u:%02u:%02u.%03u ", tmLocalNow.tm_year+1900, tmLocalNow.tm_mon, tmLocalNow.tm_mday,
+    snprintf(date, 40, "%02u-%02u-%02u %02u:%02u:%02u.%03u ", tmLocalNow.tm_year+1900, tmLocalNow.tm_mon+1, tmLocalNow.tm_mday,
              tmLocalNow.tm_hour, tmLocalNow.tm_min, tmLocalNow.tm_sec, (unsigned int)tvTime.tv_usec/1000 );
     
     strcpy(strHeadContent,date);

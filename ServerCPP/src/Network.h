@@ -18,6 +18,18 @@ namespace ADCS
     }
     
     enum class ServerStatus { Uninit = 100, Inited, Running, Exiting};
+    
+    struct _PackageHeader_
+    {
+        unsigned int Version;			//-- Packet version.
+        unsigned int Type;				//-- Packet type.
+        unsigned int Length;			//-- The total length of whole packet.
+        unsigned int Reserve;			//-- Reserved area. Decided by the packet type.
+    } __attribute__((aligned(4)));
+    
+    typedef	_PackageHeader_	PACK_HEADER, *PtrPACK_HEADER;
+    
+    const unsigned int LENGTH_PACKHEADER = sizeof(PACK_HEADER);
 }
 
 

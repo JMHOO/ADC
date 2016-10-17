@@ -1,85 +1,32 @@
 #include <stdio.h>
+#include <iostream>
 #include "SrvApp.h"
 #include "TCPAsyncIOServer.h"
-
-class TCPAIOContext
-{
-public:
-    static const int iBufferLength = 1024;
-    
-    ssize_t		lTotal;
-    ssize_t		lCurrent;
-    char		sBuffer[iBufferLength];
-    
-    TCPAIOContext():lTotal(0), lCurrent(0)
-    {
-        memset( sBuffer, 0, iBufferLength );
-    }
-};
-
-
-class TCPServerProcessor: public ADCS::IExecuteor
-{
-public:
-    virtual bool Execute( void * pdata );
-    bool Connect( ADCS::TCPConnParam* pCP );
-    bool Recv   ( ADCS::TCPConnParam* pCP );
-    bool Send   ( ADCS::TCPConnParam* pCP );
-    bool Error  ( ADCS::TCPConnParam* pCP );
-};
-
-bool TCPServerProcessor::Execute( void * pdata )
-{
-    ADCS::TCPConnParam *pConnParam = static_cast<ADCS::TCPConnParam*>(pdata);
-    if( pConnParam == NULL )
-    {
-        
-        return false;
-    }
-    
-    switch( pConnParam->Event )
-    {
-        case ADCS::Events::EV_Connect:
-            return Connect( pConnParam );
-        case ADCS::Events::EV_Recv:
-            return Recv( pConnParam );
-        case ADCS::Events::EV_Send:
-            return Send( pConnParam );
-        case ADCS::Events::EV_Exit:
-        case ADCS::Events::EV_ThreadPoolError:
-        default:
-            return Error( pConnParam );
-    }
-    
-    return true;
-}
-
-bool TCPServerProcessor::Connect( ADCS::TCPConnParam* pCP )
-{
-    return true;
-}
-bool TCPServerProcessor::Recv( ADCS::TCPConnParam* pCP )
-{
-    return true;
-}
-bool TCPServerProcessor::Send( ADCS::TCPConnParam* pCP )
-{
-    return true;
-}
-bool TCPServerProcessor::Error( ADCS::TCPConnParam* pCP )
-{
-    return true;
-}
+#include "TCPSyncIOServer.h"
+#include "UDPSyncIOServer.h"
+#include "TCPSyncProcessor.h"
+#include "TCPAsyncIOProcessor.h"
+#include "UDPSyncProcessor.h"
+#include "KVServer.h"
+#include "RPCServer.h"
 
 bool CServerApp::Start(unsigned short usPort)
 {
-    m_processor = new TCPServerProcessor();
+    // Start TCP Server
+    //m_tcpProcessor = new TCPServerProcessor(m_pTcpLogger);
+    m_tcpProcessor = new TCPSyncServerProcessor(m_pTcpLogger);
     m_pTcpThreadPool = new ADCS::CThreadPool();
-    m_pTcpThreadPool->Init(*m_processor, 10, 20, 100);
+    m_pTcpThreadPool->Init(*m_tcpProcessor, 10, 20, 100);
     
-    m_tcpServer = new ADCS::CTCPAsyncIOServer();
-    if(m_tcpServer->Start(m_pTcpThreadPool, m_pLogger))
+    //m_tcpServer = new ADCS::CTCPAsyncIOServer();
+    m_tcpServer = new ADCS::CTCPSIOServer();
+    m_tcpServer->SetIP("0.0.0.0");
+    m_tcpServer->SetPort(usPort);
+    if(m_tcpServer->Start(m_pTcpThreadPool, m_pTcpLogger))
     {
+        //ADCS::CTCPAsyncIOServer* tcpserver = dynamic_cast<ADCS::CTCPAsyncIOServer*>(m_tcpServer);
+        ADCS::CTCPSIOServer* tcpserver = dynamic_cast<ADCS::CTCPSIOServer*>(m_tcpServer);
+        if( m_pTcpLogger)m_pTcpLogger->Info("TCP Server started: %s:%d LISTEN.", tcpserver->GetIP(), tcpserver->GetPort());
         
     }
     else
@@ -87,6 +34,45 @@ bool CServerApp::Start(unsigned short usPort)
         return false;
     }
     
+    // Start UDP Server
+    m_udpProcessor = new UDPServerProcessor(m_pUdpLogger);
+    m_pUdpThreadPool = new ADCS::CThreadPool();
+    m_pUdpThreadPool->Init(*m_udpProcessor, 10, 20, 100);
+    
+    m_udpServer = new ADCS::CUDPSyncIOServer();
+    m_udpServer->SetIP("0.0.0.0");
+    m_udpServer->SetPort(usPort+1);
+    if( m_udpServer->Start(m_pUdpThreadPool, m_pUdpLogger))
+    {
+        ADCS::CUDPSyncIOServer* udpserver = dynamic_cast<ADCS::CUDPSyncIOServer*>(m_udpServer);
+        if( m_pUdpLogger)m_pUdpLogger->Info("UDP Server started: %s:%d LISTEN.", udpserver->GetIP(), udpserver->GetPort());
+        
+    }
+    else
+    {
+        return false;
+    }
+    
+    // Start RPC Server
+    m_rpcServer = new ADCS::CRPCServer();
+    m_rpcServer->SetIP("0.0.0.0");
+    m_rpcServer->SetPort(usPort+2);
+    if(m_rpcServer->Start(NULL, m_rpcLogger))
+    {
+        ADCS::CRPCServer* rpcserver = dynamic_cast<ADCS::CRPCServer*>(m_rpcServer);
+        if( m_pUdpLogger)m_rpcLogger->Info("RPC Server started: %s:%d LISTEN.", rpcserver->GetIP(), rpcserver->GetPort());
+
+    }
+    else
+    {
+        return false;
+    }
+    
+    // initialize KVServer
+    if(!CKVServer::Create())
+    {
+        //.....
+    }
     return true;
 }
 
@@ -99,10 +85,10 @@ bool CServerApp::Stop()
         m_tcpServer = NULL;
     }
     
-    if( m_processor)
+    if( m_tcpProcessor)
     {
-        delete m_processor;
-        m_processor = NULL;
+        delete m_tcpProcessor;
+        m_tcpProcessor = NULL;
     }
     
     if( m_pTcpThreadPool)
@@ -112,16 +98,43 @@ bool CServerApp::Stop()
         m_pTcpThreadPool = NULL;
     }
     
+    if( m_udpServer)
+    {
+        m_udpServer->Stop();
+        delete m_udpServer;
+        m_udpServer = NULL;
+    }
+    
+    if( m_udpProcessor)
+    {
+        delete m_udpProcessor;
+        m_udpProcessor = NULL;
+    }
+    
+    if( m_pUdpThreadPool)
+    {
+        m_pUdpThreadPool->Destory();
+        delete m_pUdpThreadPool;
+        m_pUdpThreadPool = NULL;
+    }
+    
+    CKVServer::Destory();
+    
     return true;
 }
 
 
-CServerApp::CServerApp(): m_tcpServer(NULL), m_processor(NULL), m_pTcpThreadPool(NULL), m_pLogger(NULL)
+CServerApp::CServerApp(): m_tcpServer(NULL), m_pTcpThreadPool(NULL), m_tcpProcessor(NULL),m_pTcpLogger(NULL),
+m_udpServer(NULL), m_pUdpThreadPool(NULL), m_udpProcessor(NULL), m_pUdpLogger(NULL), m_rpcServer(NULL), m_rpcLogger(NULL)
 {
-    m_pLogger = new GlobalLog("TCP", LL_DEBUG);
+    m_pTcpLogger = new GlobalLog("TCP", LL_DEBUG);
+    m_pUdpLogger = new GlobalLog("UDP", LL_DEBUG);
+    m_rpcLogger = new GlobalLog("RPC", LL_DEBUG);
 }
 
 CServerApp::~CServerApp()
 {
-    delete m_pLogger;
+    delete m_pTcpLogger;
+    delete m_pUdpLogger;
+    delete m_rpcLogger;
 }

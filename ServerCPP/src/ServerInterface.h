@@ -25,6 +25,8 @@ namespace ADCS
         virtual bool Initialize(CThreadPool* pool, ILog *logger) = 0;
         virtual bool Main() = 0;
         virtual bool Close() = 0;
+        virtual bool SetIP(const char *ip) = 0;
+        virtual void SetPort(const unsigned short port) = 0;
     };
 }
 

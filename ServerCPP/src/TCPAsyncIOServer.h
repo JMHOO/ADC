@@ -1,5 +1,5 @@
-#ifndef _ADCS__TCP_SYNCIO_SERVER_H_
-#define _ADCS__TCP_SYNCIO_SERVER_H_
+#ifndef _ADCS__TCP_ASYNCIO_SERVER_H_
+#define _ADCS__TCP_ASYNCIO_SERVER_H_
 
 #include <aio.h>
 #include <signal.h>
@@ -28,44 +28,45 @@ namespace ADCS
     private:
         friend class CTCPAsyncIOServer;
         
-        CTCPAsyncIOServer		*Server;
+        CTCPAsyncIOServer *Server;
         
-        static void				AIOCompletionHandler( sigval_t sigval );
+        static void AIOCompletionHandler( sigval_t sigval );
         
     public:
-        int						socketid;
-        struct sockaddr_in		ClientIP;
-        int						Event;
-        void *					Context;
+        int					socketid;
+        struct sockaddr_in	ClientIP;
+        int					Event;
+        void *				Context;
         
         CTCPAIOConnParam(): Server(NULL), socketid(0), Event(Events::EV_Connect), Context(0)
         {
         }
         
     private:
-        void			InitAIOControlBlock( int iSocket );
-        void			SetAIOCompletionHandler();
+        void InitAIOControlBlock( int iSocket );
+        void SetAIOCompletionHandler();
     public:
-        void			SetAIOBuffer( void * lpBuffer, size_t BufferLen );
-        void			CloseSession();
+        void SetAIOBuffer( void * lpBuffer, size_t BufferLen );
+        void CloseSession();
     };
     
-    typedef CTCPAIOConnParam		TCPConnParam;
+    typedef CTCPAIOConnParam TCPConnParam;
     
 
     class CTCPAsyncIOServer : public IServer
     {
+    private:
         friend class CTCPAIOConnParam;
         
-        int					socketid;
-        CThreadPool         *threadPool;
-        ILog				*logger;
+        int				socketid;
+        CThreadPool     *threadPool;
+        ILog			*logger;
         
-        unsigned short		port;
-        int					iListenQueueLen;
-        char				listenIPv4[16];      // IPv4 xxx.xxx.xxx.xxx
+        unsigned short	port;
+        int				iListenQueueLen;
+        char			listenIPv4[16];      // IPv4 xxx.xxx.xxx.xxx
         
-        ServerStatus        status;
+        ServerStatus    status;
         
         bool			Clear();
         void			WaitForExit();
@@ -73,16 +74,15 @@ namespace ADCS
         
     public:
         // from IServer interface
-        virtual bool	Initialize(CThreadPool* pool, ILog *logger);
+        virtual bool	Initialize(CThreadPool* pool, ILog *plogger);
         virtual bool	Main();
         virtual bool	Close();
+        virtual bool    SetIP( const char *ip );
+        virtual void    SetPort( unsigned short usport ) { port = usport;}
         
-        const char*	GetIP() const {return listenIPv4;}
-        bool        SetIP( const char *ip );
- 
-        unsigned short	GetPort() const {return port;}
-        void	SetPort( unsigned short usport ) { port = usport;}
-        void	SetListenQueueLen( int length ){iListenQueueLen = length;}
+        const char*     GetIP() const {return listenIPv4;}
+        unsigned short  GetPort() const {return port;}
+        void            SetListenQueueLen( int length ){iListenQueueLen = length;}
         ServerStatus GetStatus() const {return status;}
         
         ADCS::IExecuteor* GetExecutor()
