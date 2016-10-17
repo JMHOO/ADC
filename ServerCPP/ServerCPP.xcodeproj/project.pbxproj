@@ -118,6 +118,7 @@
 		BF20596E1DAC9D5D00B11921 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				BF20597C1DACA31B00B11921 /* main.cpp */,
 				BF7160551DB282B100F09E59 /* Package */,
 				BF7160541DB2816600F09E59 /* Framework */,
 				BF7160531DB2814200F09E59 /* Processors */,
@@ -132,7 +133,6 @@
 				BF71603E1DB08B6A00F09E59 /* UDPSyncIOServer.cpp */,
 				BF71606B1DB487E900F09E59 /* RPCServer.h */,
 				BF71606C1DB487F600F09E59 /* RPCServer.cpp */,
-				BF20597C1DACA31B00B11921 /* main.cpp */,
 				BF20597D1DACA31B00B11921 /* MTypes.h */,
 				BF2059891DACB55500B11921 /* ErrorCode.h */,
 				BF7160651DB312F200F09E59 /* ErrorCode.cpp */,
@@ -167,11 +167,11 @@
 			isa = PBXGroup;
 			children = (
 				BF2059861DACB40A00B11921 /* ThreadPool.h */,
+				BF2059871DACB4EA00B11921 /* ThreadPool.cpp */,
 				BF20597A1DACA31B00B11921 /* GLog.cpp */,
 				BF20597B1DACA31B00B11921 /* GLog.h */,
 				BF20597E1DACA31B00B11921 /* Utility.cpp */,
 				BF20597F1DACA31B00B11921 /* Utility.h */,
-				BF2059871DACB4EA00B11921 /* ThreadPool.cpp */,
 			);
 			name = Framework;
 			sourceTree = "<group>";

@@ -1,0 +1,15 @@
+The include or lib files in this folder is only for xcode !!!
+if you use Linux, please install library libjson-rpc-cpp.
+
+============================================================
+the steps of install libjson-rpc-cpp:
+1. install dependencies: libjsoncpp-dev, libcurl4-openssl-dev, libmicrohttpd-dev, libargtable2-dev, cmake
+2. download libjson-rpc-cpp source code:
+   git clone git://github.com/cinemast/libjson-rpc-cpp.git
+3. build it:
+   mkdir -p libjson-rpc-cpp/build
+   cd libjson-rpc-cpp/build
+   cmake .. && make
+   sudo make install
+   sudo ldconfig  
+
