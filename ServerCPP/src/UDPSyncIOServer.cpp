@@ -39,7 +39,10 @@ namespace ADCS{
        
         socketid = socket( AF_INET, SOCK_DGRAM, 0 );
         if( socketid < 0 )
+        {
+            if(plogger)plogger->Error("UDP Server initialize failed: initialize socket failed.");
             return false;
+        }
         
         int reuse_addr = 1;
         setsockopt(socketid, SOL_SOCKET, SO_REUSEADDR, (char*)(&(reuse_addr)), sizeof(reuse_addr));
@@ -47,6 +50,7 @@ namespace ADCS{
         if( bind( socketid, (struct sockaddr *)(&ServerAddr), sizeof(struct sockaddr) ) == -1 )
         {
             close( socketid );
+            if(plogger)plogger->Error("UDP Server initialize failed: bind socket failed.");
             return false;
         }
         
@@ -131,7 +135,7 @@ namespace ADCS{
         bool bSuccess = threadPool->WakeUp((void *)pCP);
         if( !bSuccess && logger )
         {
-            logger->Error("CUDPSyncIOServer::AddJobToThreadpool(): Thread wake up solwly");
+            logger->Error("CUDPSyncIOServer::AddJobToThreadpool(): Thread wake up failed.");
         }
         
         return bSuccess;

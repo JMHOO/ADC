@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <arpa/inet.h>
 #include "TCPSyncProcessor.h"
 #include "Network.h"
 #include "TCPSyncIOServer.h"
@@ -19,7 +20,7 @@ bool TCPSyncServerProcessor::Execute( void * pdata )
     
     if( pConnParam == NULL )
     {
-        if(m_logger)m_logger->Info("TCPSyncServerProcessor::Execute, connection param error.");
+        if(m_logger)m_logger->Info("TCP Server Processor: connection param error.");
         return false;
     }
     
@@ -36,11 +37,11 @@ bool TCPSyncServerProcessor::Execute( void * pdata )
         {
             if( recvedlen == 0 )
             {
-                if(m_logger)m_logger->Info("TCPSyncServerProcessor::Execute, receive nothing, client might close.");
+                if(m_logger)m_logger->Info("TCP Server: receive nothing, client might close.");
             }
             else
             {
-                if(m_logger)m_logger->Error("TCPSyncServerProcessor::Execute, receive package header error. Expect to receive %d bytes, in fact, it receive %d bytes", sizeof(ADCS::PACK_HEADER), recvedlen);
+                if(m_logger)m_logger->Error("TCP Server: receive package header error. Expect to receive %d bytes, in fact, it receive %d bytes", sizeof(ADCS::PACK_HEADER), recvedlen);
             }
             tcpHelper.Close(pConnParam->socketid);
             delete pConnParam;
@@ -51,7 +52,7 @@ bool TCPSyncServerProcessor::Execute( void * pdata )
         len = tcpHelper.RecvInfo( pConnParam->socketid, sBuffer + recvedlen, nRestDataLen );
         if( len != nRestDataLen )
         {
-            if(m_logger)m_logger->Error("TCPSyncServerProcessor::Execute, receive package payload error. Expect to receive %d bytes, in fact, it receive %d bytes", nRestDataLen, len);
+            if(m_logger)m_logger->Error("TCP Server: receive package payload error. Expect to receive %d bytes, in fact, it receive %d bytes", nRestDataLen, len);
             tcpHelper.Close(pConnParam->socketid);
             delete pConnParam;
             return true;
@@ -59,6 +60,8 @@ bool TCPSyncServerProcessor::Execute( void * pdata )
         
         
         // we got the whold package, deal with it
+        if( m_logger)m_logger->Info("TCP Server: got message from client:%s -- %s", inet_ntoa(pConnParam->ClientAddr.sin_addr), sBuffer+sizeof(ADCS::PACK_HEADER));
+
         IPacket* packet = IPacket::CreatePackage(sBuffer, ntohl(ptrHeader->Length), pConnParam->socketid);
         if( packet )
         {
@@ -67,11 +70,13 @@ bool TCPSyncServerProcessor::Execute( void * pdata )
             unsigned long ulResponseLength = 0;
             packet->ToBytes(ptrResponse, ulResponseLength);
             
+            if( m_logger)m_logger->Info("TCP Server: sending response to client:%s -- %s", inet_ntoa(pConnParam->ClientAddr.sin_addr), ptrResponse+sizeof(ADCS::PACK_HEADER));
+            
             // send whole package
             len = tcpHelper.SendInfo( pConnParam->socketid, ptrResponse, (int)ulResponseLength );
             if( (int)ulResponseLength != len )
             {
-                if(m_logger)m_logger->Error("TCPSyncServerProcessor::Execute, sending package header error. Expect to send %d bytes, in fact, it sent %d bytes", ulResponseLength, len);
+                if(m_logger)m_logger->Error("TCP Server: sending package header error. Expect to send %d bytes, in fact, it sent %d bytes", ulResponseLength, len);
                 tcpHelper.Close(pConnParam->socketid);
                 delete pConnParam;
                 return true;
@@ -81,7 +86,7 @@ bool TCPSyncServerProcessor::Execute( void * pdata )
         }
         else
         {
-            if(m_logger)m_logger->Error("TCPSyncServer Invalid packet, dropped it. Content: %s", sBuffer+sizeof(ADCS::PACK_HEADER));
+            if(m_logger)m_logger->Error("TCP Server create packet failed: invalid packet, dropped it. Content: %s", sBuffer+sizeof(ADCS::PACK_HEADER));
         }
     }
     

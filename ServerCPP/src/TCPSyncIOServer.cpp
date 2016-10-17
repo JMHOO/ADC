@@ -44,11 +44,15 @@ namespace ADCS
         }
         
         if( ServerAddr.sin_addr.s_addr == INADDR_NONE )
+        {
+            if(plogger)plogger->Error("TCP Server initialize failed: Invalid IP Address --- %s", listenIPv4);
             return false;
+        }
         
         socketid = socket( AF_INET, SOCK_STREAM, 0 );
         if( socketid < 0 )
         {
+            if(plogger)plogger->Error("TCP Server initialize failed: initialize socket failed.");
             return false;
         }
         
@@ -58,6 +62,7 @@ namespace ADCS
         if( bind( socketid, (struct sockaddr *)(&ServerAddr), sizeof(struct sockaddr) ) == -1 )
         {
             close( socketid );
+            if(plogger)plogger->Error("TCP Server initialize failed: bind socket failed.");
             return false;
         }
         
@@ -93,7 +98,7 @@ namespace ADCS
             if( ( newSocket = accept( socketid, (struct sockaddr *)(&ClientAddr), (socklen_t *)&addrlen) ) == -1 )
             {
                 if( logger )
-                    logger->Error( "CTCPSIOServer::Main, accpet failed." );
+                    logger->Error( "CTCPSIOServer::Main, accpet client socket failed --- socket id:%d, client ip:%s", socketid, inet_ntoa(ClientAddr.sin_addr) );
                 continue;
             }
             
@@ -101,7 +106,7 @@ namespace ADCS
             if( !pConnParam )
             {
                 if( logger )
-                    logger->Error( "CTCPSIOServer::Main(): allocate memory for new connection failed." );
+                    logger->Error( "CTCPSIOServer::Main(): allocate memory for new connection failed, close socket." );
                 close(newSocket);
                 continue;
             }
@@ -115,7 +120,7 @@ namespace ADCS
                 
                 if( logger )
                 {
-                    logger->Error( "CTCPSIOServer : Thread Pool wake up failed. Server main exiting. Socket:%d, IP: %s", newSocket, inet_ntoa(ClientAddr.sin_addr) );
+                    logger->Error( "CTCPSIOServer : Thread Pool wake up failed. Server main exiting. Socket:%d, client ip:%s", newSocket, inet_ntoa(ClientAddr.sin_addr) );
                 }
                 break;
             }
