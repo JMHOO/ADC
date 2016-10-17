@@ -28,6 +28,9 @@ private:
     UDPServerProcessor* m_udpProcessor;
     ILog*               m_pUdpLogger;
     
+    ADCS::IServer*      m_rpcServer;
+    ILog*               m_rpcLogger;
+    
 public:
     bool Start(unsigned short usPort);
     bool Stop();

@@ -8,6 +8,7 @@
 #include "TCPAsyncIOProcessor.h"
 #include "UDPSyncProcessor.h"
 #include "KVServer.h"
+#include "RPCServer.h"
 
 bool CServerApp::Start(unsigned short usPort)
 {
@@ -46,6 +47,21 @@ bool CServerApp::Start(unsigned short usPort)
         ADCS::CUDPSyncIOServer* udpserver = dynamic_cast<ADCS::CUDPSyncIOServer*>(m_udpServer);
         if( m_pUdpLogger)m_pUdpLogger->Info("UDP Server started: %s:%d LISTEN.", udpserver->GetIP(), udpserver->GetPort());
         
+    }
+    else
+    {
+        return false;
+    }
+    
+    // Start RPC Server
+    m_rpcServer = new ADCS::CRPCServer();
+    m_rpcServer->SetIP("0.0.0.0");
+    m_rpcServer->SetPort(usPort+2);
+    if(m_rpcServer->Start(NULL, m_rpcLogger))
+    {
+        ADCS::CRPCServer* rpcserver = dynamic_cast<ADCS::CRPCServer*>(m_rpcServer);
+        if( m_pUdpLogger)m_rpcLogger->Info("RPC Server started: %s:%d LISTEN.", rpcserver->GetIP(), rpcserver->GetPort());
+
     }
     else
     {
@@ -109,14 +125,16 @@ bool CServerApp::Stop()
 
 
 CServerApp::CServerApp(): m_tcpServer(NULL), m_pTcpThreadPool(NULL), m_tcpProcessor(NULL),m_pTcpLogger(NULL),
-m_udpServer(NULL), m_pUdpThreadPool(NULL), m_udpProcessor(NULL), m_pUdpLogger(NULL)
+m_udpServer(NULL), m_pUdpThreadPool(NULL), m_udpProcessor(NULL), m_pUdpLogger(NULL), m_rpcServer(NULL), m_rpcLogger(NULL)
 {
     m_pTcpLogger = new GlobalLog("TCP", LL_DEBUG);
     m_pUdpLogger = new GlobalLog("UDP", LL_DEBUG);
+    m_rpcLogger = new GlobalLog("RPC", LL_DEBUG);
 }
 
 CServerApp::~CServerApp()
 {
     delete m_pTcpLogger;
     delete m_pUdpLogger;
+    delete m_rpcLogger;
 }

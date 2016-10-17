@@ -61,7 +61,7 @@ json jsonkvPacket::__process_one_operation__(json jrequest)
     if( !kvserver)
     {
         jresult["result"]["code"] = "1024";
-        jresult["result"]["code"] = "Internal Server Error";
+        jresult["result"]["message"] = "Internal Server Error";
         return jresult;
     }
     
@@ -72,6 +72,11 @@ json jsonkvPacket::__process_one_operation__(json jrequest)
         if( code == ErrorCode::KVStore::Success )
         {
             jresult["result"]["message"] = "put success";
+        }
+        else
+        {
+            jresult["result"]["code"] = std::to_string((int)code);
+            jresult["result"]["message"] = ErrorCode::Explain((unsigned int)code);
         }
     }
     else if(kvOperator == "get")

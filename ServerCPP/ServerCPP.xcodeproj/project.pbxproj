@@ -25,6 +25,8 @@
 		BF7160611DB2957D00F09E59 /* jsonkvPackage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160601DB2957D00F09E59 /* jsonkvPackage.cpp */; };
 		BF7160641DB2C81B00F09E59 /* KVServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160631DB2C81B00F09E59 /* KVServer.cpp */; };
 		BF7160661DB312F200F09E59 /* ErrorCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160651DB312F200F09E59 /* ErrorCode.cpp */; };
+		BF71606A1DB4778500F09E59 /* CKvJSONRPCService.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160691DB4778500F09E59 /* CKvJSONRPCService.cpp */; };
+		BF71606D1DB487F600F09E59 /* RPCServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF71606C1DB487F600F09E59 /* RPCServer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -78,6 +80,11 @@
 		BF7160621DB2C80E00F09E59 /* KVServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = KVServer.h; path = src/KVServer.h; sourceTree = "<group>"; };
 		BF7160631DB2C81B00F09E59 /* KVServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KVServer.cpp; path = src/KVServer.cpp; sourceTree = "<group>"; };
 		BF7160651DB312F200F09E59 /* ErrorCode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ErrorCode.cpp; path = src/ErrorCode.cpp; sourceTree = "<group>"; };
+		BF7160671DB4770200F09E59 /* CKvRPCServiceInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CKvRPCServiceInterface.h; path = src/CKvRPCServiceInterface.h; sourceTree = "<group>"; };
+		BF7160681DB4777A00F09E59 /* CKvJSONRPCService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CKvJSONRPCService.h; path = src/CKvJSONRPCService.h; sourceTree = "<group>"; };
+		BF7160691DB4778500F09E59 /* CKvJSONRPCService.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CKvJSONRPCService.cpp; path = src/CKvJSONRPCService.cpp; sourceTree = "<group>"; };
+		BF71606B1DB487E900F09E59 /* RPCServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPCServer.h; path = src/RPCServer.h; sourceTree = "<group>"; };
+		BF71606C1DB487F600F09E59 /* RPCServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RPCServer.cpp; path = src/RPCServer.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,6 +130,8 @@
 				BF7160441DB1A79000F09E59 /* TCPSyncIOServer.cpp */,
 				BF71603D1DB0847700F09E59 /* UDPSyncIOServer.h */,
 				BF71603E1DB08B6A00F09E59 /* UDPSyncIOServer.cpp */,
+				BF71606B1DB487E900F09E59 /* RPCServer.h */,
+				BF71606C1DB487F600F09E59 /* RPCServer.cpp */,
 				BF20597C1DACA31B00B11921 /* main.cpp */,
 				BF20597D1DACA31B00B11921 /* MTypes.h */,
 				BF2059891DACB55500B11921 /* ErrorCode.h */,
@@ -134,6 +143,9 @@
 				BF71604A1DB1B79100F09E59 /* SocketHelper.cpp */,
 				BF7160621DB2C80E00F09E59 /* KVServer.h */,
 				BF7160631DB2C81B00F09E59 /* KVServer.cpp */,
+				BF7160681DB4777A00F09E59 /* CKvJSONRPCService.h */,
+				BF7160691DB4778500F09E59 /* CKvJSONRPCService.cpp */,
+				BF7160671DB4770200F09E59 /* CKvRPCServiceInterface.h */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -232,6 +244,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF2059841DACA33F00B11921 /* makefile in Sources */,
 				BF2059821DACA31B00B11921 /* Utility.cpp in Sources */,
 				BF7160481DB1AD1800F09E59 /* TCPSyncProcessor.cpp in Sources */,
 				BF20598C1DAD923100B11921 /* TCPAsyncIOServer.cpp in Sources */,
@@ -241,10 +254,11 @@
 				BF71603F1DB08B6A00F09E59 /* UDPSyncIOServer.cpp in Sources */,
 				BF7160661DB312F200F09E59 /* ErrorCode.cpp in Sources */,
 				BF71604B1DB1B79100F09E59 /* SocketHelper.cpp in Sources */,
-				BF2059841DACA33F00B11921 /* makefile in Sources */,
+				BF71606D1DB487F600F09E59 /* RPCServer.cpp in Sources */,
 				BF2059941DADE98100B11921 /* ServerInterface.cpp in Sources */,
 				BF7160611DB2957D00F09E59 /* jsonkvPackage.cpp in Sources */,
 				BF7160581DB282F200F09E59 /* PackageInterface.cpp in Sources */,
+				BF71606A1DB4778500F09E59 /* CKvJSONRPCService.cpp in Sources */,
 				BF2059801DACA31B00B11921 /* GLog.cpp in Sources */,
 				BF2059901DADBCD500B11921 /* SrvApp.cpp in Sources */,
 				BF2059881DACB4EA00B11921 /* ThreadPool.cpp in Sources */,
@@ -346,6 +360,15 @@
 		BF20596C1DAC9D1000B11921 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = jsonrpc;
+				LIBRARY_SEARCH_PATHS = jsonrpc;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_LDFLAGS = (
+					"-ljsoncpp",
+					"-lmicrohttpd",
+					"-ljsonrpccpp-common",
+					"-ljsonrpccpp-server",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -353,6 +376,15 @@
 		BF20596D1DAC9D1000B11921 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = jsonrpc;
+				LIBRARY_SEARCH_PATHS = jsonrpc;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_LDFLAGS = (
+					"-ljsoncpp",
+					"-lmicrohttpd",
+					"-ljsonrpccpp-common",
+					"-ljsonrpccpp-server",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
