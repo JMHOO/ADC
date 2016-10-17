@@ -12,7 +12,6 @@
 		BF2059821DACA31B00B11921 /* Utility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF20597E1DACA31B00B11921 /* Utility.cpp */; };
 		BF2059841DACA33F00B11921 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = BF2059831DACA33F00B11921 /* makefile */; };
 		BF2059881DACB4EA00B11921 /* ThreadPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF2059871DACB4EA00B11921 /* ThreadPool.cpp */; };
-		BF20598C1DAD923100B11921 /* TCPAsyncIOServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF20598B1DAD923100B11921 /* TCPAsyncIOServer.cpp */; };
 		BF2059901DADBCD500B11921 /* SrvApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF20598F1DADBCD500B11921 /* SrvApp.cpp */; };
 		BF2059941DADE98100B11921 /* ServerInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF2059931DADE98100B11921 /* ServerInterface.cpp */; };
 		BF71603F1DB08B6A00F09E59 /* UDPSyncIOServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF71603E1DB08B6A00F09E59 /* UDPSyncIOServer.cpp */; };
@@ -20,7 +19,6 @@
 		BF7160481DB1AD1800F09E59 /* TCPSyncProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160471DB1AD1800F09E59 /* TCPSyncProcessor.cpp */; };
 		BF71604B1DB1B79100F09E59 /* SocketHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF71604A1DB1B79100F09E59 /* SocketHelper.cpp */; };
 		BF71604E1DB1CE0E00F09E59 /* UDPSyncProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF71604D1DB1CE0E00F09E59 /* UDPSyncProcessor.cpp */; };
-		BF7160511DB1CEF700F09E59 /* TCPAsyncIOProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160501DB1CEF700F09E59 /* TCPAsyncIOProcessor.cpp */; };
 		BF7160581DB282F200F09E59 /* PackageInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160571DB282F200F09E59 /* PackageInterface.cpp */; };
 		BF7160611DB2957D00F09E59 /* jsonkvPackage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160601DB2957D00F09E59 /* jsonkvPackage.cpp */; };
 		BF7160641DB2C81B00F09E59 /* KVServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF7160631DB2C81B00F09E59 /* KVServer.cpp */; };
@@ -53,8 +51,6 @@
 		BF2059861DACB40A00B11921 /* ThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadPool.h; path = src/ThreadPool.h; sourceTree = "<group>"; };
 		BF2059871DACB4EA00B11921 /* ThreadPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThreadPool.cpp; path = src/ThreadPool.cpp; sourceTree = "<group>"; };
 		BF2059891DACB55500B11921 /* ErrorCode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ErrorCode.h; path = src/ErrorCode.h; sourceTree = "<group>"; };
-		BF20598A1DAD909700B11921 /* TCPAsyncIOServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TCPAsyncIOServer.h; path = src/TCPAsyncIOServer.h; sourceTree = "<group>"; };
-		BF20598B1DAD923100B11921 /* TCPAsyncIOServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TCPAsyncIOServer.cpp; path = src/TCPAsyncIOServer.cpp; sourceTree = "<group>"; };
 		BF20598D1DAD990E00B11921 /* Network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Network.h; path = src/Network.h; sourceTree = "<group>"; };
 		BF20598E1DADBCC200B11921 /* SrvApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SrvApp.h; path = src/SrvApp.h; sourceTree = "<group>"; };
 		BF20598F1DADBCD500B11921 /* SrvApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SrvApp.cpp; path = src/SrvApp.cpp; sourceTree = "<group>"; };
@@ -70,8 +66,6 @@
 		BF71604A1DB1B79100F09E59 /* SocketHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SocketHelper.cpp; path = src/SocketHelper.cpp; sourceTree = "<group>"; };
 		BF71604C1DB1CDFC00F09E59 /* UDPSyncProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UDPSyncProcessor.h; path = src/UDPSyncProcessor.h; sourceTree = "<group>"; };
 		BF71604D1DB1CE0E00F09E59 /* UDPSyncProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UDPSyncProcessor.cpp; path = src/UDPSyncProcessor.cpp; sourceTree = "<group>"; };
-		BF71604F1DB1CEE600F09E59 /* TCPAsyncIOProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TCPAsyncIOProcessor.h; path = src/TCPAsyncIOProcessor.h; sourceTree = "<group>"; };
-		BF7160501DB1CEF700F09E59 /* TCPAsyncIOProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TCPAsyncIOProcessor.cpp; path = src/TCPAsyncIOProcessor.cpp; sourceTree = "<group>"; };
 		BF7160521DB2100100F09E59 /* json.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = json.hpp; path = src/json.hpp; sourceTree = "<group>"; };
 		BF7160561DB282E300F09E59 /* PackageInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PackageInterface.h; path = src/PackageInterface.h; sourceTree = "<group>"; };
 		BF7160571DB282F200F09E59 /* PackageInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PackageInterface.cpp; path = src/PackageInterface.cpp; sourceTree = "<group>"; };
@@ -85,6 +79,7 @@
 		BF7160691DB4778500F09E59 /* CKvJSONRPCService.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CKvJSONRPCService.cpp; path = src/CKvJSONRPCService.cpp; sourceTree = "<group>"; };
 		BF71606B1DB487E900F09E59 /* RPCServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPCServer.h; path = src/RPCServer.h; sourceTree = "<group>"; };
 		BF71606C1DB487F600F09E59 /* RPCServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RPCServer.cpp; path = src/RPCServer.cpp; sourceTree = "<group>"; };
+		BF71606E1DB5456600F09E59 /* cmdline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cmdline.h; path = src/cmdline.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +113,7 @@
 		BF20596E1DAC9D5D00B11921 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				BF71606E1DB5456600F09E59 /* cmdline.h */,
 				BF20597C1DACA31B00B11921 /* main.cpp */,
 				BF7160551DB282B100F09E59 /* Package */,
 				BF7160541DB2816600F09E59 /* Framework */,
@@ -125,8 +121,6 @@
 				BF7160521DB2100100F09E59 /* json.hpp */,
 				BF20598F1DADBCD500B11921 /* SrvApp.cpp */,
 				BF20598E1DADBCC200B11921 /* SrvApp.h */,
-				BF20598B1DAD923100B11921 /* TCPAsyncIOServer.cpp */,
-				BF20598A1DAD909700B11921 /* TCPAsyncIOServer.h */,
 				BF7160431DB1A77D00F09E59 /* TCPSyncIOServer.h */,
 				BF7160441DB1A79000F09E59 /* TCPSyncIOServer.cpp */,
 				BF71603D1DB0847700F09E59 /* UDPSyncIOServer.h */,
@@ -157,8 +151,6 @@
 				BF7160471DB1AD1800F09E59 /* TCPSyncProcessor.cpp */,
 				BF71604C1DB1CDFC00F09E59 /* UDPSyncProcessor.h */,
 				BF71604D1DB1CE0E00F09E59 /* UDPSyncProcessor.cpp */,
-				BF71604F1DB1CEE600F09E59 /* TCPAsyncIOProcessor.h */,
-				BF7160501DB1CEF700F09E59 /* TCPAsyncIOProcessor.cpp */,
 			);
 			name = Processors;
 			sourceTree = "<group>";
@@ -247,7 +239,6 @@
 				BF2059841DACA33F00B11921 /* makefile in Sources */,
 				BF2059821DACA31B00B11921 /* Utility.cpp in Sources */,
 				BF7160481DB1AD1800F09E59 /* TCPSyncProcessor.cpp in Sources */,
-				BF20598C1DAD923100B11921 /* TCPAsyncIOServer.cpp in Sources */,
 				BF7160641DB2C81B00F09E59 /* KVServer.cpp in Sources */,
 				BF2059811DACA31B00B11921 /* main.cpp in Sources */,
 				BF7160451DB1A79000F09E59 /* TCPSyncIOServer.cpp in Sources */,
@@ -263,7 +254,6 @@
 				BF2059901DADBCD500B11921 /* SrvApp.cpp in Sources */,
 				BF2059881DACB4EA00B11921 /* ThreadPool.cpp in Sources */,
 				BF71604E1DB1CE0E00F09E59 /* UDPSyncProcessor.cpp in Sources */,
-				BF7160511DB1CEF700F09E59 /* TCPAsyncIOProcessor.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
