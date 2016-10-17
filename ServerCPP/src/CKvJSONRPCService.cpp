@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "CKvJSONRPCService.h"
-#include "KVserver.h"
+#include "KVServer.h"
 #include "ErrorCode.h"
 
 using namespace ADCS;

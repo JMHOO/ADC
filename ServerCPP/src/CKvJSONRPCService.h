@@ -1,7 +1,7 @@
 #ifndef __CKvJSONRPCService_H_
 #define __CKvJSONRPCService_H_
 
-#include "CkvRPCServiceInterface.h"
+#include "CKvRPCServiceInterface.h"
 
 class CKvJSONRPCService : public ICKvRPCService
 {
