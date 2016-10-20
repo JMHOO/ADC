@@ -1,43 +1,60 @@
+# -*- coding: utf-8 -*-
 from socket import *
-import struct
 import json
-import binascii
-from array import *
-
-PACK_HEADER_LENGTH = 16
+import datetime
 #json:[{'operate': "" ,'key':"", 'value':""}]
-msg1 = {'jsonkv':'1.0','operate':'put','key':'apple','value':'www.apple.com','id':'1'}
-msg2 = [{"jsonkv":"1.0","id":"1","operate":"get","key":"apple","value":"null"}]
-msg3 = [{'jsonkv':'1.0','operate':"delete",'key':"apple",'value':"null","id":"1"}]
-
+#msg1 = [{'operate':"put", 'key':"1",'value':"12345"}]
+#msg2 = [{'operate':"get", 'key':"1",'value':"null"}]
+#msg3 = [{'operate':"delete", 'key':"null",'value':"null"}]
 #jmsg1 = json.dumps(msg1)
 #jmsg2 = json.dumps(msg2)
 #jmsg3 = json.dumps(msg3)
-json_msg=[]
-json_msg.append(json.dumps(msg1))
-json_msg.append(json.dumps(msg2))
-json_msg.append(json.dumps(msg3))
+# build the log
+fout = open('log.txt', 'w')
 
-#host = 'localhost'
-host = '73.140.72.152'
-port = 15001
-bufsiz = 1024
+host = 'localhost'
+port = 0;
+operate = ""
+#hostport 要输入
+host = raw_input("please input host> ")
+port = raw_input("please input port> ")
 #open socket
-tcpCliSock = socket(AF_INET, SOCK_STREAM)
+tcpCliSock = socket(AF_INET, SOCK_STREAM)#tcp must use  SOCK_STREAM
 #link to the server
 tcpCliSock.connect((host, port))
-for x in range(0,3):
+#write the log
+fout.write(str(datetime.datetime.now())+' '+"the client has linked to the server (" + host +"," + port + ")"+' '+'\n')
+#bag len
+bufsiz = 1024;
+idnum = 0;
+while True:
+    idnum = idnum + 1;
+    #write the log
+    fout.write(str(datetime.datetime.now())+' '+"the client's id is" + str(idnum) +'\n')
     #wait for input
-    #data = raw_input('> ')
-    data = json_msg[x]
-    # PackageHeader defination
-    #struct _PackageHeader_
-    #{
-    #    unsigned int Version;			//-- Packet version.
-    #    unsigned int Type;				//-- Packet type.
-    #    unsigned int Length;			//-- The total length of whole packet.
-    #    unsigned int Reserve;			//-- Reserved area. Decided by the packet type.
-    #}
+    operate = raw_input("please input operate> ")
+    if operate == "delete":
+        key = raw_input("please input key> ")
+        value = "null"
+        
+    if operate == "get":
+        key = raw_input("please input key> ")
+        value = "null"
+    if operate == "put":
+        key = raw_input("please input key> ")
+        value = raw_input("please input value> ")
+    idarr = str(idnum);
+    msg = [{'version':"1.0",'operate':operate, 'key':key,'value':value,'id':idarr}]
+    jmsg = json.dumps(msg)
+    data = jmsg;
+    if not data:
+        print("There is no valid data")
+        fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
+        break
+    #write the log
+    fout.write(str(datetime.datetime.now())+' '+"the client's opearte is:" + operate + "(" + key + "," + value + ")" +' '+ '\n')
+    
+    #add the header
     datalen = len(data)
     packageformat='%ds' % datalen
     packagelen = PACK_HEADER_LENGTH + datalen
@@ -48,6 +65,8 @@ for x in range(0,3):
     pkg_header = header_fmt.pack(*headervalues)
     pkg_payload = struct.pack(packageformat,data)
     if not pkg_payload:
+        print("There is no valid payload")
+        fout.write(str(datetime.datetime.now())+' '+"The payload's type is incorrect" +' '+ '\n')
         break
     #send message
     tcpCliSock.sendall(pkg_header)
@@ -55,7 +74,10 @@ for x in range(0,3):
     #receive response
     response = tcpCliSock.recv(bufsiz)
     if not response:
+        print("There is no valid response")
+        fout.write(str(datetime.datetime.now())+' '+"The response's type is incorrect" +' '+  '\n')
         break
+    #response ,earse the header
     if len(response) == PACK_HEADER_LENGTH:
         (version, type, length, resverse) = struct.unpack('!IIII',response)
         payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
@@ -65,5 +87,20 @@ for x in range(0,3):
         (version, type, length, resverse) = struct.unpack('!IIII',response[:PACK_HEADER_LENGTH])
         payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
         payload = struct.unpack(payload_fmt, response[PACK_HEADER_LENGTH:])
-    print payload
+        
+    #write the log    
+    recdata = json.dump(payload)
+    
+    
+    for rec in recdata:
+        if str(rec['result']['code']) == "0":
+            recstr = "The value is " + str(rec['result']['value'])
+            fout.write(str(datetime.datetime.now())+' '+"the server's response is: " + "value:" + str(rec['result']['value']) + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] + " id:" + str(rec['id'])+' '+'\n')
+        else:
+            recstr = rec['result']['message']
+            fout.write(str(datetime.datetime.now())+' '+"the server's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] + " id:" + str(rec['id'])+' '+'\n')
+        print recstr
+    
 tcpCliSock.close()
+fout.close()
+
