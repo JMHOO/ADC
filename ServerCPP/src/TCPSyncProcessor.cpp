@@ -41,7 +41,7 @@ bool TCPSyncServerProcessor::Execute( void * pdata )
             }
             else
             {
-                if(m_logger)m_logger->Error("TCP Server: receive package header error. Expect to receive %d bytes, in fact, it receive %d bytes", sizeof(ADCS::PACK_HEADER), recvedlen);
+                if(m_logger)m_logger->Error("TCP Server: receive package header error. Expect to receive %d bytes, in fact, it receive %d bytes -- %s", sizeof(ADCS::PACK_HEADER), recvedlen, sBuffer+sizeof(ADCS::PACK_HEADER));
             }
             tcpHelper.Close(pConnParam->socketid);
             delete pConnParam;
@@ -52,7 +52,7 @@ bool TCPSyncServerProcessor::Execute( void * pdata )
         len = tcpHelper.RecvInfo( pConnParam->socketid, sBuffer + recvedlen, nRestDataLen );
         if( len != nRestDataLen )
         {
-            if(m_logger)m_logger->Error("TCP Server: receive package payload error. Expect to receive %d bytes, in fact, it receive %d bytes", nRestDataLen, len);
+            if(m_logger)m_logger->Error("TCP Server: receive package payload error. Expect to receive %d bytes, in fact, it receive %d bytes -- %s", nRestDataLen, len, sBuffer+sizeof(ADCS::PACK_HEADER));
             tcpHelper.Close(pConnParam->socketid);
             delete pConnParam;
             return true;

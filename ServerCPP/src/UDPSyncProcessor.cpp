@@ -13,11 +13,11 @@ bool UDPServerProcessor::ParseBuffer(char * buf, int len)
     {
         if( ntohl(pHeader->Length) > (unsigned long)len )
         {
-            if(m_logger)m_logger->Error("UDPServerProcessor Parser: received data less than required, drop package.");
+            if(m_logger)m_logger->Error("UDPServerProcessor Parser: received data less than required, drop package. -- %s", buf + sizeof(ADCS::PACK_HEADER));
         }
         else
         {
-            if(m_logger)m_logger->Error("UDPServerProcessor Parser: received data larger than required, drop package.");
+            if(m_logger)m_logger->Error("UDPServerProcessor Parser: received data larger than required, drop package. -- %s", buf + sizeof(ADCS::PACK_HEADER));
             
         }
         return false;
