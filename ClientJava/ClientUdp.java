@@ -9,12 +9,14 @@ import java.net.SocketTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class ClientUdp {
 	private final String serverDomainName = "uw.umx.io";
 	private final String serverIP ="73.140.72.152";
 	private final int serverPortNumber = 15002;
+	private final int MAX_RETRY_TIMES = 3;
 	
-	public void UdpTest(){
+	public String UdpTest(){
 		try{
 			DatagramSocket clientSocket = new DatagramSocket();
 			InetAddress ipAddress = InetAddress.getByName(serverIP);
@@ -28,29 +30,32 @@ public class ClientUdp {
 			os.writeInt(0);
 			os.writeBytes(json);
 			final byte[] data = array_os.toByteArray();
+			os.close();
 			
 			DatagramPacket sendPacket = new DatagramPacket(data, data.length, ipAddress,serverPortNumber);
 			byte[] receiveData = new byte[128];
 			clientSocket.send(sendPacket);	
 			
-			clientSocket.setSoTimeout(5000);
-			while(true){
+			clientSocket.setSoTimeout(3000);
+			for(int i=0; i < MAX_RETRY_TIMES; i++){
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				try{
 					clientSocket.receive(receivePacket);
-					System.out.print(new String(receivePacket.getData()));
-					break;
+					return (new String(receivePacket.getData()));
 				}catch (SocketTimeoutException e){
 					//resend;
 					clientSocket.send(sendPacket);
 					continue;
 				}
-			}	
+			}
+			clientSocket.close();
 		}catch(Exception ex){
 			System.out.print("exception while doing udp call");
 			ex.printStackTrace();
+		}finally{
+			return null;
 		}
-					
+				
 	}
 
 }

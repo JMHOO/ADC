@@ -6,7 +6,7 @@ public class ClientTcp {
 	private final String serverIP ="73.140.72.152";
 	private final int serverPortNumber = 15001;
 	
-	public void TcpTest(String json) {
+	public String TcpTest(String json) {
 		try{
 			Socket clientSocket = new Socket(serverIP, serverPortNumber);
 			DataOutputStream os = new DataOutputStream(clientSocket.getOutputStream());
@@ -20,17 +20,22 @@ public class ClientTcp {
 			os.flush();
 			
 			BufferedReader in = new BufferedReader(new InputStreamReader(is));
+			String response = "";
 			String inputLine;
 			while ((inputLine = in.readLine()) != null){
+				response = response + inputLine;
 				System.out.println(inputLine);
 			}
 			in.close();
 			os.close();
 			is.close();
 			clientSocket.close();
+			return response;
 		} catch (Exception ex) {
 			System.out.print("exception while doing tcp call");
 			ex.printStackTrace();
+		}finally{
+			return null;
 		}
 	}
 
