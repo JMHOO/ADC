@@ -1,14 +1,18 @@
+import java.awt.SecondaryLoop;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketTimeoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClientUdp {
 	private final String serverDomainName = "uw.umx.io";
 	private final String serverIP ="73.140.72.152";
-	private final int serverPortNumber = 15001;
+	private final int serverPortNumber = 15002;
 	
 	public void UdpTest(){
 		try{
@@ -27,21 +31,26 @@ public class ClientUdp {
 			
 			DatagramPacket sendPacket = new DatagramPacket(data, data.length, ipAddress,serverPortNumber);
 			byte[] receiveData = new byte[128];
-			clientSocket.send(sendPacket);
-			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-			clientSocket.receive(receivePacket);
+			clientSocket.send(sendPacket);	
 			
-			System.out.print(new String(receivePacket.getData()));
-				
-		} catch(Exception ex) {
+			clientSocket.setSoTimeout(5000);
+			while(true){
+				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+				try{
+					clientSocket.receive(receivePacket);
+					System.out.print(new String(receivePacket.getData()));
+					break;
+				}catch (SocketTimeoutException e){
+					//resend;
+					clientSocket.send(sendPacket);
+					continue;
+				}
+			}	
+		}catch(Exception ex){
 			System.out.print("exception while doing udp call");
 			ex.printStackTrace();
-			
 		}
-		
+					
 	}
-	
-	
-	
 
 }
