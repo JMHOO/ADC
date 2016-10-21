@@ -64,10 +64,10 @@ bool UDPServerProcessor::Execute( void * pdata )
         unsigned long ulResponseLength = 0;
         packet->ToBytes(ptrResponse, ulResponseLength);
         
-        if( m_logger)m_logger->Info("UDP Server: sending response to client:%s -- %s", inet_ntoa(pConnParam->ClientIP.sin_addr), ptrResponse+sizeof(ADCS::PACK_HEADER));
+        if( m_logger)m_logger->Info("UDP Server: sending response[len=%d] to client:%s -- %s", ulResponseLength, inet_ntoa(pConnParam->ClientIP.sin_addr), ptrResponse+sizeof(ADCS::PACK_HEADER));
         
         // send whole package
-        int nTransferedLen = pConnParam->Send( pConnParam->Buffer, (int)ulResponseLength );
+        int nTransferedLen = pConnParam->Send( ptrResponse, (int)ulResponseLength );
         if( nTransferedLen == 0 )
         {
             if(m_logger)m_logger->Info("UDP Server: sending data failed, nothing sent.");
