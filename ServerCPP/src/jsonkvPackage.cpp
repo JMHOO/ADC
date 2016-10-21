@@ -1,6 +1,7 @@
 #include "jsonkvPackage.h"
 #include "KVServer.h"
 #include <string.h>
+#include <algorithm>
 #include "ErrorCode.h"
 
 using namespace nlohmann;
@@ -66,6 +67,7 @@ json jsonkvPacket::__process_one_operation__(json jrequest)
     }
     
     std::string kvOperator = jrequest["operate"];
+    std::transform(kvOperator.begin(),kvOperator.end(),kvOperator.begin(), ::tolower);
     if( kvOperator == "put")
     {
         ErrorCode::KVStore code = kvserver->SetValue(jrequest["key"], jrequest["value"]);

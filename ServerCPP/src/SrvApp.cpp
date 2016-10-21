@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include <iostream>
 #include "SrvApp.h"
-#include "TCPAsyncIOServer.h"
 #include "TCPSyncIOServer.h"
 #include "UDPSyncIOServer.h"
 #include "TCPSyncProcessor.h"
-#include "TCPAsyncIOProcessor.h"
 #include "UDPSyncProcessor.h"
 #include "KVServer.h"
 #include "RPCServer.h"
@@ -26,7 +24,8 @@ bool CServerApp::Start(unsigned short usPort)
     {
         //ADCS::CTCPAsyncIOServer* tcpserver = dynamic_cast<ADCS::CTCPAsyncIOServer*>(m_tcpServer);
         ADCS::CTCPSIOServer* tcpserver = dynamic_cast<ADCS::CTCPSIOServer*>(m_tcpServer);
-        if( m_pTcpLogger)m_pTcpLogger->Info("TCP Server started: %s:%d LISTEN.", tcpserver->GetIP(), tcpserver->GetPort());
+        std::cout << "TCP server is started, "<< tcpserver->GetIP() << ":"<< tcpserver->GetPort()<<" LISTENING"<< std::endl;
+        if( m_pTcpLogger)m_pTcpLogger->Info("TCP Server started: %s:%d LISTENING.", tcpserver->GetIP(), tcpserver->GetPort());
         
     }
     else
@@ -45,6 +44,7 @@ bool CServerApp::Start(unsigned short usPort)
     if( m_udpServer->Start(m_pUdpThreadPool, m_pUdpLogger))
     {
         ADCS::CUDPSyncIOServer* udpserver = dynamic_cast<ADCS::CUDPSyncIOServer*>(m_udpServer);
+        std::cout << "UDP server is started, "<< udpserver->GetIP() << ":"<< udpserver->GetPort()<< std::endl;
         if( m_pUdpLogger)m_pUdpLogger->Info("UDP Server started: %s:%d LISTEN.", udpserver->GetIP(), udpserver->GetPort());
         
     }
@@ -60,6 +60,7 @@ bool CServerApp::Start(unsigned short usPort)
     if(m_rpcServer->Start(NULL, m_rpcLogger))
     {
         ADCS::CRPCServer* rpcserver = dynamic_cast<ADCS::CRPCServer*>(m_rpcServer);
+        std::cout << "RPC server is started, "<< rpcserver->GetIP() << ":"<< rpcserver->GetPort()<<" LISTENING"<< std::endl;
         if( m_pUdpLogger)m_rpcLogger->Info("RPC Server started: %s:%d LISTEN.", rpcserver->GetIP(), rpcserver->GetPort());
 
     }

@@ -1,0 +1,8 @@
+PUT(One,two)
+Get(One)
+Put(Three,four)
+Get(Three)
+Put(FIVE,SIX)
+Delete(One)
+Get(One)
+Get(FIVE)

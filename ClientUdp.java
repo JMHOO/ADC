@@ -34,13 +34,16 @@ public class ClientUdp {
 			
 			DatagramPacket sendPacket = new DatagramPacket(data, data.length, ipAddress,serverPortNumber);
 			byte[] receiveData = new byte[128];
-			clientSocket.send(sendPacket);	
+			clientSocket.send(sendPacket);
+			long startTime = System.currentTimeMillis();
 			
 			clientSocket.setSoTimeout(3000);
 			for(int i=0; i < MAX_RETRY_TIMES; i++){
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				try{
 					clientSocket.receive(receivePacket);
+					long endTime = System.currentTimeMillis();
+					long duration = (endTime - startTime);
 					return (new String(receivePacket.getData()));
 				}catch (SocketTimeoutException e){
 					//resend;

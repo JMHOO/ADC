@@ -108,13 +108,13 @@ bool IPacket::ToBytes(const char*& pStreamData, unsigned long& ulDataLen)
     
     
     m_bytesStream.length = (unsigned int)(ADCS::LENGTH_PACKHEADER + ulResultLen);
-    m_bytesStream.data = new char[m_bytesStream.length];
+    m_bytesStream.data = new char[m_bytesStream.length+1];
     if( m_bytesStream.data == nullptr )
     {
         m_bytesStream.length = 0;
         return false;
     }
-    memset(m_bytesStream.data, 0, m_bytesStream.length);
+    memset(m_bytesStream.data, 0, m_bytesStream.length+1);
     
     ADCS::PACK_HEADER header;
     memset(&header, 0, sizeof(ADCS::PACK_HEADER));

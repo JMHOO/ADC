@@ -5,7 +5,7 @@
 
 using namespace ADCS;
 
-CKvJSONRPCService::CKvJSONRPCService(jsonrpc::AbstractServerConnector &connector) : ICKvRPCService(connector)
+CKvJSONRPCService::CKvJSONRPCService(jsonrpc::AbstractServerConnector &connector, ILog* plogger) : ICKvRPCService(connector), logger(plogger)
 {
     
 }
@@ -19,6 +19,7 @@ Json::Value CKvJSONRPCService::Put(const std::string& param1, const std::string&
     {
         result["code"] = 1024;
         result["message"] = "Internal Server Error";
+        if(logger)logger->Error("JSON-RPC Service error: get KVServer instance failed.");
         return result;
     }
     
@@ -27,11 +28,13 @@ Json::Value CKvJSONRPCService::Put(const std::string& param1, const std::string&
     {
         result["code"] = 0;
         result["message"] = "put success";
+        if(logger)logger->Info("JSON-RPC Service -- Put operation success, key:%s, value:%s", param1.c_str(), param2.c_str());
     }
     else
     {
         result["code"] = (unsigned int)code;
         result["message"] = ErrorCode::Explain((unsigned int)code);
+        if(logger)logger->Warning("JSON-RPC Service -- Put operation failed, code:%d, reason:%s, key:%s, value:%s", (unsigned int)code, ErrorCode::Explain((unsigned int)code), param1.c_str(), param2.c_str());
     }
     
     return result;
@@ -45,6 +48,7 @@ Json::Value CKvJSONRPCService::Get(const std::string& param1)
     {
         result["code"] = 1024;
         result["message"] = "Internal Server Error";
+        if(logger)logger->Error("JSON-RPC Service error: get KVServer instance failed.");
         return result;
     }
     
@@ -55,11 +59,13 @@ Json::Value CKvJSONRPCService::Get(const std::string& param1)
         result["value"] = strValue;
         result["code"] = 0;
         result["message"] = "get success";
+        if(logger)logger->Info("JSON-RPC Service -- Get operation success, key:%s, returned value:%s", param1.c_str(), strValue.c_str());
     }
     else
     {
         result["code"] = (unsigned int)code;
         result["message"] = ErrorCode::Explain((unsigned int)code);
+        if(logger)logger->Warning("JSON-RPC Service -- Get operation failed, code:%d, reason:%s, key:%s", (unsigned int)code, ErrorCode::Explain((unsigned int)code), param1.c_str());
     }
 
     return result;
@@ -74,6 +80,7 @@ Json::Value CKvJSONRPCService::Delete(const std::string& param1)
     {
         result["code"] = 1024;
         result["message"] = "Internal Server Error";
+        if(logger)logger->Error("JSON-RPC Service error: get KVServer instance failed.");
         return result;
     }
     
@@ -82,11 +89,13 @@ Json::Value CKvJSONRPCService::Delete(const std::string& param1)
     {
         result["code"] = 0;
         result["message"] = "Delete Success";
+        if(logger)logger->Info("JSON-RPC Service -- Delete operation success, key:%s", param1.c_str());
     }
     else
     {
         result["code"] = (unsigned int)code;
         result["message"] = ErrorCode::Explain((unsigned int)code);
+        if(logger)logger->Warning("JSON-RPC Service -- Delete operation failed, code:%d, reason:%s, key:%s", (unsigned int)code, ErrorCode::Explain((unsigned int)code), param1.c_str());
     }
     
     return result;

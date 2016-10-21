@@ -18,6 +18,7 @@ public class ClientTcp {
 			os.writeInt(0);
 			os.writeBytes(json);
 			os.flush();
+			long startTime = System.currentTimeMillis();
 			
 			BufferedReader in = new BufferedReader(new InputStreamReader(is));
 			String response = "";
@@ -26,11 +27,16 @@ public class ClientTcp {
 				response = response + inputLine;
 				System.out.println(inputLine);
 			}
+
 			in.close();
 			os.close();
 			is.close();
 			clientSocket.close();
+			long endTime = System.currentTimeMillis();
+			long duration = (endTime - startTime);
+			System.out.println("  "+duration+" milliseconds");
 			return response;
+			
 		} catch (Exception ex) {
 			System.out.print("exception while doing tcp call");
 			ex.printStackTrace();

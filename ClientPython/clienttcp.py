@@ -1,43 +1,42 @@
+# -*- coding: utf-8 -*-
 from socket import *
-import struct
 import json
+import datetime
+import argparse
+import re
+import struct
 import binascii
 from array import *
 
-PACK_HEADER_LENGTH = 16
-#json:[{'operate': "" ,'key':"", 'value':""}]
-msg1 = {'jsonkv':'1.0','operate':'put','key':'apple','value':'www.apple.com','id':'1'}
-msg2 = [{"jsonkv":"1.0","id":"1","operate":"get","key":"apple","value":"null"}]
-msg3 = [{'jsonkv':'1.0','operate':"delete",'key':"apple",'value':"null","id":"1"}]
 
+PACK_HEADER_LENGTH = 16
+
+#json:[{'operate': "" ,'key':"", 'value':""}]
+#msg1 = [{'operate':"put", 'key':"1",'value':"12345"}]
+#msg2 = [{'operate':"get", 'key':"1",'value':"null"}]
+#msg3 = [{'operate':"delete", 'key':"null",'value':"null"}]
 #jmsg1 = json.dumps(msg1)
 #jmsg2 = json.dumps(msg2)
 #jmsg3 = json.dumps(msg3)
-json_msg=[]
-json_msg.append(json.dumps(msg1))
-json_msg.append(json.dumps(msg2))
-json_msg.append(json.dumps(msg3))
+# build the log
+fout = open('log.txt', 'w')
 
-#host = 'localhost'
-host = '73.140.72.152'
-port = 15001
-bufsiz = 1024
-#open socket
-tcpCliSock = socket(AF_INET, SOCK_STREAM)
-#link to the server
-tcpCliSock.connect((host, port))
-for x in range(0,3):
+
+def handle(operate,key,value,idnum):
+    #write the log
+    fout.write(str(datetime.datetime.now())+' '+"the client's id is " + str(idnum) +'\n')
     #wait for input
-    #data = raw_input('> ')
-    data = json_msg[x]
-    # PackageHeader defination
-    #struct _PackageHeader_
-    #{
-    #    unsigned int Version;			//-- Packet version.
-    #    unsigned int Type;				//-- Packet type.
-    #    unsigned int Length;			//-- The total length of whole packet.
-    #    unsigned int Reserve;			//-- Reserved area. Decided by the packet type.
-    #}
+    idarr = str(idnum);
+    msg = {'jsonkv':"1.0",'operate':operate, 'key':key,'value':value,'id':idarr}
+    jmsg = json.dumps(msg)
+    data = jmsg;
+    if not data:
+        print("There is no valid data")
+        fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
+    #write the log
+    fout.write(str(datetime.datetime.now())+' '+"the client's opearte is:" + operate + "(" + key + "," + value + ")" +' '+ '\n')
+    
+    #add the header
     datalen = len(data)
     packageformat='%ds' % datalen
     packagelen = PACK_HEADER_LENGTH + datalen
@@ -48,14 +47,17 @@ for x in range(0,3):
     pkg_header = header_fmt.pack(*headervalues)
     pkg_payload = struct.pack(packageformat,data)
     if not pkg_payload:
-        break
+        print("There is no valid payload")
+        fout.write(str(datetime.datetime.now())+' '+"The payload's type is incorrect" +' '+ '\n')
     #send message
     tcpCliSock.sendall(pkg_header)
     tcpCliSock.sendall(pkg_payload)
     #receive response
     response = tcpCliSock.recv(bufsiz)
     if not response:
-        break
+        print("There is no valid response")
+        fout.write(str(datetime.datetime.now())+' '+"The response's type is incorrect" +' '+  '\n')
+    #response ,earse the header
     if len(response) == PACK_HEADER_LENGTH:
         (version, type, length, resverse) = struct.unpack('!IIII',response)
         payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
@@ -65,5 +67,76 @@ for x in range(0,3):
         (version, type, length, resverse) = struct.unpack('!IIII',response[:PACK_HEADER_LENGTH])
         payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
         payload = struct.unpack(payload_fmt, response[PACK_HEADER_LENGTH:])
-    print payload
+        
+    #write the log
+    recdata = payload[0]
+    rec = json.loads(recdata)
+    if rec['result']['code'] == "0":
+        recstr = "The value is " + str(rec['result']['value'])
+        fout.write(str(datetime.datetime.now())+' '+"the server's response is: " + "value:" + str(rec['result']['value']) + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] + " id:" + str(rec['id'])+' '+'\n')
+    else:
+        recstr = rec['result']['message']
+        fout.write(str(datetime.datetime.now())+' '+"the server's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] + " id:" + str(rec['id'])+' '+'\n')
+
+#host = 'localhost'
+#port = 0;
+#operate = ""
+##hostport 要输入
+#host = raw_input("please input host> ")
+#port = raw_input("please input port> ")
+parser = argparse.ArgumentParser(description='')
+parser.add_argument('-p', '--port', dest='Port', metavar='15001', 
+    help='Enter the server port')
+
+parser.add_argument('-a', '--address', dest='Address',
+    help='Enter server address', metavar='192.168.1.1')
+args = parser.parse_args()
+parser.print_help()
+
+
+print args.Address
+print args.Port
+host = args.Address
+port = int(args.Port)
+#open socket
+tcpCliSock = socket(AF_INET, SOCK_STREAM)#tcp must use  SOCK_STREAM
+#link to the server
+tcpCliSock.connect((host, port))
+#write the log
+fout.write(str(datetime.datetime.now())+' '+"the client has linked to the server (" + host +"," + str(port) + ")"+' '+'\n')
+#bag len
+bufsiz = 1024;
+
+with open('operations.txt', 'r') as opFile:
+    operations=[line.rstrip('\n') for line in opFile]
+    print operations
+
+
+
+idnum = 0;
+for op in operations:
+    idnum  =  idnum + 1;
+    match = re.search(r"(\w+)\((\w+)\,(\w+)\)", op)
+    if match:
+        operate = match.group(1)    # PUT
+        key = match.group(2)    # 1
+        value = match.group(3)    # 45
+        print match.group(1)    # PUT
+        print match.group(2)    # 1
+        print match.group(3)    # 45
+        fout.write(str(datetime.datetime.now())+' '+"the client's operate is: "  + operate + '(' + key + ',' + value + ')' +' '+'\n')
+        handle(operate,key,value,idnum)
+    else:
+        match = re.search(r"(\w+)\((\w+)\)", op)
+        operate = match.group(1)    # delete/get
+        key = match.group(2)    # 1
+        value =  "null"
+        handle(operate,key,value,idnum)
+        fout.write(str(datetime.datetime.now())+' '+"the client's operate is: "  + operate + '(' + key  + ')' +' '+'\n')
+        print match.group(1)    # delete/get
+        print match.group(2)    # 1
+        
+   
 tcpCliSock.close()
+fout.close()
+

@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "SrvApp.h"
+#include "cmdline.h"
 
 using namespace std;
 
@@ -102,7 +103,6 @@ CTestEntry g_Entries[] = {
 };
 
 const int g_EntriesNumber = sizeof(g_Entries)/sizeof(CTestEntry);
-
 int ShowHelp( int argc, const char * argv[] )
 {
     CTestEntry *ptr;
@@ -123,7 +123,14 @@ int ShowHelp( int argc, const char * argv[] )
 
 int main(int argc, const char * argv[]) {
     
-   
+    cmdline::parser cmdParser;
+    
+    cmdParser.add<int>("port", 'p', "Base port number, should be ranged in 1000 and 65535, automatically increased by different kinds of server instance. For example:Base port number = 15000, then 15000 will assigen to TCP Server, 15001 for UDP Server and 15002 for RPC Server", true, 15001, cmdline::range(1000, 65535));
+    
+    cmdParser.parse_check(argc, argv);
+    
+    int nPort = cmdParser.get<int>("port");
+
     //ILog* pLog = new GlobalLog("test", LL_DEBUG);
     //pLog->Debug("hello my log");
     //sleep(1);
@@ -144,14 +151,14 @@ int main(int argc, const char * argv[]) {
     CTestEntry *ptr;
     bool find = false;
     
-    cout << "TCP server is started, 0.0.0.0:15001 LISTENING"<<endl;
-    cout << "UDP Server is started, 0.0.0.0:15002 LISTENING"<<endl;
-    cout << "RPC Server is started, 0.0.0.0:15003 LISTENING"<<endl;
+    //cout << "TCP server is started, 0.0.0.0:15001 LISTENING"<<endl;
+    //cout << "UDP Server is started, 0.0.0.0:15002 LISTENING"<<endl;
+    //cout << "RPC Server is started, 0.0.0.0:15003 LISTENING"<<endl;
     cout << "--- type 'exit' to exit." << endl;
     
     // Server collection, start from port 15001, 15002....
     CServerApp server;
-    server.Start(15001);
+    server.Start(nPort);
     
     while(1)
     {

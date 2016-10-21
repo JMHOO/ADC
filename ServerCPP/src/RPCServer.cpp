@@ -33,7 +33,7 @@ bool CRPCServer::Main()
     try
     {
         httpserv = new jsonrpc::HttpServer(port);
-        rpcserv = new CKvJSONRPCService(*httpserv);
+        rpcserv = new CKvJSONRPCService(*httpserv, logger);
         if (rpcserv->StartListening())
         {
             while(!bExitFlag)
