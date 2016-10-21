@@ -85,9 +85,8 @@ def handle(operate,key,value,idnum,addr):
             response = tcpCliSock.recv(bufsiz)
             payload = struct.unpack(payload_fmt, response)
         elif len(response) > PACK_HEADER_LENGTH:
-            (version, type, length, resverse) = struct.unpack('IIII',response[:PACK_HEADER_LENGTH])
-            print (version, type, length, resverse)            
-            print   socket.ntohl(length)         
+            (version, type, length, resverse) = struct.unpack('!IIII',response[:PACK_HEADER_LENGTH])
+            print (version, type, length, resverse)                  
             payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
             payload = struct.unpack(payload_fmt, response[PACK_HEADER_LENGTH:])
             
