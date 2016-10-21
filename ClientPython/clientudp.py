@@ -85,9 +85,9 @@ def handle(operate,key,value,idnum,addr):
             response = tcpCliSock.recv(bufsiz)
             payload = struct.unpack(payload_fmt, response)
         elif len(response) > PACK_HEADER_LENGTH:
-            (version, type, length, resverse) = struct.unpack('IIII',response[:PACK_HEADER_LENGTH])
-            print (version, type, length, resverse)            
-            print   socket.ntohl(length)         
+            (version, type, length, resverse) = struct.unpack('!IIII',response[:PACK_HEADER_LENGTH])
+            #print (version, type, length, resverse)            
+            #print   socket.ntohl(length)         
             payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
             payload = struct.unpack(payload_fmt, response[PACK_HEADER_LENGTH:])
             
@@ -107,18 +107,31 @@ def handle(operate,key,value,idnum,addr):
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('-p', '--port', dest='Port', metavar='15002', 
     help='Enter the server port')
-
 parser.add_argument('-a', '--address', dest='Address',
     help='Enter server address', metavar='192.168.1.1')
+parser.add_argument('-s', '--script', dest='Script',
+    help='Operation sets file')
+
 args = parser.parse_args()
-parser.print_help()
+#parser.print_help()
+#print args.Address
+#print args.Port
+if args.Address == None or args.Port == None or args.Script == None:
+    parser.print_help()
+    exit()
 
-
-print args.Address
-print args.Port
 host = args.Address
 port = int(args.Port)
-addr = (host,port)
+opFile=args.Script
+serverip = "0.0.0.0"
+try:
+    serverip = socket.gethostbyname(host)
+except Exception,e:
+    print 'resolve domain {0} failed, please check!'.format(host)
+    print e
+    exit()
+
+addr = (serverip,port)
 #open socket
 udpCliSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)##udp must use SOCK_DGRAM
 #link to the server
@@ -127,34 +140,37 @@ udpCliSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)##udp must use SOCK
 #bag len
 bufsiz = 1024;
 
-
-with open('operations.txt', 'r') as opFile:
-    operations=[line.rstrip('\n') for line in opFile]
-    print operations
-
+try:
+    with open(opFile, 'r') as opFile:
+        operations=[line.rstrip('\n') for line in opFile]
+        #print operations
+except Exception,e:
+    print 'operation file {0} not found!'.format(opFile)
+    print e
+    exit()
 
 idnum = 0;
 for op in operations:
     idnum  =  idnum + 1;
-    match = re.search(r"(\w+)\((\w+)\,(\w+)\)", op)
+    match = re.search(r"(\w+)\,(\w+)\,(\w+)", op)   # PUT,1,abcdefg
     if match:
         operate = match.group(1)    # PUT
         key = match.group(2)    # 1
         value = match.group(3)    # 45
-        print match.group(1)    # PUT
-        print match.group(2)    # 1
-        print match.group(3)    # 45
+        #print match.group(1)    # PUT
+        #print match.group(2)    # 1
+        #print match.group(3)    # 45
         fout.write(str(datetime.datetime.now())+' '+"the client's operate is: "  + operate + '(' + key + ',' + value + ')' +' '+'\n')
         handle(operate,key,value,idnum,addr)
     else:
-        match = re.search(r"(\w+)\((\w+)\)", op)
+        match = re.search(r"(\w+)\,(\w+)", op)
         operate = match.group(1)    # delete/get
         key = match.group(2)    # 1
         value =  "null"
         handle(operate,key,value,idnum,addr)
         fout.write(str(datetime.datetime.now())+' '+"the client's operate is: "  + operate + '(' + key  + ')' +' '+'\n')
-        print match.group(1)    # delete/get
-        print match.group(2)    # 1
+        #print match.group(1)    # delete/get
+        #print match.group(2)    # 1
         
 udpCliSock.close()
 fout.close()        
