@@ -3,11 +3,10 @@ import json
 import datetime
 import argparse
 import re
-fout = open('log.txt', 'w')
+fout = open('logrpc.txt', 'w')
 
-def handle(addr,operate,key,value):
+def handle(addr,operate,key,value,idnum):
         client = Server("http://"+addr)
-        idnum = 0;
 #    while True:
         print("the client has linked to the server" + '\n')
         fout.write(str(datetime.datetime.now())+' '+"the client has linked to the server:" + addr +' '+ '\n')
@@ -60,7 +59,7 @@ address = args.Address
 port = args.Port
 addr = str(address) +':'+str(port)
 print(addr)
-with open('operations.txt', 'r') as opFile:
+with open('operations.csv', 'r') as opFile:
     operations=[line.rstrip('\n') for line in opFile]
     print operations
 
@@ -69,9 +68,10 @@ with open('operations.txt', 'r') as opFile:
 
 # op format: PUT(1,45)
     
-   
+idnum = 0;   
 for op in operations:
-    match = re.search(r"(\w+)\((\w+)\,(\w+)\)", op)
+    idnum  =  idnum + 1;
+    match = re.search(r"(\w+)\,(\w+)\,(\w+)", op)
     if match:
         operate = match.group(1)    # PUT
         key = match.group(2)    # 1
@@ -80,16 +80,16 @@ for op in operations:
         print match.group(2)    # 1
         print match.group(3)    # 45
         fout.write(str(datetime.datetime.now())+' '+"the client's operate is: "  + operate + '(' + key + ',' + value + ')' +' '+'\n')
-        handle(addr,operate,key,value)
-    else:
-        match = re.search(r"(\w+)\((\w+)\)", op)
-        operate = match.group(1)    # delete/get
-        key = match.group(2)    # 1
-        value =  "null"
-        handle(addr,operate,key,value)
-        fout.write(str(datetime.datetime.now())+' '+"the client's operate is: "  + operate + '(' + key  + ')' +' '+'\n')
-        print match.group(1)    # delete/get
-        print match.group(2)    # 1
+        handle(addr,operate,key,value,idnum)
+#    else:
+#        match = re.search(r"(\w+)\((\w+)\)", op)
+#        operate = match.group(1)    # delete/get
+#        key = match.group(2)    # 1
+#        value =  "null"
+#        handle(addr,operate,key,value,idnum)
+#        fout.write(str(datetime.datetime.now())+' '+"the client's operate is: "  + operate + '(' + key  + ')' +' '+'\n')
+#        print match.group(1)    # delete/get
+#        print match.group(2)    # 1
         
 fout.close()
 

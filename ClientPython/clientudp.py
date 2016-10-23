@@ -20,13 +20,13 @@ PACK_HEADER_LENGTH = 16
 #jmsg2 = json.dumps(msg2)
 #jmsg3 = json.dumps(msg3)
 
-fout = open('log.txt', 'w')
+fout = open('logudp.txt', 'w')
 
 def handle(operate,key,value,idnum,addr):
     #data = raw_input('>' )
     idnum = idnum + 1;
     #write the log
-    fout.write(str(datetime.datetime.now())+' '+"the client's id is" + str(idnum) +' '+'\n') 
+    fout.write(str(datetime.datetime.now())+' '+"the client's id is " + str(idnum) +' '+'\n') 
     #wait for input
     idarr = str(idnum);
     msg = {'jsonkv':"1.0",'operate':operate, 'key':key,'value':value,'id':idarr}
@@ -58,7 +58,7 @@ def handle(operate,key,value,idnum,addr):
     # ###########handle the response
     success = 1
     for i in range(1,3):
-        udpCliSock.settimeout(3.0)
+        udpCliSock.settimeout(7.0)
         response,addc = udpCliSock.recvfrom(bufsiz)
         success = 1;
         break
@@ -86,8 +86,7 @@ def handle(operate,key,value,idnum,addr):
             payload = struct.unpack(payload_fmt, response)
         elif len(response) > PACK_HEADER_LENGTH:
             (version, type, length, resverse) = struct.unpack('!IIII',response[:PACK_HEADER_LENGTH])
-            #print (version, type, length, resverse)            
-            #print   socket.ntohl(length)         
+            print (version, type, length, resverse)                  
             payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
             payload = struct.unpack(payload_fmt, response[PACK_HEADER_LENGTH:])
             
@@ -140,37 +139,34 @@ udpCliSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)##udp must use SOCK
 #bag len
 bufsiz = 1024;
 
-try:
-    with open(opFile, 'r') as opFile:
-        operations=[line.rstrip('\n') for line in opFile]
-        #print operations
-except Exception,e:
-    print 'operation file {0} not found!'.format(opFile)
-    print e
-    exit()
+
+with open('operations.csv', 'r') as opFile:
+    operations=[line.rstrip('\n') for line in opFile]
+    print operations
+
 
 idnum = 0;
 for op in operations:
     idnum  =  idnum + 1;
-    match = re.search(r"(\w+)\,(\w+)\,(\w+)", op)   # PUT,1,abcdefg
+    match = re.search(r"(\w+)\,(\w+)\,(\w+)", op)
     if match:
         operate = match.group(1)    # PUT
         key = match.group(2)    # 1
         value = match.group(3)    # 45
-        #print match.group(1)    # PUT
-        #print match.group(2)    # 1
-        #print match.group(3)    # 45
+        print match.group(1)    # PUT
+        print match.group(2)    # 1
+        print match.group(3)    # 45
         fout.write(str(datetime.datetime.now())+' '+"the client's operate is: "  + operate + '(' + key + ',' + value + ')' +' '+'\n')
         handle(operate,key,value,idnum,addr)
-    else:
-        match = re.search(r"(\w+)\,(\w+)", op)
-        operate = match.group(1)    # delete/get
-        key = match.group(2)    # 1
-        value =  "null"
-        handle(operate,key,value,idnum,addr)
-        fout.write(str(datetime.datetime.now())+' '+"the client's operate is: "  + operate + '(' + key  + ')' +' '+'\n')
-        #print match.group(1)    # delete/get
-        #print match.group(2)    # 1
+#    else:
+#        match = re.search(r"(\w+)\((\w+)\)", op)
+#        operate = match.group(1)    # delete/get
+#        key = match.group(2)    # 1
+#        value =  "null"
+#        handle(operate,key,value,idnum,addr)
+#        fout.write(str(datetime.datetime.now())+' '+"the client's operate is: "  + operate + '(' + key  + ')' +' '+'\n')
+#        print match.group(1)    # delete/get
+#        print match.group(2)    # 1
         
 udpCliSock.close()
 fout.close()        

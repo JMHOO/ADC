@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from socket import *
+#import socket
+import SocketServer
 import json
 import datetime
 import argparse
@@ -19,7 +21,7 @@ PACK_HEADER_LENGTH = 16
 #jmsg2 = json.dumps(msg2)
 #jmsg3 = json.dumps(msg3)
 # build the log
-fout = open('log.txt', 'w')
+fout = open('logtcp.txt', 'w')
 
 
 def handle(operate,key,value,idnum):
@@ -65,6 +67,7 @@ def handle(operate,key,value,idnum):
         payload = struct.unpack(payload_fmt, response)
     elif len(response) > PACK_HEADER_LENGTH:
         (version, type, length, resverse) = struct.unpack('!IIII',response[:PACK_HEADER_LENGTH])
+#        print  (version, type, length, resverse)        
         payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
         payload = struct.unpack(payload_fmt, response[PACK_HEADER_LENGTH:])
         
@@ -72,12 +75,12 @@ def handle(operate,key,value,idnum):
     recdata = payload[0]
     rec = json.loads(recdata)
     if rec['result']['code'] == "0":
-        recstr = "The value is " + str(rec['result']['value'])
+        recstr = "The value is " + str(rec['result']['value']) + ' ' + rec['result']['message']
         fout.write(str(datetime.datetime.now())+' '+"the server's response is: " + "value:" + str(rec['result']['value']) + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] + " id:" + str(rec['id'])+' '+'\n')
     else:
         recstr = rec['result']['message']
         fout.write(str(datetime.datetime.now())+' '+"the server's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] + " id:" + str(rec['id'])+' '+'\n')
-
+    print recstr
 #host = 'localhost'
 #port = 0;
 #operate = ""
@@ -85,29 +88,44 @@ def handle(operate,key,value,idnum):
 #host = raw_input("please input host> ")
 #port = raw_input("please input port> ")
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('-p', '--port', dest='Port', metavar='15001', 
+parser.add_argument('-p', '--port', dest='Port', metavar='15002', 
     help='Enter the server port')
-
 parser.add_argument('-a', '--address', dest='Address',
     help='Enter server address', metavar='192.168.1.1')
+parser.add_argument('-s', '--script', dest='Script',
+    help='Operation sets file')
+
 args = parser.parse_args()
-parser.print_help()
+#parser.print_help()
+#print args.Address
+#print args.Port
+if args.Address == None or args.Port == None or args.Script == None:
+    parser.print_help()
+    exit()
 
-
-print args.Address
-print args.Port
 host = args.Address
 port = int(args.Port)
+opFile=args.Script
+serverip = "0.0.0.0"
+#try:
+#    serverip = socket.gethostbyname(host)
+#except Exception,e:
+#    print 'resolve domain {0} failed, please check!'.format(host)
+#    print e
+#    exit()
+
+#addr = (serverip,port)
+addr = (host,port)
 #open socket
 tcpCliSock = socket(AF_INET, SOCK_STREAM)#tcp must use  SOCK_STREAM
 #link to the server
-tcpCliSock.connect((host, port))
+tcpCliSock.connect(addr)
 #write the log
 fout.write(str(datetime.datetime.now())+' '+"the client has linked to the server (" + host +"," + str(port) + ")"+' '+'\n')
 #bag len
 bufsiz = 1024;
 
-with open('operations.txt', 'r') as opFile:
+with open('operations.csv', 'r') as opFile:
     operations=[line.rstrip('\n') for line in opFile]
     print operations
 
@@ -116,7 +134,7 @@ with open('operations.txt', 'r') as opFile:
 idnum = 0;
 for op in operations:
     idnum  =  idnum + 1;
-    match = re.search(r"(\w+)\((\w+)\,(\w+)\)", op)
+    match = re.search(r"(\w+)\,(\w+)\,(\w+)", op)
     if match:
         operate = match.group(1)    # PUT
         key = match.group(2)    # 1
@@ -126,15 +144,15 @@ for op in operations:
         print match.group(3)    # 45
         fout.write(str(datetime.datetime.now())+' '+"the client's operate is: "  + operate + '(' + key + ',' + value + ')' +' '+'\n')
         handle(operate,key,value,idnum)
-    else:
-        match = re.search(r"(\w+)\((\w+)\)", op)
-        operate = match.group(1)    # delete/get
-        key = match.group(2)    # 1
-        value =  "null"
-        handle(operate,key,value,idnum)
-        fout.write(str(datetime.datetime.now())+' '+"the client's operate is: "  + operate + '(' + key  + ')' +' '+'\n')
-        print match.group(1)    # delete/get
-        print match.group(2)    # 1
+#    else:
+#        match = re.search(r"(\w+)\((\w+)\)", op)
+#        operate = match.group(1)    # delete/get
+#        key = match.group(2)    # 1
+#        value =  "null"
+#        handle(operate,key,value,idnum)
+#        fout.write(str(datetime.datetime.now())+' '+"the client's operate is: "  + operate + '(' + key  + ')' +' '+'\n')
+#        print match.group(1)    # delete/get
+#        print match.group(2)    # 1
         
    
 tcpCliSock.close()
