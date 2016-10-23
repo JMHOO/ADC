@@ -9,7 +9,8 @@ import java.util.List;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-class OperateCSV {
+
+public class OperateCSV {
 	public boolean isCSVExists(String file_name) {
 		return new File(file_name).exists();
 	}
@@ -58,5 +59,4 @@ class OperateCSV {
 		}
 		return data;
 	}
-
 }

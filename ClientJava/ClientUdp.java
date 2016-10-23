@@ -1,27 +1,27 @@
-import java.awt.SecondaryLoop;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketTimeoutException;
+import java.io.*;
+import java.net.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class ClientUdp {
-	private final String serverDomainName = "uw.umx.io";
-	private final String serverIP ="73.140.72.152";
-	private final int serverPortNumber = 15002;
-	private final int MAX_RETRY_TIMES = 3;
-	
-	public String UdpTest(){
+	private final String severIp;
+	private final int serverPortNumber;
+	private final int MAX_RETRY_TIME = 3;
+    private final Logger logger;
+
+	public ClientUdp(String severIp, int port) {
+		this.severIp = severIp;
+		this.serverPortNumber = port;
+        this.logger = LoggerFactory.getLogger(ClientUdp.class);
+	}
+
+	public String UdpTest(String json){
 		try{
 			DatagramSocket clientSocket = new DatagramSocket();
-			InetAddress ipAddress = InetAddress.getByName(serverIP);
-			
-			String json = "{\"jsonkv\":\"1.0\",\"operate\":\"put\",\"key\":\"apple\",\"value\":\"www.apple.com\",\"id\":\"1\"}";
+			InetAddress ipAddress = InetAddress.getByName(severIp);
 			final ByteArrayOutputStream array_os = new ByteArrayOutputStream();
 			final DataOutputStream os = new DataOutputStream(array_os);
 			os.writeInt(0);
@@ -34,16 +34,16 @@ public class ClientUdp {
 			
 			DatagramPacket sendPacket = new DatagramPacket(data, data.length, ipAddress,serverPortNumber);
 			byte[] receiveData = new byte[128];
-			clientSocket.send(sendPacket);	
-			
+			clientSocket.send(sendPacket);
 			clientSocket.setSoTimeout(3000);
-			for(int i=0; i < MAX_RETRY_TIMES; i++){
+
+			for(int i = 0; i < MAX_RETRY_TIME; i++){
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				try{
 					clientSocket.receive(receivePacket);
-					return (new String(receivePacket.getData()));
+					return new String(receivePacket.getData());
 				}catch (SocketTimeoutException e){
-					//resend;
+					//resend
 					clientSocket.send(sendPacket);
 					continue;
 				}
@@ -51,11 +51,11 @@ public class ClientUdp {
 			clientSocket.close();
 		}catch(Exception ex){
 			System.out.print("exception while doing udp call");
+            logger.info("exception while doing udp call",
+                    new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
 			ex.printStackTrace();
-		}finally{
-			return null;
 		}
-				
+		return null;
 	}
 
 }
