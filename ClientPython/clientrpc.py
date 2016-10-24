@@ -14,14 +14,14 @@ def handle(addr,operate,key,value,idnum):
         #write the log
         fout.write(str(datetime.datetime.now())+' '+"the client's id is " + str(idnum) +' '+'\n')
         #wait for input
-        if operate == "delete":
+        if operate == "DELETE":
     #        key = raw_input("please input key> ")
     #        value = "null"
             rec = client.Delete(key)
             print(rec['code'])
             fout.write(str(datetime.datetime.now())+' '+"the server's response is: "  + " code:" + str(rec['code']) + " message:" + rec['message'] +' '+'\n')
             print("the server's response is: "  + " code:" + str(rec['code']) + " message:" + rec['message'] +' '+'\n')
-        if operate == "get":
+        if operate == "GET":
     #        key = raw_input("please input key> ")
     #        value = "null"
             rec = client.Get(key)
@@ -32,7 +32,7 @@ def handle(addr,operate,key,value,idnum):
             else:
                 fout.write(str(datetime.datetime.now())+' '+"the server's response is: " + " code:" + str(rec['code']) + " message:" + rec['message'] +' '+'\n')
                 print("the server's response is: " + " code:" + str(rec['code']) + " message:" + rec['message'] +' '+'\n')
-        if operate == "put":
+        if operate == "PUT":
     #        key = raw_input("please input key> ")
     #        value = raw_input("please input value> ")
             rec = client.Put(key,value)
