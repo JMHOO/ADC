@@ -19,6 +19,13 @@ ${BIN_TARGET} : ${objects}
 ${ObjectDir}/%.o:${SourceDir}/%.cpp
 	$(CXX) $(CFLAGS) -c $< -o $@
 
+all: ${objects}
+$(objects) : | ${ObjectDir}
+
+$(ObjectDir):
+	mkdir -p $(ObjectDir)
+	mkdir -p $(BinaryDir)
+
 .PHONY : clean
 clean :
 	find ${ObjectDir} -name *.o -delete
