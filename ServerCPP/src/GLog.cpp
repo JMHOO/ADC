@@ -2,12 +2,15 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <string.h>
+#include <syslog.h>
 
 #ifdef _DEBUG
 LogLevel GlobalLog::DEFAULT_LOG_LEVEL = LL_DEBUG;
 #else
 LogLevel GlobalLog::DEFAULT_LOG_LEVEL = LL_INFO;
 #endif
+
+int S_SYSLOG_LEVEL_TABLE[] = { LOG_EMERG, LOG_DEBUG, LOG_NOTICE, LOG_INFO, LOG_WARNING, LOG_ERR, LOG_CRIT };
 
 GlobalLog::GlobalLog(const char* logName, LogLevel nlev)
 {
@@ -129,6 +132,8 @@ void GlobalLog::log_to_file(LogLevel level, const char* formatstr, va_list args)
     FILE* logfilePtr = NULL;
     try{
         logfilePtr = open_log_file();
+        //openlog("adcserver", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL0);
+        
     }
     catch(...)
     {
@@ -150,6 +155,10 @@ void GlobalLog::log_to_file(LogLevel level, const char* formatstr, va_list args)
     
     fwrite(header, sizeof(char), strlen(header), logfilePtr);
     fwrite(buffer, sizeof(char), strlen(buffer), logfilePtr);
+    
+    //syslog (S_SYSLOG_LEVEL_TABLE[level], "[%s] %s", header, buffer);
+    
+    //closelog();
     
     fflush(logfilePtr);
 }

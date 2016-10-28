@@ -57,7 +57,7 @@ ADCS::ErrorCode::KVStore CKVServer::SetValue(std::string key, std::string value)
     {
         it->second = value;
     }
-    m_datamap[key] = value;
+    //m_datamap[key] = value;
     pthread_mutex_unlock(&setWriteLocker);
     
     return result;

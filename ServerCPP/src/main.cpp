@@ -126,10 +126,14 @@ int main(int argc, const char * argv[]) {
     cmdline::parser cmdParser;
     
     cmdParser.add<int>("port", 'p', "Base port number, should be ranged in 1000 and 65535, automatically increased by different kinds of server instance. For example:Base port number = 15000, then 15000 will assigen to TCP Server, 15001 for UDP Server and 15002 for RPC Server", true, 15001, cmdline::range(1000, 65535));
+    cmdParser.add<std::string>("mode", 'm', "Config server mode, one of 'agent | regular', when config as agent server, the --port parameter will be ignored.", true, "regular");
+    cmdParser.add<std::string>("address",'a', "Server address which will send to Agent server, the address should be connectable.", false, "127.0.0.1");
     
     cmdParser.parse_check(argc, argv);
     
     int nPort = cmdParser.get<int>("port");
+    std::string sMode = cmdParser.get<string>("mode");
+    std::string sAddr = cmdParser.get<string>("address");
 
     //ILog* pLog = new GlobalLog("test", LL_DEBUG);
     //pLog->Debug("hello my log");
@@ -158,7 +162,7 @@ int main(int argc, const char * argv[]) {
     
     // Server collection, start from port 15001, 15002....
     CServerApp server;
-    server.Start(nPort);
+    server.Start(nPort, sMode, sAddr);
     
     while(1)
     {

@@ -21,6 +21,8 @@ enum LogLevel
     LL_FATAL	= 6
 };
 
+
+
 class ILog
 {
 public:

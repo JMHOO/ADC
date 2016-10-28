@@ -2,6 +2,7 @@
 #include <arpa/inet.h>
 #include "PackageInterface.h"
 #include "jsonkvPackage.h"
+#include "jsonAgentPackage.h"
 
 IPacket* IPacket::CreatePackage(const char* sdata, unsigned int uiDataLen, int clientSocket)
 {
@@ -21,11 +22,18 @@ IPacket* IPacket::CreatePackage(const char* sdata, unsigned int uiDataLen, int c
             {
                 // jsonkv package
                 packet = new jsonkvPacket(sdata, uiDataLen, clientSocket);
-                if( packet && !packet->IsValid() )
-                {
-                    delete packet;
-                    packet = nullptr;
-                }
+                
+            }
+            else if( strstr(sdata+ADCS::LENGTH_PACKHEADER, "jsonagent") != NULL)
+            {
+                // jsonagent package
+                packet = new jsonAgentPacket(sdata, uiDataLen, clientSocket);
+            }
+            
+            if( packet && !packet->IsValid() )
+            {
+                delete packet;
+                packet = nullptr;
             }
         }
     }
