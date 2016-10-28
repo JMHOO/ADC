@@ -94,6 +94,37 @@ The length of JSON itself is 65, and the Header's size is an constant which alwa
    ]
    </p>
 
+<h3>Agent JSON format request</h3>
+  <p> <-- {"jsonagent": version, "operate": operations, "address": server address, "port": TCP server port}</p>
+  <p>
+      <table>
+        <tr><td>version</td><td>1.0</td></tr>
+        <tr><td>operate</td><td>register / unregister / getserverlist</td></tr>
+        <tr><td>address</td><td>server address( internet ip or domain name )</td></tr>
+        <tr><td>port</td><td>TCP server port</td></tr>
+      </table>
+  </p> 
+  <blockquote>
+    Example:
+     {"jsonagent":"1.0","operate":"register","address":"uw.umx.io","port":"15003"}
+  </blockquote>
+  
+<h3>Agent JSON format response</h3>
+  <p> --> {"jsonagent": version, "result": {"value": [{"address":"uw.umx.io","port",15003},], "code": code, "message": message}}</p>
+  <p>
+      <table>
+        <tr><td>version</td><td>1.0</td></tr>
+        <tr><td>result</td><td> </td></tr>
+        <tr><td>result - value</td><td>json array contains server list<BR>if request is not getserverlist, value=0</td></tr>
+        <tr><td>result - code</td><td> success : code == 0<br>errors: code > 0</td></tr>
+        <tr><td>result - message</td><td>success : message is empty<br>errors: server will explain</td></tr>
+      </table>
+  </p>
+ <blockquote>
+    Example:
+    {"jsonagent":"1.0","result":{"value":[{"address":"uw.umx.io","port":15003}], "code":"0","message":"get server list success"}}
+  </blockquote>
+  
 <h3>UDP</h3>
 <P>
 Server will check every UDP package, if the package is larger or less than expected, the package will be dropped.
