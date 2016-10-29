@@ -17,10 +17,10 @@ namespace ADCS
         bool SetSocketProperty( int Socket );
         
     public:
-        CTCPHelper(): nTimeOut(5), nRetryTime(3) { }
+        CTCPHelper(): nTimeOut(10), nRetryTime(3) { }
         ~CTCPHelper() { }
         
-        void SetTimeOut( int second = 5 );
+        void SetTimeOut( int second = 10 );
         void SetRetryTime( int nRetryTime = 3 );
         
         bool Close( int Socket );

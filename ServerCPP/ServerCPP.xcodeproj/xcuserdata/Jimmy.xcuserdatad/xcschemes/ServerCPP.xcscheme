@@ -63,11 +63,11 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-p 15000"
+            argument = "-p 15100"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-m agent"
+            argument = "-m regular"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

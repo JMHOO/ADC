@@ -28,7 +28,7 @@ bool CRPCServer::Main()
 
     struct timespec	ts;
     ts.tv_sec = 0;
-    ts.tv_nsec = 10000;     // 10ms
+    ts.tv_nsec = 500000;     // 100ms
     
     try
     {

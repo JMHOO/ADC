@@ -186,7 +186,7 @@ bool CServerApp::Stop()
 
 CServerApp::CServerApp(): m_tcpServer(NULL), m_pTcpThreadPool(NULL), m_tcpProcessor(NULL),m_pTcpLogger(NULL),
 m_udpServer(NULL), m_pUdpThreadPool(NULL), m_udpProcessor(NULL), m_pUdpLogger(NULL), m_rpcServer(NULL), m_rpcLogger(NULL),
-m_agentServer(NULL), m_agentProcessor(NULL), m_agentThreadPool(NULL)
+m_agentServer(NULL), m_agentThreadPool(NULL), m_agentProcessor(NULL)
 {
     m_pTcpLogger = new GlobalLog("TCP", LL_DEBUG);
     m_pUdpLogger = new GlobalLog("UDP", LL_DEBUG);
