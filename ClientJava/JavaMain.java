@@ -1,37 +1,44 @@
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URL;  
+import java.net.Socket;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Scanner;
-//import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
-//import com.googlecode.jsonrpc4j.ProxyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
   
 public class JavaMain {
 	
 	private static String serverDomainName = "uw.umx.io";
 	private static String serverIP ="73.140.72.152";
-	private static String serverPortNumber = "15003";
+	private static String serverPortNumber = "15001";
 
-	private static final String inputFile = "src/main/resources/input.csv";
-	private static final String outputFileTcp = "src/main/resources/output_tcp.csv";
-	private static final String outputFileUdp = "src/main/resources/output_udp.csv";
+	private static String inputFile = "src/kvp-operations.csv";
+	private static final String outputFileTcp = "src/output_tcp.csv";
 	
+	private final static OperateCSV csv = new OperateCSV();
+	// IO streams
+	private static DataOutputStream toServer;
+	private static DataInputStream fromServer;
 	
     public static void main(String[] args) throws Throwable {  
-    	String method = null;
     	// create a Scanner object
 		Scanner input = new Scanner(System.in);
+    	String response, inputLine;
     	
 		try {
 			if (args.length == 3) {
     			serverIP = args[0];
     			serverPortNumber= args[1];
-    			method = args[2];
+    			inputFile = args[2];
     		}
     		else if (args.length == 2) {
     			serverIP = args[0];
     			serverPortNumber= args[1];
-    			// prompt the user to select protocol
-    			System.out.println("Please enter TCP/UDP/RPC as communication protocol: ");
-				method = input.nextLine();
     		}
     		else {
     			// prompt the user to enter the serverIP
@@ -40,74 +47,89 @@ public class JavaMain {
 				// prompt the user to enter the port number
 				System.out.println("Please enter the server port number: ");
 				serverPortNumber = input.nextLine();
-				// prompt the user to select protocol
-				System.out.println("Please enter TCP/UDP/RPC as communication protocol: ");
-				method = input.nextLine();
     		}
+//			JavaClient client_tcp = new JavaClient(serverIP, Integer.parseInt(serverPortNumber));
+//       	client_tcp.runOperations(inputFile, outputFileTcp, "TCP");
+        	
+			// Create socket
+			Socket socket = new Socket(serverIP, Integer.parseInt(serverPortNumber));
+			// Create input stream to receive data
+			fromServer = new DataInputStream(socket.getInputStream());
+			// Create output stream to send data
+			toServer = new DataOutputStream(socket.getOutputStream());
 
-    		if (method.toLowerCase().equals("tcp")) {
-				JavaClient client_tcp = new JavaClient(serverIP, Integer.parseInt(serverPortNumber));
-        		client_tcp.runOperations(inputFile, outputFileTcp, "TCP");
-			} else if (method.toLowerCase().equals("udp")) {
-				JavaClient client_udp = new JavaClient(serverIP, Integer.parseInt(serverPortNumber));
-		        client_udp.runOperations(inputFile, outputFileUdp, "UDP");
-			} else if (method.toLowerCase().equals("rpc")) {
-				//manulRPC()
-			} else {
-				System.out.println("unsupport argument " + method);
-			}
+			
+        	initialOutput(outputFileTcp);
+        	List<String[]> operations = csv.readCVS(inputFile);
+        	for (int i = 1; i <operations.size(); i++) {
+        		String operate = operations.get(i)[0];
+        		String key = operations.get(i)[1];
+        		String value = "";
+        		if (operate.equals("PUT"))
+        			value = operations.get(i)[2];
+        		
+//        		// Create socket
+//    			Socket socket = new Socket(serverIP, Integer.parseInt(serverPortNumber));
+//    			// Create input stream to receive data
+//    			fromServer = new DataInputStream(socket.getInputStream());
+//    			// Create output stream to send data
+//    			toServer = new DataOutputStream(socket.getOutputStream());
+        		
+        		// execute TCP
+        		String json = createJsonPayload(operate, key, value);
+        		Long requestTime = System.currentTimeMillis();
+        		//System.out.println(json);
+        		
+        		// protocol
+        		toServer.writeInt(0);
+        		toServer.writeInt(0);
+        		toServer.writeInt(16 + json.length());
+        		toServer.writeInt(0);
+        		toServer.writeBytes(json);
+        		toServer.flush();
+        		
+        		byte[] header = new byte[16];
+        		fromServer.read(header, 0, 16);
+        		
+        		// where magic happens
+        		int len = (int) ((((header[8] & 0xff) << 24) | ((header[9] & 0xff) << 16) | ((header[10] & 0xff) << 8) | ((header[11] & 0xff) << 0)));    
+        		byte[] message = new byte[len];
+        		fromServer.read(message, 0, len);
+        		System.out.println(new String(message));
+
+        		Long responseTime = System.currentTimeMillis();
+        		
+        		String duration = String.valueOf(responseTime - requestTime);
+        		String[] record = {operate, key, value, String.valueOf(message), duration};
+        		csv.appendCSV(outputFileTcp, record);
+        	}
+        	toServer.close();
+        	fromServer.close();
+        	socket.close();
     	}
 		catch(Exception ex) {
 			ex.printStackTrace();
 		}
-		
 		input.close();
     }
     
-//    // RPC
-//    private static void manulRPC() throws Throwable {
-//		// create a Scanner object
-//		Scanner input = new Scanner(System.in);
-//		// prompt the user to select command
-//		System.out.println("Please select your command: \n\t1 for PUT(key, value)\n\t2 for GET(key)\n\t3 for Delete(key)");
-//		int command = input.nextInt();
-//		input.nextLine();
-//		String key, value;
-//		Client c;
-//		// construct url
-//		String url = "http://".concat(serverIP).concat(":").concat(serverPortNumber);
-//		System.out.println("url: " + url);
-//		JsonRpcHttpClient client = new JsonRpcHttpClient(new URL(url));
-//		switch(command) {
-//			case 1:
-//				// prompt the user to enter key and value
-//				System.out.println("Please enter the key: ");
-//				key = input.nextLine();
-//				System.out.println("Please enter the value: ");
-//				value = input.nextLine();
-//				c = client.invoke("Put", new Object[] {key, value}, Client.class);
-//		        System.out.println(c);
-//				break;
-//			case 2:
-//				// prompt the user to enter key
-//				System.out.println("Please enter the key: ");
-//				key = input.nextLine();
-//				c = client.invoke("Get", new Object[] {key}, Client.class);
-//		        System.out.println(c);
-//				break;
-//			case 3:
-//				// prompt the user to enter key
-//				System.out.println("Please enter the key: ");
-//				key = input.nextLine();
-//				c = client.invoke("Delete", new Object[] {key}, Client.class);
-//		        System.out.println(c);
-//				break;
-//			default:
-//				System.out.println("Wrong command! Please follow the instruction!");
-//				System.exit(0);
-//				break;
-//		}
-//		// close the Scanner to avoid resource leak
-//		input.close();
-//	}
-}  
+    // Initialize output file
+    public static void initialOutput(String outputFile) {
+    	if (csv.isCSVExists(outputFile)) {
+			csv.clearCVS(outputFile);
+		} else {
+			csv.createCSV(outputFile);
+		}
+		String[] head = {"operation", "key", "value", "response", "duration"};
+		csv.appendCSV(outputFile, head);
+    }
+    
+    // Initialize json payload
+    public static String createJsonPayload(String operation, String key, String value) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("{\"jsonkv\":\"1.0\",\"operate\":\"").append(operation.toLowerCase())
+				.append("\",\"key\":\"").append(key).append("\",\"value\":\"")
+				.append(value).append("\",\"id\":\"1\"}");
+		return sb.toString();
+	}
+}
