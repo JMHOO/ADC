@@ -31,6 +31,7 @@
 		BF76A26D1DC3F93F0001D0B1 /* TCPClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF76A26A1DC3F93F0001D0B1 /* TCPClient.cpp */; };
 		BF76A2701DC3F9F80001D0B1 /* AgentClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF76A26F1DC3F9F80001D0B1 /* AgentClient.cpp */; };
 		BF9D36EC1DC7C4080067E556 /* UDPClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9D36EA1DC7C4080067E556 /* UDPClient.cpp */; };
+		BF9D36EF1DC7F7320067E556 /* KVCoordinator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9D36EE1DC7F7320067E556 /* KVCoordinator.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -99,6 +100,9 @@
 		BF76A26F1DC3F9F80001D0B1 /* AgentClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AgentClient.cpp; path = src/AgentClient.cpp; sourceTree = "<group>"; };
 		BF9D36EA1DC7C4080067E556 /* UDPClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UDPClient.cpp; path = src/UDPClient.cpp; sourceTree = "<group>"; };
 		BF9D36EB1DC7C4080067E556 /* UDPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UDPClient.h; path = src/UDPClient.h; sourceTree = "<group>"; };
+		BF9D36ED1DC7F7220067E556 /* KVCoordinator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = KVCoordinator.h; path = src/KVCoordinator.h; sourceTree = "<group>"; };
+		BF9D36EE1DC7F7320067E556 /* KVCoordinator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KVCoordinator.cpp; path = src/KVCoordinator.cpp; sourceTree = "<group>"; };
+		BF9D36F01DC7F9BE0067E556 /* CKvJSONRPCClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CKvJSONRPCClient.h; path = src/CKvJSONRPCClient.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +159,8 @@
 				BF2059931DADE98100B11921 /* ServerInterface.cpp */,
 				BF7160491DB1B77F00F09E59 /* SocketHelper.h */,
 				BF71604A1DB1B79100F09E59 /* SocketHelper.cpp */,
+				BF9D36ED1DC7F7220067E556 /* KVCoordinator.h */,
+				BF9D36EE1DC7F7320067E556 /* KVCoordinator.cpp */,
 				BF7160621DB2C80E00F09E59 /* KVServer.h */,
 				BF7160631DB2C81B00F09E59 /* KVServer.cpp */,
 				BF76A2631DC3C5340001D0B1 /* ServerManager.cpp */,
@@ -162,6 +168,7 @@
 				BF7160681DB4777A00F09E59 /* CKvJSONRPCService.h */,
 				BF7160691DB4778500F09E59 /* CKvJSONRPCService.cpp */,
 				BF7160671DB4770200F09E59 /* CKvRPCServiceInterface.h */,
+				BF9D36F01DC7F9BE0067E556 /* CKvJSONRPCClient.h */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -296,6 +303,7 @@
 				BF7160581DB282F200F09E59 /* PackageInterface.cpp in Sources */,
 				BF71606A1DB4778500F09E59 /* CKvJSONRPCService.cpp in Sources */,
 				BF2059801DACA31B00B11921 /* GLog.cpp in Sources */,
+				BF9D36EF1DC7F7320067E556 /* KVCoordinator.cpp in Sources */,
 				BF2059901DADBCD500B11921 /* SrvApp.cpp in Sources */,
 				BF2059881DACB4EA00B11921 /* ThreadPool.cpp in Sources */,
 				BF9D36EC1DC7C4080067E556 /* UDPClient.cpp in Sources */,

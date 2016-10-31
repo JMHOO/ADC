@@ -100,3 +100,24 @@ Json::Value CKvJSONRPCService::Delete(const std::string& param1)
     
     return result;
 }
+
+Json::Value CKvJSONRPCService::SrvPut(const std::string& param1, const std::string& param2, const std::string& param3, const std::string& param4)
+{
+    Json::Value result;
+    
+    return result;
+}
+
+Json::Value CKvJSONRPCService::SrvDelete(const std::string& param1, const std::string& param2, const std::string& param3, const std::string& param4)
+{
+    Json::Value result;
+    
+    return result;
+}
+
+Json::Value CKvJSONRPCService::SrvGo(const std::string& param1, const std::string& param2)
+{
+    Json::Value result;
+    
+    return result;
+}

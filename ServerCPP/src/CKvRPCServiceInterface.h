@@ -9,29 +9,47 @@
 
 class ICKvRPCService : public jsonrpc::AbstractServer<ICKvRPCService>
 {
-    public:
-        ICKvRPCService(jsonrpc::AbstractServerConnector &conn, jsonrpc::serverVersion_t type = jsonrpc::JSONRPC_SERVER_V2) : jsonrpc::AbstractServer<ICKvRPCService>(conn, type)
-        {
-            this->bindAndAddMethod(jsonrpc::Procedure("Put", jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_OBJECT, "param1",jsonrpc::JSON_STRING,"param2",jsonrpc::JSON_STRING, NULL), &ICKvRPCService::PutI);
-            this->bindAndAddMethod(jsonrpc::Procedure("Get", jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_OBJECT, "param1",jsonrpc::JSON_STRING, NULL), &ICKvRPCService::GetI);
-            this->bindAndAddMethod(jsonrpc::Procedure("Delete", jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_OBJECT, "param1",jsonrpc::JSON_STRING, NULL), &ICKvRPCService::DeleteI);
-        }
-
-        inline virtual void PutI(const Json::Value &request, Json::Value &response)
-        {
-            response = this->Put(request[0u].asString(), request[1u].asString());
-        }
-        inline virtual void GetI(const Json::Value &request, Json::Value &response)
-        {
-            response = this->Get(request[0u].asString());
-        }
-        inline virtual void DeleteI(const Json::Value &request, Json::Value &response)
-        {
-            response = this->Delete(request[0u].asString());
-        }
-        virtual Json::Value Put(const std::string& param1, const std::string& param2) = 0;
-        virtual Json::Value Get(const std::string& param1) = 0;
-        virtual Json::Value Delete(const std::string& param1) = 0;
+public:
+    ICKvRPCService(jsonrpc::AbstractServerConnector &conn, jsonrpc::serverVersion_t type = jsonrpc::JSONRPC_SERVER_V2) : jsonrpc::AbstractServer<ICKvRPCService>(conn, type)
+    {
+        this->bindAndAddMethod(jsonrpc::Procedure("Put", jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_OBJECT, "param1",jsonrpc::JSON_STRING,"param2",jsonrpc::JSON_STRING, NULL), &ICKvRPCService::PutI);
+        this->bindAndAddMethod(jsonrpc::Procedure("Get", jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_OBJECT, "param1",jsonrpc::JSON_STRING, NULL), &ICKvRPCService::GetI);
+        this->bindAndAddMethod(jsonrpc::Procedure("Delete", jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_OBJECT, "param1",jsonrpc::JSON_STRING, NULL), &ICKvRPCService::DeleteI);
+        this->bindAndAddMethod(jsonrpc::Procedure("SrvPut", jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_OBJECT, "param1",jsonrpc::JSON_STRING,"param2",jsonrpc::JSON_STRING,"param3",jsonrpc::JSON_STRING,"param4",jsonrpc::JSON_STRING, NULL), &ICKvRPCService::SrvPutI);
+        this->bindAndAddMethod(jsonrpc::Procedure("SrvDelete", jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_OBJECT, "param1",jsonrpc::JSON_STRING,"param2",jsonrpc::JSON_STRING,"param3",jsonrpc::JSON_STRING,"param4",jsonrpc::JSON_STRING, NULL), &ICKvRPCService::SrvDeleteI);
+        this->bindAndAddMethod(jsonrpc::Procedure("SrvGo", jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_OBJECT, "param1",jsonrpc::JSON_STRING,"param2",jsonrpc::JSON_STRING, NULL), &ICKvRPCService::SrvGoI);
+    }
+    
+    inline virtual void PutI(const Json::Value &request, Json::Value &response)
+    {
+        response = this->Put(request[0u].asString(), request[1u].asString());
+    }
+    inline virtual void GetI(const Json::Value &request, Json::Value &response)
+    {
+        response = this->Get(request[0u].asString());
+    }
+    inline virtual void DeleteI(const Json::Value &request, Json::Value &response)
+    {
+        response = this->Delete(request[0u].asString());
+    }
+    inline virtual void SrvPutI(const Json::Value &request, Json::Value &response)
+    {
+        response = this->SrvPut(request[0u].asString(), request[1u].asString(), request[2u].asString(), request[3u].asString());
+    }
+    inline virtual void SrvDeleteI(const Json::Value &request, Json::Value &response)
+    {
+        response = this->SrvDelete(request[0u].asString(), request[1u].asString(), request[2u].asString(), request[3u].asString());
+    }
+    inline virtual void SrvGoI(const Json::Value &request, Json::Value &response)
+    {
+        response = this->SrvGo(request[0u].asString(), request[1u].asString());
+    }
+    virtual Json::Value Put(const std::string& param1, const std::string& param2) = 0;
+    virtual Json::Value Get(const std::string& param1) = 0;
+    virtual Json::Value Delete(const std::string& param1) = 0;
+    virtual Json::Value SrvPut(const std::string& param1, const std::string& param2, const std::string& param3, const std::string& param4) = 0;
+    virtual Json::Value SrvDelete(const std::string& param1, const std::string& param2, const std::string& param3, const std::string& param4) = 0;
+    virtual Json::Value SrvGo(const std::string& param1, const std::string& param2) = 0;
 };
 
 #endif //JSONRPC_CPP_STUB_ICKVRPCSERVICE_H_

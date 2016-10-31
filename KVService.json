@@ -30,6 +30,43 @@
         "code": 0,
         "message": "success"
     }
+ },
+ {
+    "name": "SrvPut",
+    "params": [
+        "coorid",
+        "clientid",
+        "key",
+        "value"
+    ],
+    "returns": {
+        "code": 0,
+        "message": "success"
+    }
+ },
+ {
+    "name": "SrvDelete",
+    "params": [
+        "coorid",
+        "clientid",
+        "key",
+        "value"
+    ],
+    "returns": {
+        "code": 0,
+        "message": "success"
+    }
+ },
+ {
+    "name": "SrvGo",
+    "params": [
+        "coorid",
+        "clientid"
+    ],
+    "returns": {
+        "code": 0,
+        "message": "success"
+    }
  }
 ]
 
