@@ -16,7 +16,7 @@ bool CServerApp::Start(unsigned short usPort, std::string sMode, std::string sAd
     m_serverAddr = sAddr;
     m_agentAddr = agentServerAddr;
     
-    if( sMode == "regular" )
+    if( sMode == "kvserver" )
     {
         // Start TCP Server
         //m_tcpProcessor = new TCPServerProcessor(m_pTcpLogger);
@@ -88,12 +88,12 @@ bool CServerApp::Start(unsigned short usPort, std::string sMode, std::string sAd
         ADCS::CTCPSIOServer* tcpserver = dynamic_cast<ADCS::CTCPSIOServer*>(m_tcpServer);
         if( m_agentClient->Start(m_agentLogger, m_agentAddr, m_serverAddr, tcpserver->GetPort()))
         {
-            std::cout << "Agent Client is started. " << std::endl;
-            if(m_agentLogger)m_agentLogger->Info("Agent Client is started.");
+            std::cout << "Discovery Client is started. " << std::endl;
+            if(m_agentLogger)m_agentLogger->Info("Discovery Client is started.");
         }
 
     }
-    else if (sMode == "agent" )
+    else if (sMode == "discovery" )
     {
         // Start Agent Server
         m_agentProcessor = new AgentServerProcessor(m_agentLogger);
@@ -106,8 +106,8 @@ bool CServerApp::Start(unsigned short usPort, std::string sMode, std::string sAd
         if(m_agentServer->Start(m_agentThreadPool, m_agentLogger))
         {
             ADCS::CTCPSIOServer* agentserv = dynamic_cast<ADCS::CTCPSIOServer*>(m_agentServer);
-            std::cout << "Agent server is started, "<< agentserv->GetIP() << ":"<< agentserv->GetPort()<<" LISTENING"<< std::endl;
-            if( m_agentLogger)m_agentLogger->Info("Agent Server started: %s:%d LISTENING.", agentserv->GetIP(), agentserv->GetPort());
+            std::cout << "Discovery server is started, "<< agentserv->GetIP() << ":"<< agentserv->GetPort()<<" LISTENING"<< std::endl;
+            if( m_agentLogger)m_agentLogger->Info("Discovery Server started: %s:%d LISTENING.", agentserv->GetIP(), agentserv->GetPort());
             
         }
         else
@@ -129,7 +129,7 @@ bool CServerApp::Start(unsigned short usPort, std::string sMode, std::string sAd
 
 bool CServerApp::Stop()
 {
-    if( m_runmode == "regular" )
+    if( m_runmode == "kvserver" )
     {
         if( m_tcpServer)
         {
@@ -180,7 +180,7 @@ bool CServerApp::Stop()
         
         CKVServer::Destory();
     }
-    else if (m_runmode == "agent")
+    else if (m_runmode == "discovery")
     {
         if( m_agentProcessor )
         {
@@ -208,8 +208,8 @@ m_agentServer(NULL), m_agentThreadPool(NULL), m_agentProcessor(NULL), m_agentCli
     m_pTcpLogger = new GlobalLog("TCP", LL_DEBUG);
     m_pUdpLogger = new GlobalLog("UDP", LL_DEBUG);
     m_rpcLogger = new GlobalLog("RPC", LL_DEBUG);
-    m_agentLogger = new GlobalLog("Agent", LL_DEBUG);
-    m_runmode = "regular";
+    m_agentLogger = new GlobalLog("discovery", LL_DEBUG);
+    m_runmode = "kvserver";
 }
 
 CServerApp::~CServerApp()
