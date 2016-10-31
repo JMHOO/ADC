@@ -54,7 +54,7 @@ int main(int argc, const char * argv[]) {
     cmdline::parser cmdParser;
     
     cmdParser.add<std::string>("mode", 'm', "KV Server or discovery server, one of 'discovery | kvserver', when config as discovery server, the --port parameter will be ignored.", true, "regular");
-    cmdParser.add<int>("port", 'p', "Base port number for KV Server, should be ranged in 1000 and 65535, automatically increased by different kinds of server instance. For example:Base port number = 15000, then 15000 will assigen to TCP Server, 15001 for UDP Server and 15002 for RPC Server", true, 15001, cmdline::range(1000, 65535));
+    cmdParser.add<int>("port", 'p', "Base port number for KV Server, should be ranged in 1000 and 65535, automatically increased by different kinds of server instance. For example:Base port number = 15000, then 15000 will assigen to TCP Server, 15001 for UDP Server and 15002 for RPC Server", false, 15001, cmdline::range(1000, 65535));
     cmdParser.add<std::string>("external",'e', "KV Server's external IP address or domain which will send to discovery server, the address then will be connected by client.", false, "127.0.0.1");
     cmdParser.add<std::string>("discovery", 'd', "Discovery server address, default=uw.umx.io", false, "uw.umx.io");
     

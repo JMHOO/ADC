@@ -49,11 +49,11 @@ std::vector<PServerInfo> CServerManager::GetAliveServers()
 
 bool CServerManager::RegisterServer(int socketid, std::string serverAddr, int port)
 {
-    if(m_logger)m_logger->Info("Agent Server: server[%s:%d] try to register...", serverAddr.c_str(), port);
+    if(m_logger)m_logger->Info("Discovery Server: registering kv server[%s:%d]...", serverAddr.c_str(), port);
     ServerMap::iterator it = m_srvMap.find(socketid);
     if( it != m_srvMap.end())
     {
-        if(m_logger)m_logger->Info("Agent Server: found server, update [%s:%d] --->>> [%s:%d]", it->second->serverAddr.c_str(), it->second->port, serverAddr.c_str(), port);
+        if(m_logger)m_logger->Info("Discovery Server: found kv server, update [%s:%d] --->>> [%s:%d]", it->second->serverAddr.c_str(), it->second->port, serverAddr.c_str(), port);
         it->second->serverAddr = serverAddr;
         it->second->port = port;
     }
@@ -64,7 +64,7 @@ bool CServerManager::RegisterServer(int socketid, std::string serverAddr, int po
         si->serverAddr = serverAddr;
         si->port = port;
         m_srvMap.insert(ServerMap::value_type(socketid, si));
-        if(m_logger)m_logger->Info("Agent Server: server[%s:%d] was registered.", serverAddr.c_str(), port);
+        if(m_logger)m_logger->Info("Discovery Server: kv server[%s:%d] was registered.", serverAddr.c_str(), port);
     }
     return true;
 }
@@ -74,7 +74,7 @@ bool CServerManager::UnregisterServer(int socketid)
     ServerMap::iterator it = m_srvMap.find(socketid);
     if( it != m_srvMap.end())
     {
-        if(m_logger)m_logger->Info("Agent Server: server[%s:%d] was Unregistered.", it->second->serverAddr.c_str(), it->second->port);
+        if(m_logger)m_logger->Info("Discovery Server: kv server[%s:%d] was Unregistered.", it->second->serverAddr.c_str(), it->second->port);
 
         PServerInfo si = it->second;
         delete si;

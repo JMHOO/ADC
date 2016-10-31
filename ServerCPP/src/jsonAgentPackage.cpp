@@ -73,7 +73,16 @@ json jsonAgentPacket::__process_one_operation__(json jrequest)
     std::transform(agentOperator.begin(),agentOperator.end(),agentOperator.begin(), ::tolower);
     if( agentOperator == "register")
     {
-        int iport = jrequest["port"];
+        int iport = 0;
+        try
+        {
+            iport = jrequest["port"];
+        }
+        catch(std::domain_error e)
+        {
+            std::string strPort = jrequest["port"];
+            iport = std::stoi(strPort);
+        }
         bool bRet = srvMgr->RegisterServer(m_clientsocket, jrequest["address"], iport);
         if( bRet )
         {
