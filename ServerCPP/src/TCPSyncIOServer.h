@@ -24,8 +24,6 @@ namespace ADCS
         struct sockaddr_in ServerAddr;
         struct sockaddr_in ClientAddr;
 
-        CThreadPool     *threadPool;
-        ILog            *logger;
         unsigned short	port;
         char            listenIPv4[16];
         int             iListenQueueLen;
@@ -34,18 +32,18 @@ namespace ADCS
         bool Clear();
         
     public:
-        virtual bool	Initialize(CThreadPool* pool, ILog *plogger);
+        virtual bool	Initialize();
         virtual bool	Main();
         virtual bool	Close();
-        virtual bool    SetIP( const char *ip );
-        virtual void    SetPort( unsigned short usport ) { port = usport;}
+        virtual bool SetIP( const char *ip );
+        virtual void SetPort( unsigned short usport ) { port = usport;}
         
-        const char*     GetIP() const {return listenIPv4;}
-        unsigned short  GetPort() const {return port;}
+        virtual const char*    GetIP() {return listenIPv4;}
+        virtual unsigned short  GetPort() {return port;}
         void            SetListenQueueLen( int length ){iListenQueueLen = length;}
         ServerStatus    GetStatus() const {return status;}
         
-        CTCPSIOServer();
+        CTCPSIOServer(const char* sName, IExecuteor* executor);
         virtual ~CTCPSIOServer() {}
     };
 }

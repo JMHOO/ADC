@@ -64,26 +64,26 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-p 15000"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-p 15100"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-m agent"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-m regular"
+            argument = "-m discovery"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-i 192.168.31.168"
+            argument = "-m kvserver"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-a uw.umx.io"
+            argument = "-e 192.168.31.168"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-d uw.umx.io"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

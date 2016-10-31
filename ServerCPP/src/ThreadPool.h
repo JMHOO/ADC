@@ -9,6 +9,7 @@
 #include <queue>
 #include <list>
 #include "ErrorCode.h"
+#include "GLog.h"
 
 namespace ADCS
 {
@@ -17,6 +18,7 @@ namespace ADCS
     {
     public:
         virtual bool Execute( void * data ) = 0;
+        virtual void SetLogger(ILog* logger) = 0;
         virtual ~IExecuteor()	{}
     };
     

@@ -16,7 +16,7 @@ namespace ADCS
     typedef std::pair<string,int> ServerDesc;
     typedef std::vector<ServerDesc> ServerList;
     
-    class CAgentClient
+    class CDiscoveryClient
     {
     private:
         static void* ClientMain( void* pParam );
@@ -34,12 +34,12 @@ namespace ADCS
         IPacket* __do_recv();
         
     public:
-        bool Start(ILog * pLogger, std::string strAgentSrvAddr, std::string strTCPServerAddr, int nTCPServerPort );
+        bool Start(std::string strAgentSrvAddr, std::string strTCPServerAddr, int nTCPServerPort );
         bool Stop();
         IClient* GetClient();
         
-        CAgentClient();
-        ~CAgentClient();
+        CDiscoveryClient();
+        ~CDiscoveryClient();
     };
 }
 

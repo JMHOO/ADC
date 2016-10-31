@@ -38,12 +38,8 @@ namespace ADCS
     {
         friend class CUDPSyncIOConnParam;
         
-        pthread_mutex_t	Mutex;
         int				socketid;
-        
-        CThreadPool     *threadPool;
-        ILog            *logger;
-        
+               
         unsigned short	port;
         char            listenIPv4[16];
         
@@ -54,20 +50,21 @@ namespace ADCS
         bool AddJobToThreadPool( CUDPSyncIOConnParam * pCP);
         
     public:
-        virtual bool	Initialize(CThreadPool* pool, ILog *plogger);
+        virtual bool	Initialize();
         virtual bool	Main();
         virtual bool	Close();
-        virtual bool    SetIP( const char *ip );
-        virtual void    SetPort( unsigned short usport ) { port = usport;}
+        virtual bool SetIP( const char *ip );
+        virtual void SetPort( const unsigned short usport ) { port = usport;}
+        virtual const char* GetIP(){return listenIPv4;}
+        virtual unsigned short GetPort(){ return port; }
         
-        void SetListenQueueLen( int length ){ }
         
-        CUDPSyncIOServer();
+        CUDPSyncIOServer(IExecuteor* executor);
         virtual ~CUDPSyncIOServer();
         
-        unsigned short	GetPort() const{ return port; }
-        const char*     GetIP() const {return listenIPv4;}
         ServerStatus GetStatus() const {return status;}
+        void SetListenQueueLen( int length ){ }
+        
     };
 }
 

@@ -11,8 +11,8 @@ private:
 public:
     virtual bool Execute( void * lpvoid );
     
-    
-    TCPSyncServerProcessor(ILog* logger) : m_logger(logger) {}
+    virtual void SetLogger(ILog* logger) { m_logger = logger; }
+    TCPSyncServerProcessor() {}
 
 };
 

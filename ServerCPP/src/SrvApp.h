@@ -9,45 +9,23 @@
 #include "AgentClient.h"
 #include <string>
 
-class TCPServerProcessor;
-class UDPServerProcessor;
-
-class TCPServerProcessor;
-class UDPServerProcessor;
-class TCPSyncServerProcessor;
-
-class AgentServerProcessor;
+#define INTERAL_SERVER_COUNT    3
 
 class CServerApp
 {
 private:
-    ADCS::IServer*      m_tcpServer;
-    ADCS::CThreadPool*  m_pTcpThreadPool;
-    //TCPServerProcessor* m_tcpProcessor;
-    TCPSyncServerProcessor* m_tcpProcessor;
-    ILog*               m_pTcpLogger;
-
-    ADCS::IServer*      m_udpServer;
-    ADCS::CThreadPool*  m_pUdpThreadPool;
-    UDPServerProcessor* m_udpProcessor;
-    ILog*               m_pUdpLogger;
+    ADCS::IServer*          m_servers[INTERAL_SERVER_COUNT];       // TCP, UDP, RPC Server
+    ADCS::CDiscoveryClient* m_discoveryClient;
     
-    ADCS::IServer*      m_rpcServer;
-    ILog*               m_rpcLogger;
-    
-    ADCS::IServer*      m_agentServer;
-    ADCS::CThreadPool*  m_agentThreadPool;
-    AgentServerProcessor* m_agentProcessor;
-    ILog*               m_agentLogger;
-    
-    ADCS::CAgentClient* m_agentClient;
+    ADCS::IServer*          m_discoveryServer;   // Discovery Server
+  
     
     std::string         m_runmode;
-    std::string         m_serverAddr;
-    std::string         m_agentAddr;
+    std::string         m_serverExternalAddr;
+    std::string         m_discoverySrvAddr;
     
 public:
-    bool Start(unsigned short usPort, std::string sMode, std::string serverSelfAddr, std::string agentServerAddr);
+    bool Start(unsigned short usPort, std::string sMode, std::string serverExternalAddr, std::string discoveryServerAddr);
     bool Stop();
     
     

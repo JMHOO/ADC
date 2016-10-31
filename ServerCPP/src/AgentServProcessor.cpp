@@ -25,7 +25,7 @@ bool AgentServerProcessor::Execute( void * pdata )
     
     if( pConnParam == NULL )
     {
-        if(m_logger)m_logger->Info("Agent Server Processor: connection param error.");
+        if(m_logger)m_logger->Info("Discovery Server Processor: connection param error.");
         return false;
     }
     
@@ -42,12 +42,12 @@ bool AgentServerProcessor::Execute( void * pdata )
         {
             if( recvedlen == 0 )
             {
-                if(m_logger)m_logger->Info("Agent Server: receive nothing, client might close.");
+                if(m_logger)m_logger->Info("Discovery Server: receive nothing, client might close.");
                 
             }
             else
             {
-                if(m_logger)m_logger->Error("Agent Server: receive package header error. Expect to receive %d bytes, in fact, it receive %d bytes -- %s", sizeof(ADCS::PACK_HEADER), recvedlen, sBuffer+sizeof(ADCS::PACK_HEADER));
+                if(m_logger)m_logger->Error("Discovery Server: receive package header error. Expect to receive %d bytes, in fact, it receive %d bytes -- %s", sizeof(ADCS::PACK_HEADER), recvedlen, sBuffer+sizeof(ADCS::PACK_HEADER));
             }
             
             // remove server
@@ -63,7 +63,7 @@ bool AgentServerProcessor::Execute( void * pdata )
         len = tcpHelper.RecvInfo( pConnParam->socketid, sBuffer + recvedlen, nRestDataLen );
         if( len != nRestDataLen )
         {
-            if(m_logger)m_logger->Error("Agent Server: receive package payload error. Expect to receive %d bytes, in fact, it receive %d bytes -- %s", nRestDataLen, len, sBuffer+sizeof(ADCS::PACK_HEADER));
+            if(m_logger)m_logger->Error("Discovery Server: receive package payload error. Expect to receive %d bytes, in fact, it receive %d bytes -- %s", nRestDataLen, len, sBuffer+sizeof(ADCS::PACK_HEADER));
 
             // remove server
             srvMgr->UnregisterServer(pConnParam->socketid);
@@ -76,7 +76,7 @@ bool AgentServerProcessor::Execute( void * pdata )
         
         
         // we got the whold package, deal with it
-        if( m_logger)m_logger->Info("Agent Server: request from client[%d: %s] -- %s", pConnParam->socketid, inet_ntoa(pConnParam->ClientAddr.sin_addr), sBuffer+sizeof(ADCS::PACK_HEADER));
+        if( m_logger)m_logger->Info("Discovery Server: request from client[%d: %s] -- %s", pConnParam->socketid, inet_ntoa(pConnParam->ClientAddr.sin_addr), sBuffer+sizeof(ADCS::PACK_HEADER));
 
         IPacket* packet = IPacket::CreatePackage(sBuffer, ntohl(ptrHeader->Length), pConnParam->socketid);
         if( packet )
@@ -86,13 +86,13 @@ bool AgentServerProcessor::Execute( void * pdata )
             unsigned long ulResponseLength = 0;
             packet->ToBytes(ptrResponse, ulResponseLength);
             
-            //if( m_logger)m_logger->Info("Agent Server: sending response to client:%s -- %s", inet_ntoa(pConnParam->ClientAddr.sin_addr), ptrResponse+sizeof(ADCS::PACK_HEADER));
+            //if( m_logger)m_logger->Info("Discovery Server: sending response to client:%s -- %s", inet_ntoa(pConnParam->ClientAddr.sin_addr), ptrResponse+sizeof(ADCS::PACK_HEADER));
             
             // send whole package
             len = tcpHelper.SendInfo( pConnParam->socketid, ptrResponse, (int)ulResponseLength );
             if( (int)ulResponseLength != len )
             {
-                if(m_logger)m_logger->Error("Agent Server: sending package header error. Expect to send %d bytes, in fact, it sent %d bytes", ulResponseLength, len);
+                if(m_logger)m_logger->Error("Discovery Server: sending package header error. Expect to send %d bytes, in fact, it sent %d bytes", ulResponseLength, len);
 
                 // remove server
                 srvMgr->UnregisterServer(pConnParam->socketid);
@@ -107,7 +107,7 @@ bool AgentServerProcessor::Execute( void * pdata )
         }
         else
         {
-            if(m_logger)m_logger->Error("Agent Server create packet failed: invalid packet, dropped it. Content: %s", sBuffer+sizeof(ADCS::PACK_HEADER));
+            if(m_logger)m_logger->Error("Discovery Server: create packet failed: invalid packet, dropped it. Content: %s", sBuffer+sizeof(ADCS::PACK_HEADER));
         }
     }
 

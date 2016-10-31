@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 #include "UDPSyncIOServer.h"
+#include "UDPClient.h"
 
 namespace ADCS{
     
@@ -17,7 +18,7 @@ namespace ADCS{
         return true;
     }
  
-    bool CUDPSyncIOServer::Initialize(CThreadPool* pool, ILog *plogger)
+    bool CUDPSyncIOServer::Initialize()
     {
         if( status != ServerStatus::Uninit )
             return false;
@@ -40,7 +41,7 @@ namespace ADCS{
         socketid = socket( AF_INET, SOCK_DGRAM, 0 );
         if( socketid < 0 )
         {
-            if(plogger)plogger->Error("UDP Server initialize failed: initialize socket failed.");
+            if(m_logger)m_logger->Error("%s Server initialize failed: initialize socket failed.", m_serverName.c_str());
             return false;
         }
         
@@ -50,12 +51,9 @@ namespace ADCS{
         if( bind( socketid, (struct sockaddr *)(&ServerAddr), sizeof(struct sockaddr) ) == -1 )
         {
             close( socketid );
-            if(plogger)plogger->Error("UDP Server initialize failed: bind socket failed.");
+            if(m_logger)m_logger->Error("%s Server initialize failed: bind socket failed.", m_serverName.c_str());
             return false;
         }
-        
-        threadPool = pool;
-        logger = plogger;
         
         status = ServerStatus::Inited;
         
@@ -76,8 +74,8 @@ namespace ADCS{
             pConnParam = new CUDPSyncIOConnParam;
             if( !pConnParam )
             {
-                if( logger )
-                    logger->Error( "CUDPSyncIOServer::Main(): allocate memory for new connection failed." );
+                if( m_logger )
+                    m_logger->Error( "%s Server::Main(): allocate memory for new connection failed." , m_serverName.c_str());
                 continue;
             }
             
@@ -107,13 +105,28 @@ namespace ADCS{
  
     bool CUDPSyncIOServer::Close()
     {
-        if( threadPool )
+        if( m_pThreadPool )
         {
             status = ServerStatus::Exiting;
+            if(m_logger)m_logger->Warning("%s Server Closing...", m_serverName.c_str());
+            if(m_logger)m_logger->Warning("Destory thread pool.");
+
+            m_pThreadPool->Destory();
             
-            threadPool = NULL;
+            if(m_logger)m_logger->Warning("Server closer working....");
             
+            CUDPClient client;
+            client.SetIP("127.0.0.1");
+            client.SetPort(GetPort());
+            client.Connect();
+            
+            char pBuffer[16];
+            memset(pBuffer, 0, 16);
+            client.SendInfo(pBuffer, 16);
+            
+            client.Close();
             status = ServerStatus::Uninit;
+            if(m_logger)m_logger->Warning("%s server shutted down.", m_serverName.c_str());
         }
         
         return true;
@@ -123,7 +136,6 @@ namespace ADCS{
     {
         close( socketid );
         socketid = 0;
-        threadPool = NULL;
         
         status = ServerStatus::Uninit;
         
@@ -132,10 +144,10 @@ namespace ADCS{
 
     bool CUDPSyncIOServer::AddJobToThreadPool( CUDPSyncIOConnParam * pCP)
     {
-        bool bSuccess = threadPool->WakeUp((void *)pCP);
-        if( !bSuccess && logger )
+        bool bSuccess = m_pThreadPool->WakeUp((void *)pCP);
+        if( !bSuccess && m_logger )
         {
-            logger->Error("CUDPSyncIOServer::AddJobToThreadpool(): Thread wake up failed.");
+            m_logger->Error("CUDPSyncIOServer::AddJobToThreadpool(): Thread wake up failed.");
         }
         
         return bSuccess;
@@ -146,14 +158,14 @@ namespace ADCS{
         if(pCP) delete pCP;
     }
     
-    CUDPSyncIOServer::CUDPSyncIOServer(): socketid(0), threadPool(0), logger(0), port(0), status(ServerStatus::Uninit)
+    CUDPSyncIOServer::CUDPSyncIOServer(IExecuteor* executor): ADCS::IServer("UDP", executor), socketid(0), port(0), status(ServerStatus::Uninit)
     {
         memset( listenIPv4, 0, 16);
     }
     
     CUDPSyncIOServer::~CUDPSyncIOServer()
     {
-        pthread_mutex_destroy(&Mutex);
+        
     }
 
     

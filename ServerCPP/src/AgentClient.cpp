@@ -5,9 +5,9 @@
 
 namespace ADCS
 {
-    void* CAgentClient::ClientMain( void* pParam )
+    void* CDiscoveryClient::ClientMain( void* pParam )
     {
-        CAgentClient* pAgent = reinterpret_cast<CAgentClient*>(pParam);
+        CDiscoveryClient* pAgent = reinterpret_cast<CDiscoveryClient*>(pParam);
         ILog* plogger = pAgent->m_logger;
         
         // It will retry if server unreachable
@@ -20,7 +20,7 @@ namespace ADCS
         IPacket* pRes = pAgent->__do_recv();
         if(pRes == NULL)
         {
-            if(plogger)plogger->Error("Agent Client: get register response failed.");
+            if(plogger)plogger->Error("Discovery Client: get register response failed.");
         }
         
         // every 15 seconds, thread wake up to get server list
@@ -46,7 +46,7 @@ namespace ADCS
                 nlohmann::json jSrvList = pSrvList->GetServerList();
                 if( jSrvList.is_array())
                 {
-                    if(plogger)plogger->Info("Agent Client: server list [%s]", jSrvList.dump().c_str());
+                    // if(plogger)plogger->Info("Discovery Client: server list [%s]", jSrvList.dump().c_str());
                     pAgent->m_aliveSrvList.clear();
                     for(size_t i = 0; i < jSrvList.size(); i++)
                     {
@@ -64,7 +64,7 @@ namespace ADCS
             
             if(!bSusscuss)
             {
-                if(plogger)plogger->Warning("Agent Client: it seems the connection was lost, reconnecting...");
+                if(plogger)plogger->Warning("Discovery Client: it seems the connection was lost, reconnecting...");
                 pAgent->__try_connect_agent_server();
             }
         }
@@ -72,7 +72,7 @@ namespace ADCS
         return 0;
     }
     
-    bool CAgentClient::__do_send(IPacket* p)
+    bool CDiscoveryClient::__do_send(IPacket* p)
     {
         const char* ptrRequest = nullptr;
         unsigned long ulRequestLength = 0;
@@ -81,14 +81,14 @@ namespace ADCS
         int nSentLen = m_tcpClient.SendInfo(ptrRequest, (int)ulRequestLength);
         if( (int)ulRequestLength != nSentLen )
         {
-            if(m_logger)m_logger->Error("Agent Clent: sending register package error. Agent client exit. Expect to send %d bytes, in fact, it sent %d bytes", ulRequestLength, nSentLen);
+            if(m_logger)m_logger->Error("Discovery Client: sending register package error. Agent client exit. Expect to send %d bytes, in fact, it sent %d bytes", ulRequestLength, nSentLen);
             m_tcpClient.Close();
             return false;
         }
         return true;
     }
     
-    IPacket* CAgentClient::__do_recv()
+    IPacket* CDiscoveryClient::__do_recv()
     {
         char sBuffer[1024];
         memset(sBuffer, 0, 1024);
@@ -100,12 +100,12 @@ namespace ADCS
         {
             if( nRecvLen == 0 )
             {
-                if(m_logger)m_logger->Info("Agent Client: nothing received.");
+                if(m_logger)m_logger->Info("Discovery Client: nothing received.");
                 
             }
             else
             {
-                if(m_logger)m_logger->Error("Agent Client: receive package header error. Expect to receive %d bytes, in fact, it receive %d bytes.", sizeof(ADCS::PACK_HEADER), nRecvLen);
+                if(m_logger)m_logger->Error("Discovery Client: receive package header error. Expect to receive %d bytes, in fact, it receive %d bytes.", sizeof(ADCS::PACK_HEADER), nRecvLen);
             }
             
             return NULL;
@@ -115,33 +115,33 @@ namespace ADCS
         nRecvLen = m_tcpClient.RecvInfo(sBuffer + nRecvLen, nRestDataLen );
         if( nRecvLen != nRestDataLen )
         {
-            if(m_logger)m_logger->Error("Agent Client: receive package payload error. Expect to receive %d bytes, in fact, it receive %d bytes -- %s", nRestDataLen, nRecvLen, sBuffer+sizeof(ADCS::PACK_HEADER));
+            if(m_logger)m_logger->Error("Discovery Client: receive package payload error. Expect to receive %d bytes, in fact, it receive %d bytes -- %s", nRestDataLen, nRecvLen, sBuffer+sizeof(ADCS::PACK_HEADER));
             return NULL;
         }
         
         return IPacket::CreatePackage(sBuffer, ntohl(ptrHeader->Length), m_tcpClient.GetSocketID());
     }
     
-    CAgentClient::CAgentClient()
+    CDiscoveryClient::CDiscoveryClient()
     {
-        m_logger = NULL;
+        m_logger = new GlobalLog("discovery", LL_DEBUG);
     }
     
-    CAgentClient::~CAgentClient()
+    CDiscoveryClient::~CDiscoveryClient()
     {
-        
+        delete m_logger;
     }
 
-    IClient* CAgentClient::GetClient()
+    IClient* CDiscoveryClient::GetClient()
     {
         return &m_tcpClient;
     }
     
-    bool CAgentClient::__try_connect_agent_server()
+    bool CDiscoveryClient::__try_connect_agent_server()
     {
         int nRetryCount = 0;
         
-        if(m_logger)m_logger->Info("Agent Client: Trying to connect agent server: %s:%d", m_tcpClient.GetIPAddr(), m_tcpClient.GetPort());
+        if(m_logger)m_logger->Info("Discovery Client: Trying to connect agent server: %s:%d", m_tcpClient.GetIPAddr(), m_tcpClient.GetPort());
         
         do
         {
@@ -150,12 +150,12 @@ namespace ADCS
             
             if( m_tcpClient.Connect() )
             {
-                if(m_logger)m_logger->Info("Agent Client: Server connected.");
+                if(m_logger)m_logger->Info("Discovery Client: Server connected.");
                 return true;
             }
             else
             {
-                if(m_logger)m_logger->Warning("Agent Client: Connect to server failed, will retry in 30 seconds...");
+                if(m_logger)m_logger->Warning("Discovery Client: Connect to server failed, will retry in 30 seconds...");
                 timespec ts;
                 ts.tv_sec = 30;
                 ts.tv_nsec = 0;
@@ -168,11 +168,10 @@ namespace ADCS
         return false;
     }
     
-    bool CAgentClient::Start(ILog * pLogger, std::string strAgentSrvAddr, std::string strTCPServerAddr, int nTCPServerPort)
+    bool CDiscoveryClient::Start(std::string strAgentSrvAddr, std::string strTCPServerAddr, int nTCPServerPort)
     {
         m_tcpserverIP = strTCPServerAddr;
         m_tcpserverPort = nTCPServerPort;
-        m_logger = pLogger;
         
         bool bStarted = false;
         m_tcpClient.SetIP(strAgentSrvAddr.c_str());
@@ -193,10 +192,12 @@ namespace ADCS
         
         pthread_attr_destroy(&attr);
         
+        if(m_logger)m_logger->Info("Discovery Client is started.");
+        
         return bStarted;
     }
     
-    bool CAgentClient::Stop()
+    bool CDiscoveryClient::Stop()
     {
         pthread_join( AgentClientMainThreadId, NULL );
         

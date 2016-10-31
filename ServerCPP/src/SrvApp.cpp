@@ -10,71 +10,46 @@
 #include "RPCServer.h"
 #include "ServerManager.h"
 
-bool CServerApp::Start(unsigned short usPort, std::string sMode, std::string sAddr, std::string agentServerAddr)
+const char kvserver_cluster[INTERAL_SERVER_COUNT][16] = { "tcp", "udp", "rpc" };
+
+bool CServerApp::Start(unsigned short usPort, std::string sMode,  std::string serverExternalAddr, std::string discoveryServerAddr)
 {
     m_runmode = sMode;
-    m_serverAddr = sAddr;
-    m_agentAddr = agentServerAddr;
+    m_serverExternalAddr = serverExternalAddr;
+    m_discoverySrvAddr = discoveryServerAddr;
     
     if( sMode == "kvserver" )
     {
-        // Start TCP Server
-        //m_tcpProcessor = new TCPServerProcessor(m_pTcpLogger);
-        m_tcpProcessor = new TCPSyncServerProcessor(m_pTcpLogger);
-        m_pTcpThreadPool = new ADCS::CThreadPool();
-        m_pTcpThreadPool->Init(*m_tcpProcessor, 10, 20, 100);
-        
-        //m_tcpServer = new ADCS::CTCPAsyncIOServer();
-        m_tcpServer = new ADCS::CTCPSIOServer();
-        m_tcpServer->SetIP("0.0.0.0");
-        m_tcpServer->SetPort(usPort);
-        if(m_tcpServer->Start(m_pTcpThreadPool, m_pTcpLogger))
+        // create 3-kinds server: tcp, udp, rpc
+        for(int i = 0; i < INTERAL_SERVER_COUNT; i++ )
         {
-            //ADCS::CTCPAsyncIOServer* tcpserver = dynamic_cast<ADCS::CTCPAsyncIOServer*>(m_tcpServer);
-            ADCS::CTCPSIOServer* tcpserver = dynamic_cast<ADCS::CTCPSIOServer*>(m_tcpServer);
-            std::cout << "TCP server is started, "<< tcpserver->GetIP() << ":"<< tcpserver->GetPort()<<" LISTENING"<< std::endl;
-            if( m_pTcpLogger)m_pTcpLogger->Info("TCP Server started: %s:%d LISTENING.", tcpserver->GetIP(), tcpserver->GetPort());
-            
-        }
-        else
-        {
-            return false;
+            m_servers[i] = ADCS::IServer::CreateServer(kvserver_cluster[i]);
         }
         
-        // Start UDP Server
-        m_udpProcessor = new UDPServerProcessor(m_pUdpLogger);
-        m_pUdpThreadPool = new ADCS::CThreadPool();
-        m_pUdpThreadPool->Init(*m_udpProcessor, 10, 20, 100);
-        
-        m_udpServer = new ADCS::CUDPSyncIOServer();
-        m_udpServer->SetIP("0.0.0.0");
-        m_udpServer->SetPort(usPort+1);
-        if( m_udpServer->Start(m_pUdpThreadPool, m_pUdpLogger))
+        // start all server
+        bool bAllServerStarted = true;
+        for(int i = 0; i < INTERAL_SERVER_COUNT; i++ )
         {
-            ADCS::CUDPSyncIOServer* udpserver = dynamic_cast<ADCS::CUDPSyncIOServer*>(m_udpServer);
-            std::cout << "UDP server is started, "<< udpserver->GetIP() << ":"<< udpserver->GetPort()<< std::endl;
-            if( m_pUdpLogger)m_pUdpLogger->Info("UDP Server started: %s:%d LISTEN.", udpserver->GetIP(), udpserver->GetPort());
-            
-        }
-        else
-        {
-            return false;
+            if( !m_servers[i]->Start(usPort+i) )
+            {
+                bAllServerStarted = false;
+                std::cout << "Failed to start " << kvserver_cluster << " server, application exit." << endl;
+                break;
+            }
         }
         
-        // Start RPC Server
-        m_rpcServer = new ADCS::CRPCServer();
-        m_rpcServer->SetIP("0.0.0.0");
-        m_rpcServer->SetPort(usPort+2);
-        if(m_rpcServer->Start(NULL, m_rpcLogger))
+        // some of server start failed, destroy all and exit.
+        if( !bAllServerStarted )
         {
-            ADCS::CRPCServer* rpcserver = dynamic_cast<ADCS::CRPCServer*>(m_rpcServer);
-            std::cout << "RPC server is started, "<< rpcserver->GetIP() << ":"<< rpcserver->GetPort()<<" LISTENING"<< std::endl;
-            if( m_pUdpLogger)m_rpcLogger->Info("RPC Server started: %s:%d LISTEN.", rpcserver->GetIP(), rpcserver->GetPort());
-
-        }
-        else
-        {
-            return false;
+            for( int i = 0; i < INTERAL_SERVER_COUNT; i++ )
+            {
+                if( m_servers[i] )
+                {
+                    m_servers[i]->Stop();
+                    delete m_servers[i];
+                    m_servers[i] = nullptr;
+                }
+            }
         }
         
         // initialize KVServer
@@ -83,41 +58,25 @@ bool CServerApp::Start(unsigned short usPort, std::string sMode, std::string sAd
             //.....
         }
         
-        // Start Agent Client
-        m_agentClient = new ADCS::CAgentClient();
-        ADCS::CTCPSIOServer* tcpserver = dynamic_cast<ADCS::CTCPSIOServer*>(m_tcpServer);
-        if( m_agentClient->Start(m_agentLogger, m_agentAddr, m_serverAddr, tcpserver->GetPort()))
+        // Start discovery Client
+        m_discoveryClient = new ADCS::CDiscoveryClient();
+        if( m_discoveryClient->Start(m_discoverySrvAddr, m_serverExternalAddr, usPort))
         {
             std::cout << "Discovery Client is started. " << std::endl;
-            if(m_agentLogger)m_agentLogger->Info("Discovery Client is started.");
         }
 
     }
     else if (sMode == "discovery" )
     {
-        // Start Agent Server
-        m_agentProcessor = new AgentServerProcessor(m_agentLogger);
-        m_agentThreadPool = new ADCS::CThreadPool();
-        m_agentThreadPool->Init(*m_agentProcessor, 10, 20, 100);
-
-        m_agentServer = new ADCS::CTCPSIOServer();
-        m_agentServer->SetIP("0.0.0.0");
-        m_agentServer->SetPort(15000);
-        if(m_agentServer->Start(m_agentThreadPool, m_agentLogger))
-        {
-            ADCS::CTCPSIOServer* agentserv = dynamic_cast<ADCS::CTCPSIOServer*>(m_agentServer);
-            std::cout << "Discovery server is started, "<< agentserv->GetIP() << ":"<< agentserv->GetPort()<<" LISTENING"<< std::endl;
-            if( m_agentLogger)m_agentLogger->Info("Discovery Server started: %s:%d LISTENING.", agentserv->GetIP(), agentserv->GetPort());
-            
-        }
-        else
+        // Start Discovery Server
+        m_discoveryServer = ADCS::IServer::CreateServer("discovery");
+        if(!m_discoveryServer->Start(15000))
         {
             return false;
         }
         
-        
         // initialize Server Manager
-        if(!CServerManager::Create(m_agentLogger))
+        if( !CServerManager::Create( m_discoveryServer->GetLogger() ) )
         {
             //......
         }
@@ -131,91 +90,44 @@ bool CServerApp::Stop()
 {
     if( m_runmode == "kvserver" )
     {
-        if( m_tcpServer)
+        for( int i = 0; i < INTERAL_SERVER_COUNT; i++ )
         {
-            m_tcpServer->Stop();
-            delete m_tcpServer;
-            m_tcpServer = NULL;
+            if( m_servers[i] )
+            {
+                m_servers[i]->Stop();
+                delete m_servers[i];
+                m_servers[i] = nullptr;
+            }
         }
-        
-        if( m_tcpProcessor)
-        {
-            delete m_tcpProcessor;
-            m_tcpProcessor = NULL;
-        }
-        
-        if( m_pTcpThreadPool)
-        {
-            m_pTcpThreadPool->Destory();
-            delete m_pTcpThreadPool;
-            m_pTcpThreadPool = NULL;
-        }
-        
-        if( m_udpServer)
-        {
-            m_udpServer->Stop();
-            delete m_udpServer;
-            m_udpServer = NULL;
-        }
-        
-        if( m_udpProcessor)
-        {
-            delete m_udpProcessor;
-            m_udpProcessor = NULL;
-        }
-        
-        if( m_pUdpThreadPool)
-        {
-            m_pUdpThreadPool->Destory();
-            delete m_pUdpThreadPool;
-            m_pUdpThreadPool = NULL;
-        }
-        
-        if( m_agentClient)
-        {
-            delete m_agentClient;
-            m_agentClient = NULL;
-        }
-        
         
         CKVServer::Destory();
     }
     else if (m_runmode == "discovery")
     {
-        if( m_agentProcessor )
+        if( m_discoveryServer )
         {
-            delete m_agentProcessor;
-            m_agentProcessor = NULL;
+            m_discoveryServer->Stop();
+            delete m_discoveryServer;
+            m_discoveryServer = nullptr;
         }
-        
-        if( m_agentThreadPool)
-        {
-            m_agentThreadPool->Destory();
-            delete m_agentThreadPool;
-            m_agentThreadPool = NULL;
-        }
-
         CServerManager::Destory();
     }
     return true;
 }
 
 
-CServerApp::CServerApp(): m_tcpServer(NULL), m_pTcpThreadPool(NULL), m_tcpProcessor(NULL),m_pTcpLogger(NULL),
-m_udpServer(NULL), m_pUdpThreadPool(NULL), m_udpProcessor(NULL), m_pUdpLogger(NULL), m_rpcServer(NULL), m_rpcLogger(NULL),
-m_agentServer(NULL), m_agentThreadPool(NULL), m_agentProcessor(NULL), m_agentClient(NULL)
+CServerApp::CServerApp()
 {
-    m_pTcpLogger = new GlobalLog("TCP", LL_DEBUG);
-    m_pUdpLogger = new GlobalLog("UDP", LL_DEBUG);
-    m_rpcLogger = new GlobalLog("RPC", LL_DEBUG);
-    m_agentLogger = new GlobalLog("discovery", LL_DEBUG);
+    for( int i = 0; i < INTERAL_SERVER_COUNT; i++ )
+    {
+        m_servers[i] = nullptr;
+    }
+    m_discoveryServer = nullptr;
+    
     m_runmode = "kvserver";
 }
 
 CServerApp::~CServerApp()
 {
-    delete m_pTcpLogger;
-    delete m_pUdpLogger;
-    delete m_rpcLogger;
-    delete m_agentLogger;
+    
 }

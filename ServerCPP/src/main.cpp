@@ -82,7 +82,11 @@ int main(int argc, const char * argv[]) {
     
     // Server collection: TCP Server, UDP Server, RPC Server and Discovery Server
     CServerApp server;
-    server.Start(nPort, sMode, sExternalIP, sAgentSrvAddr);
+    if( !server.Start(nPort, sMode, sExternalIP, sAgentSrvAddr) )
+    {
+        cout << "Failed to start all server, exit." << endl;
+        return 0;
+    }
     
     while(1)
     {
@@ -119,6 +123,8 @@ int main(int argc, const char * argv[]) {
         cout<<endl;
         
     }
+    
+    server.Stop();
     
     return 0;
 }

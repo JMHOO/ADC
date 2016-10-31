@@ -3,11 +3,12 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 #include "TCPSyncIOServer.h"
+#include "TCPClient.h"
 
 namespace ADCS
 {
     
-    CTCPSIOServer::CTCPSIOServer(): socketid(0), threadPool(0), logger(0), port(0),
+    CTCPSIOServer::CTCPSIOServer(const char* sName, IExecuteor* executor): ADCS::IServer(sName, executor), socketid(0), port(0),
         iListenQueueLen(100),status(ServerStatus::Uninit)
     {
         memset( listenIPv4, 0, 16);
@@ -23,7 +24,7 @@ namespace ADCS
         return true;
     }
     
-    bool CTCPSIOServer::Initialize(CThreadPool* pool, ILog *plogger)
+    bool CTCPSIOServer::Initialize()
     {
         if( status != ServerStatus::Uninit )
             return false;
@@ -45,14 +46,14 @@ namespace ADCS
         
         if( ServerAddr.sin_addr.s_addr == INADDR_NONE )
         {
-            if(plogger)plogger->Error("TCP Server initialize failed: Invalid IP Address --- %s", listenIPv4);
+            if(m_logger)m_logger->Error("%s Server initialize failed: Invalid IP Address --- %s", m_serverName.c_str(), listenIPv4);
             return false;
         }
         
         socketid = socket( AF_INET, SOCK_STREAM, 0 );
         if( socketid < 0 )
         {
-            if(plogger)plogger->Error("TCP Server initialize failed: initialize socket failed.");
+            if(m_logger)m_logger->Error("%s Server initialize failed: initialize socket failed.", m_serverName.c_str());
             return false;
         }
         
@@ -62,7 +63,7 @@ namespace ADCS
         if( bind( socketid, (struct sockaddr *)(&ServerAddr), sizeof(struct sockaddr) ) == -1 )
         {
             close( socketid );
-            if(plogger)plogger->Error("TCP Server initialize failed: bind socket failed.");
+            if(m_logger)m_logger->Error("%s Server initialize failed: bind socket failed.", m_serverName.c_str());
             return false;
         }
         
@@ -71,9 +72,6 @@ namespace ADCS
             close( socketid );
             return false;
         }
-        
-        threadPool = pool;
-        logger = plogger;
         
         status = ServerStatus::Inited;
         
@@ -97,32 +95,32 @@ namespace ADCS
         {
             if( ( newSocket = accept( socketid, (struct sockaddr *)(&ClientAddr), (socklen_t *)&addrlen) ) == -1 )
             {
-                if( logger )
-                    logger->Error( "CTCPSIOServer::Main, accpet client socket failed --- socket id:%d, client ip:%s", socketid, inet_ntoa(ClientAddr.sin_addr) );
+                if( m_logger )
+                    m_logger->Error( "%s Server::Main, accpet client socket failed --- socket id:%d, client ip:%s", m_serverName.c_str(), socketid, inet_ntoa(ClientAddr.sin_addr) );
                 continue;
             }
             
-            if(logger)logger->Info("TCPServer::Main, new connection from client: %s, socket id:%d", inet_ntoa(ClientAddr.sin_addr), socketid);
+            if(m_logger)m_logger->Info("%s Server::Main, new connection from client: %s, socket id:%d", m_serverName.c_str(), inet_ntoa(ClientAddr.sin_addr), socketid);
             
             pConnParam = new CTCPSIOConnParam;
             if( !pConnParam )
             {
-                if( logger )
-                    logger->Error( "CTCPSIOServer::Main(): allocate memory for new connection failed, close socket." );
+                if( m_logger )
+                    m_logger->Error( "%s Server::Main(): allocate memory for new connection failed, close socket." );
                 close(newSocket);
                 continue;
             }
             pConnParam->socketid = newSocket;
             pConnParam->ClientAddr = ClientAddr;
             
-            if( threadPool->WakeUp( (void *)pConnParam) == false )
+            if( m_pThreadPool->WakeUp( (void *)pConnParam) == false )
             {
                 close(newSocket);
                 delete pConnParam;
                 
-                if( logger )
+                if( m_logger )
                 {
-                    logger->Error( "CTCPSIOServer : Thread Pool wake up failed. Server main exiting. Socket:%d, client ip:%s", newSocket, inet_ntoa(ClientAddr.sin_addr) );
+                    m_logger->Error( "%s Server : Thread Pool wake up failed. Server main exiting. Socket:%d, client ip:%s", m_serverName.c_str(), newSocket, inet_ntoa(ClientAddr.sin_addr) );
                 }
                 break;
             }
@@ -134,11 +132,28 @@ namespace ADCS
 
     bool CTCPSIOServer::Close()
     {
-        if( threadPool )
+        if( m_pThreadPool )
         {
             status = ServerStatus::Exiting;
+            if(m_logger)m_logger->Warning("%s Server Closing...", m_serverName.c_str());
+            if(m_logger)m_logger->Warning("Destory thread pool.");
+
+            m_pThreadPool->Destory();
+            
+            if(m_logger)m_logger->Warning("Server closer working....");
             // we should need a client to connet server because ServerMain was blocked in accept()
+            CTCPClient client;
+            client.SetIP("127.0.0.1");
+            client.SetPort(GetPort());
+            client.Connect();
+            
+            //char pBuffer[16];
+            //client.SendInfo(pBuffer, 16);
+            
+            client.Close();
+            
             status = ServerStatus::Uninit;
+            if(m_logger)m_logger->Warning("%s server shutted down.", m_serverName.c_str());
         }
         
         return true;
@@ -148,7 +163,6 @@ namespace ADCS
     {
         close(socketid);
         socketid = 0;
-        threadPool = NULL;
         return true;
     }
 }

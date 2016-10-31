@@ -12,7 +12,9 @@ public:
     virtual bool Execute( void * lpvoid );
     
     bool ParseBuffer(char * buf, int len);
-    UDPServerProcessor(ILog* logger) : m_logger(logger) {}
+    
+    virtual void SetLogger(ILog* logger) { m_logger = logger; }
+    UDPServerProcessor() {}
     
 };
 

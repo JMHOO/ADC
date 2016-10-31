@@ -13,7 +13,6 @@ namespace ADCS
 {
 class CRPCServer : public IServer
 {
-    ILog            *logger;
     unsigned short	port;
     char            listenIPv4[16];
     ServerStatus    status;
@@ -21,21 +20,24 @@ class CRPCServer : public IServer
     CKvJSONRPCService *rpcserv;
     jsonrpc::HttpServer *httpserv;
     
+    pthread_mutex_t	Mutex;
+    pthread_cond_t Condition;
+    
     bool bExitFlag;
     
 public:
-    virtual bool Initialize(CThreadPool* pool, ILog *plogger);
+    virtual bool Initialize();
     virtual bool Main();
     virtual bool Close();
     virtual bool SetIP( const char *ip );
     virtual void SetPort( unsigned short usport ) { port = usport;}
-    
-    unsigned short	GetPort() const{ return port; }
-    const char*     GetIP() const {return listenIPv4;}
-    ServerStatus GetStatus() const {return status;}
-    
-    CRPCServer();
+    virtual unsigned short GetPort(){ return port; }
+    virtual const char* GetIP() {return listenIPv4;}
+
+    CRPCServer(IExecuteor* executor);
     virtual ~CRPCServer();
+ 
+    ServerStatus GetStatus() const {return status;}
     
 };
 
