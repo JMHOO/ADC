@@ -9,6 +9,7 @@ public:
     static IPacket* CreatePackage(const char* sdata, unsigned int uiDataLen, int clientSocket);
 
     //IPacket();
+    IPacket();
     IPacket(const char* pData, unsigned int nDataLen, int clientSocket);
     IPacket(const IPacket& rhs);
     IPacket& operator = (const IPacket& rhs);

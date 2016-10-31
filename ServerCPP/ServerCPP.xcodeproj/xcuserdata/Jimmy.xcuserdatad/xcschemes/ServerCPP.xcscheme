@@ -63,11 +63,27 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
+            argument = "-p 15000"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-p 15100"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-m agent"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-m regular"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-i 192.168.31.168"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-a uw.umx.io"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

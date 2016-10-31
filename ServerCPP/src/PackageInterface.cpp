@@ -40,6 +40,11 @@ IPacket* IPacket::CreatePackage(const char* sdata, unsigned int uiDataLen, int c
     return packet;
 }
 
+IPacket::IPacket()
+{
+    memset(&m_header, 0, ADCS::LENGTH_PACKHEADER);
+}
+
 IPacket::IPacket(const char* pData, unsigned int nDataLen, int clientSocket)
 {
     m_clientsocket = clientSocket;

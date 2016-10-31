@@ -102,6 +102,8 @@ namespace ADCS
                 continue;
             }
             
+            if(logger)logger->Info("TCPServer::Main, new connection from client: %s, socket id:%d", inet_ntoa(ClientAddr.sin_addr), socketid);
+            
             pConnParam = new CTCPSIOConnParam;
             if( !pConnParam )
             {

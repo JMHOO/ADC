@@ -10,10 +10,12 @@
 #include "RPCServer.h"
 #include "ServerManager.h"
 
-bool CServerApp::Start(unsigned short usPort, std::string sMode, std::string sAddr)
+bool CServerApp::Start(unsigned short usPort, std::string sMode, std::string sAddr, std::string agentServerAddr)
 {
     m_runmode = sMode;
     m_serverAddr = sAddr;
+    m_agentAddr = agentServerAddr;
+    
     if( sMode == "regular" )
     {
         // Start TCP Server
@@ -79,6 +81,15 @@ bool CServerApp::Start(unsigned short usPort, std::string sMode, std::string sAd
         if(!CKVServer::Create())
         {
             //.....
+        }
+        
+        // Start Agent Client
+        m_agentClient = new ADCS::CAgentClient();
+        ADCS::CTCPSIOServer* tcpserver = dynamic_cast<ADCS::CTCPSIOServer*>(m_tcpServer);
+        if( m_agentClient->Start(m_agentLogger, m_agentAddr, m_serverAddr, tcpserver->GetPort()))
+        {
+            std::cout << "Agent Client is started. " << std::endl;
+            if(m_agentLogger)m_agentLogger->Info("Agent Client is started.");
         }
 
     }
@@ -160,6 +171,12 @@ bool CServerApp::Stop()
             m_pUdpThreadPool = NULL;
         }
         
+        if( m_agentClient)
+        {
+            delete m_agentClient;
+            m_agentClient = NULL;
+        }
+        
         
         CKVServer::Destory();
     }
@@ -186,7 +203,7 @@ bool CServerApp::Stop()
 
 CServerApp::CServerApp(): m_tcpServer(NULL), m_pTcpThreadPool(NULL), m_tcpProcessor(NULL),m_pTcpLogger(NULL),
 m_udpServer(NULL), m_pUdpThreadPool(NULL), m_udpProcessor(NULL), m_pUdpLogger(NULL), m_rpcServer(NULL), m_rpcLogger(NULL),
-m_agentServer(NULL), m_agentThreadPool(NULL), m_agentProcessor(NULL)
+m_agentServer(NULL), m_agentThreadPool(NULL), m_agentProcessor(NULL), m_agentClient(NULL)
 {
     m_pTcpLogger = new GlobalLog("TCP", LL_DEBUG);
     m_pUdpLogger = new GlobalLog("UDP", LL_DEBUG);

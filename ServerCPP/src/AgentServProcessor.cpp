@@ -70,7 +70,7 @@ bool AgentServerProcessor::Execute( void * pdata )
         
         
         // we got the whold package, deal with it
-        //if( m_logger)m_logger->Info("Agent Server: got request from client[socketid:%d, %s] -- %s", pConnParam->socketid, inet_ntoa(pConnParam->ClientAddr.sin_addr), sBuffer+sizeof(ADCS::PACK_HEADER));
+        if( m_logger)m_logger->Info("Agent Server: got request from client[socketid:%d, %s] -- %s", pConnParam->socketid, inet_ntoa(pConnParam->ClientAddr.sin_addr), sBuffer+sizeof(ADCS::PACK_HEADER));
 
         IPacket* packet = IPacket::CreatePackage(sBuffer, ntohl(ptrHeader->Length), pConnParam->socketid);
         if( packet )

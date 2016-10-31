@@ -7,6 +7,11 @@
 using namespace nlohmann;
 using namespace ADCS;
 
+jsonAgentPacket::jsonAgentPacket()
+{
+    
+}
+
 jsonAgentPacket::jsonAgentPacket(const char* pData, unsigned int nDataLen, int clientSocket) : IPacket(pData, nDataLen, clientSocket)
 {
     try
@@ -151,4 +156,20 @@ bool jsonAgentPacket::GetResult(char*& pStreamData, unsigned long& ulDataLen)
     memcpy(pStreamData, strResult.c_str(), ulDataLen);
     
     return true;
+}
+
+void jsonAgentPacket::BuildRequest(std::string strOperate, std::string strIP, int port)
+{
+    json jReq;
+    jReq["jsonagent"] = "1.0";
+    jReq["operate"] = strOperate;
+    jReq["address"] = strIP;
+    jReq["port"] = port;
+    
+    m_json_result = jReq;
+}
+
+nlohmann::json jsonAgentPacket::GetServerList()
+{
+    return m_json_request["result"]["value"];
 }

@@ -6,6 +6,7 @@
 #include "ThreadPool.h"
 #include "GLog.h"
 #include "ServerInterface.h"
+#include "AgentClient.h"
 #include <string>
 
 class TCPServerProcessor;
@@ -39,11 +40,14 @@ private:
     AgentServerProcessor* m_agentProcessor;
     ILog*               m_agentLogger;
     
+    ADCS::CAgentClient* m_agentClient;
+    
     std::string         m_runmode;
     std::string         m_serverAddr;
+    std::string         m_agentAddr;
     
 public:
-    bool Start(unsigned short usPort, std::string sMode, std::string sAddr);
+    bool Start(unsigned short usPort, std::string sMode, std::string serverSelfAddr, std::string agentServerAddr);
     bool Stop();
     
     

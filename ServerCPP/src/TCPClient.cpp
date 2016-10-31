@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <errno.h>
+#include <netdb.h>
 #include <arpa/inet.h>
 #include "TCPClient.h"
 
@@ -33,47 +35,113 @@ bool CTCPClient::Connect()
     serverAddr.sin_port = htons( port );
     
     if( serverAddr.sin_addr.s_addr == INADDR_NONE )
-        return false;
+    {
+        // try dns resolve
+        char ip[32] = {0};
+        
+        struct hostent *host;
+        struct in_addr **addr_list;
+        host = gethostbyname(sIP);
+        addr_list = (struct in_addr **)host->h_addr_list;
+        
+        strcpy(ip, inet_ntoa(*addr_list[0]));
+        
+        serverAddr.sin_addr.s_addr = inet_addr(ip);
+        if( serverAddr.sin_addr.s_addr == INADDR_NONE )
+            return false;
+    }
     
     socketid = socket( AF_INET, SOCK_STREAM, 0 );
     if( socketid < 0 )
         return false;
     
-    if( connect( socketid, ( struct sockaddr * )&serverAddr, sizeof( serverAddr ) ) != 0 )
+    if( connect(socketid, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) != 0 )
     {
-        close(socketid);
+        close( socketid );
         socketid = 0;
+        return false;
+    }
+    
+    int flags = fcntl( socketid, F_GETFL );
+    if( flags == -1 )
+    {
+        Close();
+        return false;
+    }
+    
+    if( fcntl( socketid, F_SETFL, flags | O_NDELAY ) != 0 )
+    {
+        Close();
         return false;
     }
     
     return true;
 }
 
+int CTCPClient::SendInfoRaw(const char* sInfo, int nLen)
+{  
+    fd_set fdWrite;
+    int iRet = 0;
+    
+    struct timeval tv;
+    tv.tv_sec = m_timeout;
+    tv.tv_usec = 0;
+    
+    FD_ZERO( &fdWrite );
+    FD_SET( socketid, &fdWrite );
+    iRet = select( socketid + 1, NULL, &fdWrite, NULL, &tv );
+    
+    if( iRet > 0 && FD_ISSET( socketid, &fdWrite ) )
+        return (int)send( socketid, sInfo, nLen, 0 );
+    
+    return iRet;
+
+}
+
+int CTCPClient::RecvInfoRaw(char* sInfo, int nLen)
+{
+    fd_set fdRead;
+    int 	iRet = 0;
+    
+    struct timeval tv;
+    tv.tv_sec = m_timeout;
+    tv.tv_usec = 0;
+    
+    FD_ZERO( &fdRead );
+    FD_SET( socketid, &fdRead );
+    iRet = select( socketid + 1, &fdRead, NULL, NULL, &tv );
+    
+    if( iRet > 0 && FD_ISSET( socketid, &fdRead ) )
+        return (int)recv( socketid, sInfo, nLen, 0 );
+    
+    return iRet;
+}
 
 int CTCPClient::SendInfo( const char* sInfo, int nLen )
 {
     const char* pBuffer = sInfo;
-    int	nBytesSent = 0;
-    int nBytesTotal = nLen;
+    int nBytesTransferred = 0;
+    int nBytesForTransfer = nLen;
     
-    ssize_t	nRet = 0;
-    while(true)
+    int nRet = 0;
+    for( int i = 0; i < m_retry; i++ )
     {
-        nRet = send( socketid, pBuffer, nBytesTotal, 0 );
+        nRet = SendInfoRaw( pBuffer, nBytesForTransfer );
         if( nRet > 0 )
         {
-            nBytesSent += nRet;
-            nBytesTotal -= nRet;
-            if( nBytesTotal > 0 )
+            nBytesTransferred += nRet;
+            nBytesForTransfer -= nRet;
+            if( nBytesForTransfer > 0 )
             {
+                i = 0;
                 pBuffer += nRet;
                 continue;
             }
-            return nBytesSent;
+            return nBytesTransferred;
         }
         else if( nRet == -1 )
         {
-            if( errno == EINTR || errno == EAGAIN )
+            if( i < m_retry - 1 )
                 continue;
             else
                 return -1;
@@ -87,27 +155,28 @@ int CTCPClient::SendInfo( const char* sInfo, int nLen )
 int CTCPClient::RecvInfo( char* sInfo, int nLen )
 {
     char* pBuffer = sInfo;
-    int	nBytesReceived = 0;
-    int nBytesTotal = nLen;
+    int nBytesTransferred = 0;
+    int nBytesForTransfer = nLen;
     
-    ssize_t	nRet = 0;
-    while(true)
+    int nRet = 0;
+    for( int i = 0; i < m_retry; i++ )
     {
-        nRet = recv( socketid, pBuffer, nBytesTotal, 0 );
+        nRet = RecvInfoRaw(pBuffer, nBytesForTransfer);
         if( nRet > 0 )
         {
-            nBytesReceived += nRet;
-            nBytesTotal -= nRet;
-            if( nBytesTotal > 0 )
+            nBytesTransferred += nRet;
+            nBytesForTransfer -= nRet;
+            if( nBytesForTransfer > 0 )
             {
+                i = 0;
                 pBuffer += nRet;
                 continue;
             }
-            return nBytesReceived;
+            return nBytesTransferred;
         }
         else if( nRet == -1 )
         {
-            if( errno == EINTR || errno == EAGAIN )
+            if( i < m_retry - 1 )
                 continue;
             else
                 return -1;
@@ -125,4 +194,9 @@ bool CTCPClient::Close()
     close( socketid );
     socketid = 0;
     return true;
+}
+
+int CTCPClient::GetSocketID()
+{
+    return socketid;
 }
