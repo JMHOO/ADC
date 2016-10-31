@@ -10,6 +10,9 @@
 bool AgentServerProcessor::Execute( void * pdata )
 {
     ADCS::CTCPHelper tcpHelper;
+    tcpHelper.SetTimeOut(20);
+    tcpHelper.SetRetryTime(3);
+    
     CServerManager* srvMgr = CServerManager::GetInstance();
     
     int	len = 0;
@@ -46,11 +49,12 @@ bool AgentServerProcessor::Execute( void * pdata )
             {
                 if(m_logger)m_logger->Error("Agent Server: receive package header error. Expect to receive %d bytes, in fact, it receive %d bytes -- %s", sizeof(ADCS::PACK_HEADER), recvedlen, sBuffer+sizeof(ADCS::PACK_HEADER));
             }
-            tcpHelper.Close(pConnParam->socketid);
-            delete pConnParam;
             
             // remove server
             srvMgr->UnregisterServer(pConnParam->socketid);
+            
+            tcpHelper.Close(pConnParam->socketid);
+            delete pConnParam;
             
             return true;
         }
@@ -60,17 +64,19 @@ bool AgentServerProcessor::Execute( void * pdata )
         if( len != nRestDataLen )
         {
             if(m_logger)m_logger->Error("Agent Server: receive package payload error. Expect to receive %d bytes, in fact, it receive %d bytes -- %s", nRestDataLen, len, sBuffer+sizeof(ADCS::PACK_HEADER));
+
+            // remove server
+            srvMgr->UnregisterServer(pConnParam->socketid);
+
             tcpHelper.Close(pConnParam->socketid);
             delete pConnParam;
             
-            // remove server
-            srvMgr->UnregisterServer(pConnParam->socketid);
             return true;
         }
         
         
         // we got the whold package, deal with it
-        if( m_logger)m_logger->Info("Agent Server: got request from client[socketid:%d, %s] -- %s", pConnParam->socketid, inet_ntoa(pConnParam->ClientAddr.sin_addr), sBuffer+sizeof(ADCS::PACK_HEADER));
+        if( m_logger)m_logger->Info("Agent Server: request from client[%d: %s] -- %s", pConnParam->socketid, inet_ntoa(pConnParam->ClientAddr.sin_addr), sBuffer+sizeof(ADCS::PACK_HEADER));
 
         IPacket* packet = IPacket::CreatePackage(sBuffer, ntohl(ptrHeader->Length), pConnParam->socketid);
         if( packet )
@@ -87,10 +93,13 @@ bool AgentServerProcessor::Execute( void * pdata )
             if( (int)ulResponseLength != len )
             {
                 if(m_logger)m_logger->Error("Agent Server: sending package header error. Expect to send %d bytes, in fact, it sent %d bytes", ulResponseLength, len);
-                tcpHelper.Close(pConnParam->socketid);
-                delete pConnParam;
+
                 // remove server
                 srvMgr->UnregisterServer(pConnParam->socketid);
+                
+                tcpHelper.Close(pConnParam->socketid);
+                delete pConnParam;
+                
                 return true;
             }
             

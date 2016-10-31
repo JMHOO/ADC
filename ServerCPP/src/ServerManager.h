@@ -6,6 +6,7 @@
 #include <vector>
 #include <pthread.h>
 #include "ErrorCode.h"
+#include "GLog.h"
 
 typedef struct __server_info
 {
@@ -19,11 +20,11 @@ typedef std::map<int, PServerInfo> ServerMap;
 class CServerManager
 {
 public:
-    static bool             Create();
+    static bool             Create(ILog* logger = NULL);
     static void             Destory();
-    static CServerManager*  GetInstance();
+    static CServerManager*   GetInstance();
     
-    CServerManager();
+    CServerManager(ILog* logger = NULL);
     ~CServerManager();
     
     std::vector<PServerInfo>  GetAliveServers();
@@ -31,9 +32,10 @@ public:
     bool  UnregisterServer(int socketid);
     
 private:
-    ServerMap                m_srvMap;
+    ServerMap               m_srvMap;
+    ILog*                   m_logger;
     
-    static CServerManager*   srvMgr_instance;
+    static CServerManager*  srvMgr_instance;
 };
 
 

@@ -23,8 +23,10 @@ namespace ADCS
             if(plogger)plogger->Error("Agent Client: get register response failed.");
         }
         
+        // every 15 seconds, thread wake up to get server list
+        // in order to maintain the TCP connection, like heart beat package
         timespec ts;
-        ts.tv_sec = 30;     // every seconds, thread wake up to get server list
+        ts.tv_sec = 15;
         ts.tv_nsec = 0;
         
         while(true)
@@ -44,6 +46,7 @@ namespace ADCS
                 nlohmann::json jSrvList = pSrvList->GetServerList();
                 if( jSrvList.is_array())
                 {
+                    if(plogger)plogger->Info("Agent Client: server list [%s]", jSrvList.dump().c_str());
                     pAgent->m_aliveSrvList.clear();
                     for(size_t i = 0; i < jSrvList.size(); i++)
                     {
@@ -64,9 +67,6 @@ namespace ADCS
                 if(plogger)plogger->Warning("Agent Client: it seems the connection was lost, reconnecting...");
                 pAgent->__try_connect_agent_server();
             }
-            
-            
-            
         }
         
         return 0;
@@ -155,7 +155,7 @@ namespace ADCS
             }
             else
             {
-                if(m_logger)m_logger->Warning("Agent Client: Connect to server failed, retry in 30 seconds...");
+                if(m_logger)m_logger->Warning("Agent Client: Connect to server failed, will retry in 30 seconds...");
                 timespec ts;
                 ts.tv_sec = 30;
                 ts.tv_nsec = 0;

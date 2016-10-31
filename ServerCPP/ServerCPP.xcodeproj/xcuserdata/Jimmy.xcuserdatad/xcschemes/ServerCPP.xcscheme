@@ -64,19 +64,19 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-p 15000"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-p 15100"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-m agent"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-m regular"
+            argument = "-m agent"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-m regular"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-i 192.168.31.168"

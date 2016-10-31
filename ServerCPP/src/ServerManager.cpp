@@ -3,11 +3,11 @@
 
 CServerManager* CServerManager::srvMgr_instance = nullptr;
 
-bool CServerManager::Create()
+bool CServerManager::Create(ILog* logger)
 {
     if( srvMgr_instance == nullptr )
     {
-        srvMgr_instance = new CServerManager();
+        srvMgr_instance = new CServerManager(logger);
         if( srvMgr_instance == nullptr )
             return false;
     }
@@ -28,8 +28,9 @@ CServerManager* CServerManager::GetInstance()
     return srvMgr_instance;
 }
 
-CServerManager::CServerManager()
+CServerManager::CServerManager(ILog* logger)
 {
+    m_logger = logger;
 }
 
 CServerManager::~CServerManager()
@@ -48,9 +49,11 @@ std::vector<PServerInfo> CServerManager::GetAliveServers()
 
 bool CServerManager::RegisterServer(int socketid, std::string serverAddr, int port)
 {
+    if(m_logger)m_logger->Info("Agent Server: server[%s:%d] try to register...", serverAddr.c_str(), port);
     ServerMap::iterator it = m_srvMap.find(socketid);
     if( it != m_srvMap.end())
     {
+        if(m_logger)m_logger->Info("Agent Server: found server, update [%s:%d] --->>> [%s:%d]", it->second->serverAddr.c_str(), it->second->port, serverAddr.c_str(), port);
         it->second->serverAddr = serverAddr;
         it->second->port = port;
     }
@@ -61,6 +64,7 @@ bool CServerManager::RegisterServer(int socketid, std::string serverAddr, int po
         si->serverAddr = serverAddr;
         si->port = port;
         m_srvMap.insert(ServerMap::value_type(socketid, si));
+        if(m_logger)m_logger->Info("Agent Server: server[%s:%d] was registered.", serverAddr.c_str(), port);
     }
     return true;
 }
@@ -70,9 +74,12 @@ bool CServerManager::UnregisterServer(int socketid)
     ServerMap::iterator it = m_srvMap.find(socketid);
     if( it != m_srvMap.end())
     {
+        if(m_logger)m_logger->Info("Agent Server: server[%s:%d] was Unregistered.", it->second->serverAddr.c_str(), it->second->port);
+
         PServerInfo si = it->second;
         delete si;
         it = m_srvMap.erase(it);
+        
         
         return true;
     }

@@ -107,7 +107,7 @@ bool CServerApp::Start(unsigned short usPort, std::string sMode, std::string sAd
         {
             ADCS::CTCPSIOServer* agentserv = dynamic_cast<ADCS::CTCPSIOServer*>(m_agentServer);
             std::cout << "Agent server is started, "<< agentserv->GetIP() << ":"<< agentserv->GetPort()<<" LISTENING"<< std::endl;
-            if( m_pTcpLogger)m_pTcpLogger->Info("Agent Server started: %s:%d LISTENING.", agentserv->GetIP(), agentserv->GetPort());
+            if( m_agentLogger)m_agentLogger->Info("Agent Server started: %s:%d LISTENING.", agentserv->GetIP(), agentserv->GetPort());
             
         }
         else
@@ -117,7 +117,7 @@ bool CServerApp::Start(unsigned short usPort, std::string sMode, std::string sAd
         
         
         // initialize Server Manager
-        if(!CServerManager::Create())
+        if(!CServerManager::Create(m_agentLogger))
         {
             //......
         }
