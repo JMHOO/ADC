@@ -98,15 +98,26 @@ The length of JSON itself is 65, and the Header's size is an constant which alwa
   <p> <-- {"jsonagent": version, "operate": operations, "address": server address, "port": TCP server port}</p>
   <p>
       <table>
+        <tr><td colspan="2"><B>Register</B></td></tr>
         <tr><td>version</td><td>1.0</td></tr>
-        <tr><td>operate</td><td>register / unregister / getserverlist</td></tr>
+        <tr><td>operate</td><td>register</td></tr>
         <tr><td>address</td><td>server address( internet ip or domain name )</td></tr>
-        <tr><td>port</td><td>TCP server port</td></tr>
+        <tr><td>tcpport</td><td>TCP server port</td></tr>
+        <tr><td>rpcport</td><td>RPC server port</td></tr>
+        <tr><td colspan="2"><B>Unregister</B></td></tr>
+        <tr><td>version</td><td>1.0</td></tr>
+        <tr><td>operate</td><td>unregister</td></tr>
+        <tr><td colspan="2"><B>GetServerList</B></td></tr>
+        <tr><td>version</td><td>1.0</td></tr>
+        <tr><td>operate</td><td>getserverlist</td></tr>
+        <tr><td>protocol</td><td>tcp or rpc</td></tr>
       </table>
   </p> 
   <blockquote>
-    Example:
-     {"jsonagent":"1.0","operate":"register","address":"uw.umx.io","port":"15003"}
+    Example:<BR/>
+     {"jsonagent":"1.0","operate":"register","address":"uw.umx.io","tcpport":"15001","rpcport":"15003"}<BR/>
+     {"jsonagent":"1.0","operate":"unregister"}<BR/>
+     {"jsonagent":"1.0","operate":"getserverlist","protocol":"tcp"}<BR/>
   </blockquote>
   
 <h3>Agent JSON format response</h3>
@@ -121,8 +132,10 @@ The length of JSON itself is 65, and the Header's size is an constant which alwa
       </table>
   </p>
  <blockquote>
-    Example:
-    {"jsonagent":"1.0","result":{"value":[{"address":"uw.umx.io","port":15003}], "code":"0","message":"get server list success"}}
+    Example:<BR/>
+    {"jsonagent":"1.0","result":{"code":"0","message":"register success"}}<BR/>
+    {"jsonagent":"1.0","result":{"code":"0","message":"unregister success"}}<BR/>
+    {"jsonagent":"1.0","result":{"value":[{"address":"uw.umx.io","port":15003}], "code":"0","message":"get tcp/rpc server list success"}}
   </blockquote>
   
 <h3>UDP</h3>
