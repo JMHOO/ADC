@@ -13,9 +13,6 @@ using namespace std;
 
 namespace ADCS
 {
-    typedef std::pair<string,int> ServerDesc;
-    typedef std::vector<ServerDesc> ServerList;
-    
     class CDiscoveryClient
     {
     private:
@@ -29,10 +26,15 @@ namespace ADCS
         int         m_tcpserverPort;
         int         m_rpcserverPort;
         
-        ServerList  m_aliveSrvList;
-        bool __try_connect_agent_server();
-        bool __do_send(IPacket* p);
-        IPacket* __do_recv();
+        int         m_globalServerID;
+        
+        bool        m_bRegistered;
+        
+        bool        __try_connect_agent_server();
+        bool        __do_send(IPacket* p);
+        IPacket*    __do_recv();
+        
+        bool        __register();
         
     public:
         bool Start(std::string strAgentSrvAddr, std::string strExternalIP, int nTCPServerPort, int nRPCServerPort );

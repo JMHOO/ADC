@@ -2,6 +2,9 @@
 #include "CKvJSONRPCService.h"
 #include "KVServer.h"
 #include "ErrorCode.h"
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
 
 using namespace ADCS;
 
@@ -12,6 +15,10 @@ CKvJSONRPCService::CKvJSONRPCService(jsonrpc::AbstractServerConnector &connector
 
 Json::Value CKvJSONRPCService::Put(const std::string& param1, const std::string& param2)
 {
+    // generate a random client ID
+    srand((unsigned)time(NULL));
+    int nClientID = rand() % (30000);
+    
     Json::Value result;
     
     CKVServer* kvserver = CKVServer::GetInstance();
@@ -23,7 +30,7 @@ Json::Value CKvJSONRPCService::Put(const std::string& param1, const std::string&
         return result;
     }
     
-    ErrorCode::KVStore code = kvserver->SetValue(param1, param2);
+    ErrorCode::KVStore code = kvserver->SetValue(nClientID, param1, param2);
     if( code == ErrorCode::KVStore::Success )
     {
         result["code"] = 0;
@@ -73,6 +80,10 @@ Json::Value CKvJSONRPCService::Get(const std::string& param1)
 
 Json::Value CKvJSONRPCService::Delete(const std::string& param1)
 {
+    // generate a random client ID
+    srand((unsigned)time(NULL));
+    int nClientID = rand() % (30000);
+    
     Json::Value result;
 
     CKVServer* kvserver = CKVServer::GetInstance();
@@ -84,7 +95,7 @@ Json::Value CKvJSONRPCService::Delete(const std::string& param1)
         return result;
     }
     
-    ErrorCode::KVStore code = kvserver->Delete(param1);
+    ErrorCode::KVStore code = kvserver->Delete(nClientID, param1);
     if( code == ErrorCode::KVStore::Success )
     {
         result["code"] = 0;
@@ -104,6 +115,14 @@ Json::Value CKvJSONRPCService::Delete(const std::string& param1)
 Json::Value CKvJSONRPCService::SrvPut(const std::string& param1, const std::string& param2, const std::string& param3, const std::string& param4)
 {
     Json::Value result;
+    result["code"] = 0;
+    result["message"] = "pre-put success";
+    
+    int nServerID = std::stoi(param1);
+    int nClientID = std::stoi(param2);
+    
+    // cache the operation, waitting on coordinator's go message
+    Wait_Operation(nServerID, nClientID, "put", param3, param4);
     
     return result;
 }
@@ -111,6 +130,14 @@ Json::Value CKvJSONRPCService::SrvPut(const std::string& param1, const std::stri
 Json::Value CKvJSONRPCService::SrvDelete(const std::string& param1, const std::string& param2, const std::string& param3, const std::string& param4)
 {
     Json::Value result;
+    result["code"] = 0;
+    result["message"] = "pre-delete success";
+    
+    int nServerID = std::stoi(param1);
+    int nClientID = std::stoi(param2);
+    
+    // cache the operation, waitting on coordinator's go message
+    Wait_Operation(nServerID, nClientID, "delete", param3, param4);
     
     return result;
 }
@@ -118,6 +145,65 @@ Json::Value CKvJSONRPCService::SrvDelete(const std::string& param1, const std::s
 Json::Value CKvJSONRPCService::SrvGo(const std::string& param1, const std::string& param2)
 {
     Json::Value result;
+    result["code"] = 0;
+    result["message"] = "go success";
+    
+    int nServerID = std::stoi(param1);
+    int nClientID = std::stoi(param2);
+    
+    Go_Operation(nServerID, nClientID);
     
     return result;
+}
+
+void CKvJSONRPCService::Wait_Operation(int nServerID, int nClientID, std::string opName, std::string key, std::string value)
+{
+    KVOperation op;
+    op.name = "put";
+    op.key = key;
+    op.value = value;
+    
+    if(logger)logger->Info("JSON-RPC Service: cache operation: server[%d], client[%d] --- %s,%s,%s", nServerID, nClientID, op.name.c_str(), op.key.c_str(), op.value.c_str());
+    
+    ServerOP::iterator itServer = m_operations.find(nServerID);
+    if( itServer != m_operations.end())
+    {
+        itServer->second.insert(ClientOP::value_type(nClientID, op));
+    }
+    else
+    {
+        ClientOP clientOPMap;
+        clientOPMap.insert(ClientOP::value_type(nClientID, op));
+        
+        m_operations.insert(ServerOP::value_type(nServerID, clientOPMap));
+    }
+}
+
+void CKvJSONRPCService::Go_Operation(int nServerID, int nClientID)
+{
+    CKVServer* kvserver = CKVServer::GetInstance();
+    
+    ServerOP::iterator itServer = m_operations.find(nServerID);
+    if( itServer!= m_operations.end())
+    {
+        ClientOP::iterator itClient = itServer->second.find(nClientID);
+        if(itClient != itServer->second.end())
+        {
+            KVOperation& op = itClient->second;
+            if(logger)logger->Info("JSON-RPC Service: release operation: server[%d], client[%d] --- %s,%s,%s", nServerID, nClientID, op.name.c_str(), op.key.c_str(), op.value.c_str() );
+
+            if( op.name == "put" )
+            {
+                // this kv operation does not need coordinator
+                kvserver->SetValue(op.key, op.value);
+            }
+            else if( op.name == "delete")
+            {
+                // this kv operation does not need coordinator
+                kvserver->Delete(op.key);
+            }
+            
+            itClient = itServer->second.erase(itClient);
+        }
+    }
 }

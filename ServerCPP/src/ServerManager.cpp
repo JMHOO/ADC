@@ -31,6 +31,7 @@ CServerManager* CServerManager::GetInstance()
 CServerManager::CServerManager(ILog* logger)
 {
     m_logger = logger;
+    m_globalServerID = 0;
 }
 
 CServerManager::~CServerManager()
@@ -47,8 +48,9 @@ std::vector<PServerInfo> CServerManager::GetAliveServers()
     return srvList;
 }
 
-bool CServerManager::RegisterServer(int socketid, std::string serverAddr, int nTCPPort, int nRPCPort)
+int CServerManager::RegisterServer(int socketid, std::string serverAddr, int nTCPPort, int nRPCPort)
 {
+    int nNewID = -1;
     if(m_logger)m_logger->Info("Discovery Server: registering kv server, tcp[%s:%d], rpc[%s:%d]...", serverAddr.c_str(), nTCPPort, serverAddr.c_str(), nRPCPort);
     ServerMap::iterator it = m_srvMap.find(socketid);
     if( it != m_srvMap.end())
@@ -67,9 +69,10 @@ bool CServerManager::RegisterServer(int socketid, std::string serverAddr, int nT
         si->tcpport = nTCPPort;
         si->rpcport = nRPCPort;
         m_srvMap.insert(ServerMap::value_type(socketid, si));
-        if(m_logger)m_logger->Info("Discovery Server: kv server, tcp[%s:%d], rpc[%s:%d] was registered.", serverAddr.c_str(), nTCPPort, serverAddr.c_str(), nRPCPort);
+        nNewID = ++m_globalServerID;
+        if(m_logger)m_logger->Info("Discovery Server: kv server[#%d], tcp[%s:%d], rpc[%s:%d] was registered.", nNewID, serverAddr.c_str(), nTCPPort, serverAddr.c_str(), nRPCPort);
     }
-    return true;
+    return nNewID;
 }
 
 bool CServerManager::UnregisterServer(int socketid)

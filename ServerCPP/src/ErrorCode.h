@@ -13,7 +13,8 @@ namespace ADCS
             ThreadPool = 2048,
             Helper = 4096,
             KVStore = 8192,
-            Other = 10240,
+            KVCoordinator = 16384,
+            Other = 32768,
         };
         
         enum class General : unsigned int
@@ -42,10 +43,12 @@ namespace ADCS
             
         enum class KVStore : unsigned int
         {
-            Success = (unsigned int)CodeBase::KVStore + 1,
-            KeyNotExist,
+            Success = 0,
+            KeyNotExist = (unsigned int)CodeBase::KVStore + 1,
             InvalidKey,
             ValueTooLong,
+            Coor_MessageFailed,
+            Coor_GoFailed,
             
         };
             

@@ -2,6 +2,7 @@
 #include <time.h>
 #include "AgentClient.h"
 #include "jsonAgentPackage.h"
+#include "KVCoordinator.h"
 
 namespace ADCS
 {
@@ -12,16 +13,6 @@ namespace ADCS
         
         // It will retry if server unreachable
         pAgent->__try_connect_agent_server();
-        // register self first.
-        jsonAgentPacket p;
-        p.BuildRegisterRequest(pAgent->m_serverExternalIP, pAgent->m_tcpserverPort, pAgent->m_rpcserverPort);
-        
-        pAgent->__do_send(&p);
-        IPacket* pRes = pAgent->__do_recv();
-        if(pRes == NULL)
-        {
-            if(plogger)plogger->Error("Discovery Client: get register response failed.");
-        }
         
         // every 15 seconds, thread wake up to get server list
         // in order to maintain the TCP connection, like heart beat package
@@ -31,15 +22,19 @@ namespace ADCS
         
         while(true)
         {
-            bool bSusscuss = false;
+            // register self first.
+            if( !pAgent->m_bRegistered )pAgent->__register();
+            
+            bool bSuccess = false;
             // request online rpc server list
+            jsonAgentPacket p;
             p.BuildGetServerListRequest("rpc");
             bool bSent = pAgent->__do_send(&p);
             
             IPacket* pRes = pAgent->__do_recv();
             jsonAgentPacket* pSrvList = dynamic_cast<jsonAgentPacket*>(pRes);
             
-            bSusscuss = bSent && pSrvList;
+            bSuccess = bSent && pSrvList;
             
             if( pSrvList )
             {
@@ -47,7 +42,7 @@ namespace ADCS
                 if( jSrvList.is_array())
                 {
                     // if(plogger)plogger->Info("Discovery Client: server list [%s]", jSrvList.dump().c_str());
-                    pAgent->m_aliveSrvList.clear();
+                    ServerList list;
                     for(size_t i = 0; i < jSrvList.size(); i++)
                     {
                         ServerDesc sd;
@@ -55,16 +50,18 @@ namespace ADCS
                         sd.second = jSrvList[i]["port"];
                         
                         if( sd.first != pAgent->m_serverExternalIP && sd.second != pAgent->m_rpcserverPort)
-                            pAgent->m_aliveSrvList.push_back(sd);
+                            list.push_back(sd);
                     }
+                    CKvCoordinator::GetInstance()->UpdateServerList(list);
                 }
             }
             
             nanosleep(&ts, NULL);
             
-            if(!bSusscuss)
+            if(!bSuccess)
             {
                 if(plogger)plogger->Warning("Discovery Client: it seems the connection was lost, reconnecting...");
+                pAgent->m_bRegistered = false;
                 pAgent->__try_connect_agent_server();
             }
         }
@@ -125,6 +122,7 @@ namespace ADCS
     CDiscoveryClient::CDiscoveryClient()
     {
         m_logger = new GlobalLog("discovery", LL_DEBUG);
+        m_globalServerID = -1;
     }
     
     CDiscoveryClient::~CDiscoveryClient()
@@ -166,6 +164,34 @@ namespace ADCS
         }while(true);
         
         return false;
+    }
+    
+    bool CDiscoveryClient::__register()
+    {
+        bool bResult = true;
+        
+        jsonAgentPacket p;
+        p.BuildRegisterRequest(m_serverExternalIP, m_tcpserverPort, m_rpcserverPort);
+        
+        __do_send(&p);
+        IPacket* pRes = __do_recv();
+        if(pRes == NULL)
+        {
+            if(m_logger)m_logger->Error("Discovery Client: get register response failed.");
+            m_bRegistered = false;
+            bResult = false;
+        }
+        else
+        {
+            jsonAgentPacket* pRegisterResponse = dynamic_cast<jsonAgentPacket*>(pRes);
+            if( pRegisterResponse )
+            {
+                m_globalServerID = std::stoi(pRegisterResponse->GetValue());
+                ADCS::CKvCoordinator::GetInstance()->SetServerID(m_globalServerID);
+            }
+            
+        }
+        return bResult;
     }
     
     bool CDiscoveryClient::Start(std::string strAgentSrvAddr, std::string strExternalIP, int nTCPServerPort, int nRPCServerPort)

@@ -20,6 +20,7 @@ public:
     void BuildUnRegisterRequest();
     void BuildGetServerListRequest(std::string serverType);
     nlohmann::json GetServerList();
+    std::string GetValue();
     
 protected:
     virtual bool GetResult(char*& pStreamData, unsigned long& ulDataLen);

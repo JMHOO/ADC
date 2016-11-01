@@ -18,8 +18,11 @@ public:
     CKVServer();
     ~CKVServer();
     
-    ADCS::ErrorCode::KVStore  SetValue(std::string key, std::string value);
+    ADCS::ErrorCode::KVStore  SetValue(int clientID, std::string key, std::string value);
     ADCS::ErrorCode::KVStore  GetValue(std::string key, std::string &value);
+    ADCS::ErrorCode::KVStore  Delete(int clientID, std::string key);
+    
+    ADCS::ErrorCode::KVStore  SetValue(std::string key, std::string value);
     ADCS::ErrorCode::KVStore  Delete(std::string key);
     
 private:

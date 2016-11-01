@@ -20,7 +20,10 @@ namespace ADCS {
                 case KVStore::Success:  return "Sucess";
                 case KVStore::InvalidKey: return "Invalid Key";
                 case KVStore::KeyNotExist: return "Key does not exist.";
-                case KVStore::ValueTooLong: return "Value must limited in 1024 bytes";
+                case KVStore::ValueTooLong: return "Value too long";
+                case KVStore::Coor_MessageFailed: return "Send message to other server Failed!";
+                case KVStore::Coor_GoFailed: return "Send Go to other server Failed!";
+                    
                 default:
                     return "Unknown";
             }

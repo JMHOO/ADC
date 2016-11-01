@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "KVServer.h"
+#include "KVCoordinator.h"
+#include "ErrorCode.h"
 
 CKVServer* CKVServer::kvserver_instance = nullptr;
 
@@ -38,6 +40,22 @@ CKVServer::~CKVServer()
     pthread_mutex_destroy(&setWriteLocker);
 }
 
+ADCS::ErrorCode::KVStore CKVServer::GetValue(std::string key, std::string &value)
+{
+    ADCS::ErrorCode::KVStore result = ADCS::ErrorCode::KVStore::Success;
+    KVMap::iterator it = m_datamap.find(key);
+    if( it != m_datamap.end() )
+    {
+        value = it->second;
+    }
+    else
+    {
+        result = ADCS::ErrorCode::KVStore::KeyNotExist;
+    }
+    return result;
+}
+
+
 ADCS::ErrorCode::KVStore CKVServer::SetValue(std::string key, std::string value)
 {
     ADCS::ErrorCode::KVStore result = ADCS::ErrorCode::KVStore::Success;
@@ -63,21 +81,6 @@ ADCS::ErrorCode::KVStore CKVServer::SetValue(std::string key, std::string value)
     return result;
 }
 
-ADCS::ErrorCode::KVStore CKVServer::GetValue(std::string key, std::string &value)
-{
-    ADCS::ErrorCode::KVStore result = ADCS::ErrorCode::KVStore::Success;
-    KVMap::iterator it = m_datamap.find(key);
-    if( it != m_datamap.end() )
-    {
-        value = it->second;
-    }
-    else
-    {
-        result = ADCS::ErrorCode::KVStore::KeyNotExist;
-    }
-    return result;
-}
-
 ADCS::ErrorCode::KVStore CKVServer::Delete(std::string key)
 {
     ADCS::ErrorCode::KVStore result = ADCS::ErrorCode::KVStore::Success;
@@ -92,5 +95,45 @@ ADCS::ErrorCode::KVStore CKVServer::Delete(std::string key)
         result = ADCS::ErrorCode::KVStore::KeyNotExist;
     }
     pthread_mutex_unlock(&setWriteLocker);
+    return result;
+
+}
+
+ADCS::ErrorCode::KVStore CKVServer::SetValue(int clientID, std::string key, std::string value)
+{
+    ADCS::ErrorCode::KVStore result = ADCS::ErrorCode::KVStore::Success;
+    if( value.length() >= 1024 )
+    {
+        result = ADCS::ErrorCode::KVStore::ValueTooLong;
+        return result;
+    }
+    
+    // coordinator send message to other nodes.
+    ADCS::CKvCoordinator* coordinator = ADCS::CKvCoordinator::GetInstance();
+    result = coordinator->SyncOperation(clientID, "put", key, value);
+    
+    if( result == ADCS::ErrorCode::KVStore::Success )
+    {
+        // do local operation
+        result = SetValue(key, value);
+    }
+    
+    return result;
+}
+
+ADCS::ErrorCode::KVStore CKVServer::Delete(int clientID,std::string key)
+{
+    ADCS::ErrorCode::KVStore result = ADCS::ErrorCode::KVStore::Success;
+    
+    // coordinator send message to other nodes.
+    ADCS::CKvCoordinator* coordinator = ADCS::CKvCoordinator::GetInstance();
+    result = coordinator->SyncOperation(clientID, "delete", key, "");
+    
+    if( result == ADCS::ErrorCode::KVStore::Success )
+    {
+        // do local operation
+        result = Delete(key);
+    }
+    
     return result;
 }

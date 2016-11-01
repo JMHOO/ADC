@@ -70,7 +70,7 @@ json jsonkvPacket::__process_one_operation__(json jrequest)
     std::transform(kvOperator.begin(),kvOperator.end(),kvOperator.begin(), ::tolower);
     if( kvOperator == "put")
     {
-        ErrorCode::KVStore code = kvserver->SetValue(jrequest["key"], jrequest["value"]);
+        ErrorCode::KVStore code = kvserver->SetValue(m_clientsocket, jrequest["key"], jrequest["value"]);
         if( code == ErrorCode::KVStore::Success )
         {
             jresult["result"]["message"] = "put success";
@@ -98,7 +98,7 @@ json jsonkvPacket::__process_one_operation__(json jrequest)
     }
     else if(kvOperator == "delete")
     {
-        ErrorCode::KVStore code = kvserver->Delete(jrequest["key"]);
+        ErrorCode::KVStore code = kvserver->Delete(m_clientsocket, jrequest["key"]);
         if( code == ErrorCode::KVStore::Success )
         {
             jresult["result"]["message"] = "Delete Success";

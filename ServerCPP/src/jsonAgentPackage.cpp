@@ -87,10 +87,11 @@ json jsonAgentPacket::__process_one_operation__(json jrequest)
             strPort = jrequest["rpcport"];
             rpcPort = std::stoi(strPort);
         }
-        bool bRet = srvMgr->RegisterServer(m_clientsocket, jrequest["address"], tcpPort, rpcPort);
-        if( bRet )
+        int nNewID = srvMgr->RegisterServer(m_clientsocket, jrequest["address"], tcpPort, rpcPort);
+        if( nNewID > 0 )
         {
             jresult["result"]["message"] = "register success.";
+            jresult["result"]["value"] = std::to_string(nNewID);
         }
         else
         {
@@ -207,4 +208,9 @@ void jsonAgentPacket::BuildGetServerListRequest(std::string serverType)
 nlohmann::json jsonAgentPacket::GetServerList()
 {
     return m_json_request["result"]["value"];
+}
+
+std::string jsonAgentPacket::GetValue()
+{
+    return m_json_result["result"]["value"];
 }

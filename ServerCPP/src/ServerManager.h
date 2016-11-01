@@ -30,13 +30,14 @@ public:
     ~CServerManager();
     
     std::vector<PServerInfo>  GetAliveServers();
-    bool  RegisterServer(int socketid, std::string serverAddr, int nTCPPort, int nRPCPort);
+    int  RegisterServer(int socketid, std::string serverAddr, int nTCPPort, int nRPCPort);
     bool  UnregisterServer(int socketid);
     
 private:
     ServerMap               m_srvMap;
     ILog*                   m_logger;
     
+    int                     m_globalServerID;
     static CServerManager*  srvMgr_instance;
 };
 
