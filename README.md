@@ -94,7 +94,7 @@ The length of JSON itself is 65, and the Header's size is an constant which alwa
    ]
    </p>
 
-<h3>Agent JSON format request</h3>
+<h3>Discovery JSON format request</h3>
   <p> <-- {"jsonagent": version, "operate": operations, "address": server address, "port": TCP server port}</p>
   <p>
       <table>
@@ -120,20 +120,20 @@ The length of JSON itself is 65, and the Header's size is an constant which alwa
      {"jsonagent":"1.0","operate":"getserverlist","protocol":"tcp"}<BR/>
   </blockquote>
   
-<h3>Agent JSON format response</h3>
+<h3>Discovery JSON format response</h3>
   <p> --> {"jsonagent": version, "result": {"value": [{"address":"uw.umx.io","port",15003},], "code": code, "message": message}}</p>
   <p>
       <table>
         <tr><td>version</td><td>1.0</td></tr>
         <tr><td>result</td><td> </td></tr>
-        <tr><td>result - value</td><td>json array contains server list<BR>if request is not getserverlist, value=0</td></tr>
+        <tr><td>result - value</td><td>json array contains server list<BR>if request is register, value=global server id</td></tr>
         <tr><td>result - code</td><td> success : code == 0<br>errors: code > 0</td></tr>
         <tr><td>result - message</td><td>success : message is empty<br>errors: server will explain</td></tr>
       </table>
   </p>
  <blockquote>
     Example:<BR/>
-    {"jsonagent":"1.0","result":{"code":"0","message":"register success"}}<BR/>
+    {"jsonagent":"1.0","result":{"value":"2","code":"0","message":"register success"}}<BR/>
     {"jsonagent":"1.0","result":{"code":"0","message":"unregister success"}}<BR/>
     {"jsonagent":"1.0","result":{"value":[{"address":"uw.umx.io","port":15003}], "code":"0","message":"get tcp/rpc server list success"}}
   </blockquote>
