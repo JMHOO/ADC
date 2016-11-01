@@ -25,8 +25,9 @@ namespace ADCS
         pthread_t   AgentClientMainThreadId;
         CTCPClient  m_tcpClient;
         ILog*       m_logger;
-        std::string m_tcpserverIP;
+        std::string m_serverExternalIP;
         int         m_tcpserverPort;
+        int         m_rpcserverPort;
         
         ServerList  m_aliveSrvList;
         bool __try_connect_agent_server();
@@ -34,7 +35,7 @@ namespace ADCS
         IPacket* __do_recv();
         
     public:
-        bool Start(std::string strAgentSrvAddr, std::string strTCPServerAddr, int nTCPServerPort );
+        bool Start(std::string strAgentSrvAddr, std::string strExternalIP, int nTCPServerPort, int nRPCServerPort );
         bool Stop();
         IClient* GetClient();
         

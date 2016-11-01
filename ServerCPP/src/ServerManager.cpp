@@ -47,24 +47,27 @@ std::vector<PServerInfo> CServerManager::GetAliveServers()
     return srvList;
 }
 
-bool CServerManager::RegisterServer(int socketid, std::string serverAddr, int port)
+bool CServerManager::RegisterServer(int socketid, std::string serverAddr, int nTCPPort, int nRPCPort)
 {
-    if(m_logger)m_logger->Info("Discovery Server: registering kv server[%s:%d]...", serverAddr.c_str(), port);
+    if(m_logger)m_logger->Info("Discovery Server: registering kv server, tcp[%s:%d], rpc[%s:%d]...", serverAddr.c_str(), nTCPPort, serverAddr.c_str(), nRPCPort);
     ServerMap::iterator it = m_srvMap.find(socketid);
     if( it != m_srvMap.end())
     {
-        if(m_logger)m_logger->Info("Discovery Server: found kv server, update [%s:%d] --->>> [%s:%d]", it->second->serverAddr.c_str(), it->second->port, serverAddr.c_str(), port);
+        if(m_logger)m_logger->Info("Discovery Server: found kv server, update [%s:%d/%d] --->>> [%s:%d/%d]",
+                                   it->second->serverAddr.c_str(), it->second->tcpport, it->second->rpcport, serverAddr.c_str(), nTCPPort, nRPCPort);
         it->second->serverAddr = serverAddr;
-        it->second->port = port;
+        it->second->tcpport = nTCPPort;
+        it->second->rpcport = nRPCPort;
     }
     else
     {
         PServerInfo si = new ServerInfo();
         si->socketid = socketid;
         si->serverAddr = serverAddr;
-        si->port = port;
+        si->tcpport = nTCPPort;
+        si->rpcport = nRPCPort;
         m_srvMap.insert(ServerMap::value_type(socketid, si));
-        if(m_logger)m_logger->Info("Discovery Server: kv server[%s:%d] was registered.", serverAddr.c_str(), port);
+        if(m_logger)m_logger->Info("Discovery Server: kv server, tcp[%s:%d], rpc[%s:%d] was registered.", serverAddr.c_str(), nTCPPort, serverAddr.c_str(), nRPCPort);
     }
     return true;
 }
@@ -74,7 +77,7 @@ bool CServerManager::UnregisterServer(int socketid)
     ServerMap::iterator it = m_srvMap.find(socketid);
     if( it != m_srvMap.end())
     {
-        if(m_logger)m_logger->Info("Discovery Server: kv server[%s:%d] was Unregistered.", it->second->serverAddr.c_str(), it->second->port);
+        if(m_logger)m_logger->Info("Discovery Server: kv server[%s:%d/%d] was Unregistered.", it->second->serverAddr.c_str(), it->second->tcpport, it->second->rpcport);
 
         PServerInfo si = it->second;
         delete si;

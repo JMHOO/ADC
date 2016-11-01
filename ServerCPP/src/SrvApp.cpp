@@ -60,7 +60,7 @@ bool CServerApp::Start(unsigned short usPort, std::string sMode,  std::string se
         
         // Start discovery Client
         m_discoveryClient = new ADCS::CDiscoveryClient();
-        if( m_discoveryClient->Start(m_discoverySrvAddr, m_serverExternalAddr, usPort))
+        if( m_discoveryClient->Start(m_discoverySrvAddr, m_serverExternalAddr, usPort, usPort + 2))
         {
             std::cout << "Discovery Client is started. " << std::endl;
         }

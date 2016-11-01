@@ -11,9 +11,11 @@
 typedef struct __server_info
 {
     int socketid;
-    int port;
+    int tcpport;
+    int rpcport;
     std::string serverAddr;
 }ServerInfo, *PServerInfo;
+
 
 typedef std::map<int, PServerInfo> ServerMap;
 
@@ -28,7 +30,7 @@ public:
     ~CServerManager();
     
     std::vector<PServerInfo>  GetAliveServers();
-    bool  RegisterServer(int socketid, std::string serverAddr, int port);
+    bool  RegisterServer(int socketid, std::string serverAddr, int nTCPPort, int nRPCPort);
     bool  UnregisterServer(int socketid);
     
 private:

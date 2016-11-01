@@ -73,17 +73,21 @@ json jsonAgentPacket::__process_one_operation__(json jrequest)
     std::transform(agentOperator.begin(),agentOperator.end(),agentOperator.begin(), ::tolower);
     if( agentOperator == "register")
     {
-        int iport = 0;
+        int tcpPort = 0;
+        int rpcPort = 0;
         try
         {
-            iport = jrequest["port"];
+            tcpPort = jrequest["tcpport"];
+            rpcPort = jrequest["rpcport"];
         }
         catch(std::domain_error e)
         {
-            std::string strPort = jrequest["port"];
-            iport = std::stoi(strPort);
+            std::string strPort = jrequest["tcpport"];
+            tcpPort = std::stoi(strPort);
+            strPort = jrequest["rpcport"];
+            rpcPort = std::stoi(strPort);
         }
-        bool bRet = srvMgr->RegisterServer(m_clientsocket, jrequest["address"], iport);
+        bool bRet = srvMgr->RegisterServer(m_clientsocket, jrequest["address"], tcpPort, rpcPort);
         if( bRet )
         {
             jresult["result"]["message"] = "register success.";
@@ -98,6 +102,10 @@ json jsonAgentPacket::__process_one_operation__(json jrequest)
     {
         std::string strValue = "";
         std::vector<PServerInfo> srvList = srvMgr->GetAliveServers();
+        std::string strProtocol = jrequest["protocol"];
+        std::transform(strProtocol.begin(),strProtocol.end(),strProtocol.begin(), ::tolower);
+
+        bool bTCP = strProtocol == "tcp";
         if( srvList.size() == 0 )
         {
             jresult["result"]["code"] = std::to_string((int)903);
@@ -109,7 +117,7 @@ json jsonAgentPacket::__process_one_operation__(json jrequest)
             {
                 json si;
                 si["address"] = srvList[i]->serverAddr;
-                si["port"] = srvList[i]->port;
+                si["port"] = bTCP ? srvList[i]->tcpport : srvList[i]->rpcport;
                 
                 jresult["result"]["value"].push_back(si);
             }
@@ -167,13 +175,31 @@ bool jsonAgentPacket::GetResult(char*& pStreamData, unsigned long& ulDataLen)
     return true;
 }
 
-void jsonAgentPacket::BuildRequest(std::string strOperate, std::string strIP, int port)
+void jsonAgentPacket::BuildRegisterRequest(std::string strIP, int tcpport, int rpcport)
 {
     json jReq;
     jReq["jsonagent"] = "1.0";
-    jReq["operate"] = strOperate;
+    jReq["operate"] = "register";
     jReq["address"] = strIP;
-    jReq["port"] = port;
+    jReq["tcpport"] = tcpport;
+    jReq["rpcport"] = rpcport;
+    
+    m_json_result = jReq;
+}
+void jsonAgentPacket::BuildUnRegisterRequest()
+{
+    json jReq;
+    jReq["jsonagent"] = "1.0";
+    jReq["operate"] = "unregister";
+    
+    m_json_result = jReq;
+}
+void jsonAgentPacket::BuildGetServerListRequest(std::string serverType)
+{
+    json jReq;
+    jReq["jsonagent"] = "1.0";
+    jReq["operate"] = "getserverlist";
+    jReq["protocol"] = serverType.c_str();
     
     m_json_result = jReq;
 }

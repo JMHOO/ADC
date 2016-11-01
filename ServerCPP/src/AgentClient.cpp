@@ -14,7 +14,7 @@ namespace ADCS
         pAgent->__try_connect_agent_server();
         // register self first.
         jsonAgentPacket p;
-        p.BuildRequest("register", pAgent->m_tcpserverIP, pAgent->m_tcpserverPort);
+        p.BuildRegisterRequest(pAgent->m_serverExternalIP, pAgent->m_tcpserverPort, pAgent->m_rpcserverPort);
         
         pAgent->__do_send(&p);
         IPacket* pRes = pAgent->__do_recv();
@@ -32,8 +32,8 @@ namespace ADCS
         while(true)
         {
             bool bSusscuss = false;
-            // request online server list
-            p.BuildRequest("getserverlist");
+            // request online rpc server list
+            p.BuildGetServerListRequest("rpc");
             bool bSent = pAgent->__do_send(&p);
             
             IPacket* pRes = pAgent->__do_recv();
@@ -54,7 +54,7 @@ namespace ADCS
                         sd.first = jSrvList[i]["address"];
                         sd.second = jSrvList[i]["port"];
                         
-                        if( sd.first != pAgent->m_tcpserverIP && sd.second != pAgent->m_tcpserverPort)
+                        if( sd.first != pAgent->m_serverExternalIP && sd.second != pAgent->m_rpcserverPort)
                             pAgent->m_aliveSrvList.push_back(sd);
                     }
                 }
@@ -168,10 +168,11 @@ namespace ADCS
         return false;
     }
     
-    bool CDiscoveryClient::Start(std::string strAgentSrvAddr, std::string strTCPServerAddr, int nTCPServerPort)
+    bool CDiscoveryClient::Start(std::string strAgentSrvAddr, std::string strExternalIP, int nTCPServerPort, int nRPCServerPort)
     {
-        m_tcpserverIP = strTCPServerAddr;
+        m_serverExternalIP = strExternalIP;
         m_tcpserverPort = nTCPServerPort;
+        m_rpcserverPort = nRPCServerPort;
         
         bool bStarted = false;
         m_tcpClient.SetIP(strAgentSrvAddr.c_str());
