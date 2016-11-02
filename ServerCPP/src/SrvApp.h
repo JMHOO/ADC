@@ -28,6 +28,8 @@ public:
     bool Start(unsigned short usPort, std::string sMode, std::string serverExternalAddr, std::string discoveryServerAddr);
     bool Stop();
     
+    void ListAllServer();
+    
     
     CServerApp();
     ~CServerApp();

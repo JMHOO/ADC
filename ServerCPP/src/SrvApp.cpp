@@ -123,6 +123,25 @@ bool CServerApp::Stop()
     return true;
 }
 
+void CServerApp::ListAllServer()
+{
+    if( m_runmode == "kvserver" )
+        return;
+    
+    CServerManager* pSrvMgr = CServerManager::GetInstance();
+    std::vector<PServerInfo> serverList = pSrvMgr->GetAliveServers();
+    
+    if( serverList.size() == 0 )
+    {
+        std::cout << "No Server Available." << endl;
+    }
+    
+    for(int i = 0; i < serverList.size(); i++ )
+    {
+        std::cout << "Server: " << serverList[i]->serverAddr << "[tcp:" << serverList[i]->tcpport << ",rpc:" << serverList[i]->rpcport << "]" << endl;
+    }
+}
+
 
 CServerApp::CServerApp()
 {

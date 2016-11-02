@@ -15,9 +15,10 @@
 
 using namespace std;
 
+CServerApp g_servers;
 typedef int (*TestFunc)(int, const char* [] );
-
 int ShowHelp( int argc, const char* argv[] );
+int ListAllAliveServer(int argc, const char * argv[]);
 
 struct CTestEntry
 {
@@ -27,7 +28,8 @@ struct CTestEntry
 };
 
 CTestEntry g_Entries[] = {
-    { "help", (char*)"", ShowHelp }
+    { "help", (char*)"", ShowHelp },
+    { "listserver", "List all online server", ListAllAliveServer }
 };
 
 const int g_EntriesNumber = sizeof(g_Entries)/sizeof(CTestEntry);
@@ -46,6 +48,12 @@ int ShowHelp( int argc, const char * argv[] )
         cout<<"  -- Test Unit: "<<ptr->desc<<endl;
     }
     
+    return 0;
+}
+    
+int ListAllAliveServer(int argc, const char * argv[])
+{
+    g_servers.ListAllServer();
     return 0;
 }
 
@@ -81,8 +89,7 @@ int main(int argc, const char * argv[]) {
     cout << "--- type 'exit' to exit." << endl;
     
     // Server collection: TCP Server, UDP Server, RPC Server and Discovery Server
-    CServerApp server;
-    if( !server.Start(nPort, sMode, sExternalIP, sAgentSrvAddr) )
+    if( !g_servers.Start(nPort, sMode, sExternalIP, sAgentSrvAddr) )
     {
         cout << "Failed to start all server, exit." << endl;
         return 0;
@@ -124,7 +131,7 @@ int main(int argc, const char * argv[]) {
         
     }
     
-    server.Stop();
+    g_servers.Stop();
     
     return 0;
 }

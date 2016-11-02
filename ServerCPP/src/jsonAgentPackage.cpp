@@ -212,5 +212,5 @@ nlohmann::json jsonAgentPacket::GetServerList()
 
 std::string jsonAgentPacket::GetValue()
 {
-    return m_json_result["result"]["value"];
+    return m_json_request["result"]["value"];
 }
