@@ -24,6 +24,7 @@ namespace ADCS
         
         void SetServerID(int sid) { m_serverID = sid; }
         void UpdateServerList(ServerList list);
+        ServerList GetServerList();
         
         ErrorCode::KVStore SyncOperation(int nClientID, string strOperate, string key, string value);
         

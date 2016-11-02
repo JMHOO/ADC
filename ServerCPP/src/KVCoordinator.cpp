@@ -48,6 +48,11 @@ namespace ADCS
         this->m_aliveSrvList = list;
     }
     
+    ServerList CKvCoordinator::GetServerList()
+    {
+        return m_aliveSrvList;
+    }
+    
     ErrorCode::KVStore CKvCoordinator::SyncOperation(int nClientID, string strOperate, string key, string value)
     {
         m_logger->Info("Coordinator: begin operation from client:%d -- %s,%s,%s", nClientID, strOperate.c_str(), key.c_str(), value.c_str());
@@ -57,6 +62,12 @@ namespace ADCS
         ServerList svl = m_aliveSrvList;
         
         ErrorCode::KVStore code = ErrorCode::KVStore::Success;
+        
+        if( svl.size() == 0 )
+        {
+            m_logger->Info("Coordinator: No other server exist, go...");
+            return code;
+        }
         
         std::transform(strOperate.begin(),strOperate.end(),strOperate.begin(), ::tolower);
         

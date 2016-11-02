@@ -125,20 +125,36 @@ bool CServerApp::Stop()
 
 void CServerApp::ListAllServer()
 {
-    if( m_runmode == "kvserver" )
-        return;
-    
-    CServerManager* pSrvMgr = CServerManager::GetInstance();
-    std::vector<PServerInfo> serverList = pSrvMgr->GetAliveServers();
-    
-    if( serverList.size() == 0 )
+    if( m_runmode == "discovery" )
     {
-        std::cout << "No Server Available." << endl;
+        CServerManager* pSrvMgr = CServerManager::GetInstance();
+        std::vector<PServerInfo> serverList = pSrvMgr->GetAliveServers();
+        
+        if( serverList.size() == 0 )
+        {
+            std::cout << "No Server Available." << endl;
+        }
+        
+        for(size_t i = 0; i < serverList.size(); i++ )
+        {
+            std::cout << "Server: " << serverList[i]->serverAddr << "[tcp:" << serverList[i]->tcpport << ",rpc:" << serverList[i]->rpcport << "]" << endl;
+        }
     }
-    
-    for(int i = 0; i < serverList.size(); i++ )
+    else if( m_runmode == "kvserver" )
     {
-        std::cout << "Server: " << serverList[i]->serverAddr << "[tcp:" << serverList[i]->tcpport << ",rpc:" << serverList[i]->rpcport << "]" << endl;
+        ADCS::CKvCoordinator* coor = ADCS::CKvCoordinator::GetInstance();
+        ADCS::ServerList serverList = coor->GetServerList();
+        
+        if( serverList.size() == 0 )
+        {
+            std::cout << "No Server Available." << endl;
+        }
+        
+        for(size_t i = 0; i < serverList.size(); i++ )
+        {
+            std::cout << "Server: " << serverList[i].first << ":" << serverList[i].second << endl;
+        }
+
     }
 }
 

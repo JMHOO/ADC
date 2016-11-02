@@ -13,6 +13,9 @@
 #include "SrvApp.h"
 #include "cmdline.h"
 
+//#include <jsonrpccpp/client/connectors/httpclient.h>
+//#include "CKvJSONRPCClient.h"
+
 using namespace std;
 
 CServerApp g_servers;
@@ -58,6 +61,16 @@ int ListAllAliveServer(int argc, const char * argv[])
 }
 
 int main(int argc, const char * argv[]) {
+    
+    //jsonrpc::HttpClient httpClient("http://172.22.71.27:15003");
+    //CKvRPCClient rpcClient(httpClient);
+    
+    //try{
+    //    rpcClient.SrvPut("1", "124", "mD7", "dfetuggjbb");
+    //} catch (jsonrpc::JsonRpcException e) {
+    //    cout<< "Coordinator::SyncOperation error in: " << e.what() << endl;
+    //}
+    //return 0;
     
     cmdline::parser cmdParser;
     

@@ -41,7 +41,7 @@ namespace ADCS
                 nlohmann::json jSrvList = pSrvList->GetServerList();
                 if( jSrvList.is_array())
                 {
-                    // if(plogger)plogger->Info("Discovery Client: server list [%s]", jSrvList.dump().c_str());
+                    //if(plogger)plogger->Info("Discovery Client: server list [%s]", jSrvList.dump().c_str());
                     ServerList list;
                     for(size_t i = 0; i < jSrvList.size(); i++)
                     {
@@ -49,7 +49,9 @@ namespace ADCS
                         sd.first = jSrvList[i]["address"];
                         sd.second = jSrvList[i]["port"];
                         
-                        if( sd.first != pAgent->m_serverExternalIP && sd.second != pAgent->m_rpcserverPort)
+                        //if(plogger)plogger->Info("ExtAddr: %s:%d, cur:%s:%d", pAgent->m_serverExternalIP.c_str(), pAgent->m_rpcserverPort,
+                         //                        sd.first.c_str(), sd.second);
+                        if( sd.first != pAgent->m_serverExternalIP || sd.second != pAgent->m_rpcserverPort)
                             list.push_back(sd);
                     }
                     CKvCoordinator::GetInstance()->UpdateServerList(list);
