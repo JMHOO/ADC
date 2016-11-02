@@ -2,6 +2,7 @@
 #include "KVCoordinator.h"
 #include <jsonrpccpp/client/connectors/httpclient.h>
 #include "CKvJSONRPCClient.h"
+#include <algorithm>
 
 namespace ADCS
 {

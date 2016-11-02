@@ -188,6 +188,8 @@ namespace ADCS
             {
                 m_globalServerID = std::stoi(pRegisterResponse->GetValue());
                 ADCS::CKvCoordinator::GetInstance()->SetServerID(m_globalServerID);
+                
+                if(m_logger)m_logger->Info("Discovery Client: register successful, global server id: %d", m_globalServerID);
             }
             
         }
