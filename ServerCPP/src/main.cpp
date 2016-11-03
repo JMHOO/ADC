@@ -135,10 +135,10 @@ int main(int argc, const char * argv[]) {
         {
             ptr->TestEntry( argc, argv );
         }
-        //else
-        //{
-        //    cout<<"Bad Command! Please Retry!"<<endl;
-        //}
+        else
+        {
+            cout<<"Bad Command! Please Retry!"<<endl;
+        }
         
         cout<<endl;
         

@@ -159,7 +159,7 @@ Json::Value CKvJSONRPCService::SrvGo(const std::string& param1, const std::strin
 void CKvJSONRPCService::Wait_Operation(int nServerID, int nClientID, std::string opName, std::string key, std::string value)
 {
     KVOperation op;
-    op.name = "put";
+    op.name = opName;
     op.key = key;
     op.value = value;
     
