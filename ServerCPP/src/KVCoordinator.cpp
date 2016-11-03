@@ -55,7 +55,7 @@ namespace ADCS
     
     ErrorCode::KVStore CKvCoordinator::SyncOperation(int nClientID, string strOperate, string key, string value)
     {
-        m_logger->Info("Coordinator: begin operation from client:%d -- %s,%s,%s", nClientID, strOperate.c_str(), key.c_str(), value.c_str());
+        m_logger->Info("Coordinator: begin operation [server:%d, client:%d] -- %s,%s,%s", m_serverID, nClientID, strOperate.c_str(), key.c_str(), value.c_str());
         
         const int nRetryTimes = 3;
         // copy server list
@@ -117,7 +117,7 @@ namespace ADCS
         // 2-phrase
         if( bSendSuccess )
         {
-            m_logger->Info("Coordinator: all nodes acknowledge for 1-phrase, sending go...");
+            m_logger->Info("Coordinator: all nodes acknowledge for 1-phrase, sending Go...");
             bool bGoSuccess = true;
             
             for( size_t i = 0; i < svl.size(); i++ )
@@ -151,7 +151,7 @@ namespace ADCS
             
             if( bGoSuccess )
             {
-                m_logger->Info("Coordinator: operation from client:%d was done!", nClientID);
+                m_logger->Info("Coordinator: all nodes acknowledge for Go, operation [server:%d, client:%d] was done!", m_serverID, nClientID);
             }
         }
         

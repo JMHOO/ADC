@@ -103,7 +103,24 @@ json jsonAgentPacket::__process_one_operation__(json jrequest)
     {
         std::string strValue = "";
         std::vector<PServerInfo> srvList = srvMgr->GetAliveServers();
-        std::string strProtocol = jrequest["protocol"];
+        
+        std::string strProtocol = "";
+        try
+        {
+            strProtocol = jrequest["protocol"];
+        }
+        catch(std::domain_error e)
+        {
+            // wrong parameter, drop
+        }
+        
+        if( strProtocol == "" )
+        {
+            jresult["result"]["code"] = std::to_string((int)905);
+            jresult["result"]["message"] = "Invalid Parameters.";
+            return jresult;
+        }
+        
         std::transform(strProtocol.begin(),strProtocol.end(),strProtocol.begin(), ::tolower);
 
         bool bTCP = strProtocol == "tcp";
