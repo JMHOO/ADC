@@ -51,7 +51,6 @@ public class JavaMain {
 			serviceDiscover();
 			
 			// execute operations
-			System.out.println("execute");
 			executeOperation();
 			
 			
@@ -93,16 +92,21 @@ public class JavaMain {
 		
 		// phrase json
 		String[] a = new String(message).split("[\\[\\]]");
-//		System.out.println(a[1]);
-		String[] b = a[1].split("address\":\"");
-		for (int i = 1; i < b.length; i++) {
-			String[] c = b[i].split("\",\"");
-			String[] d = c[1].split("port\"");
-			String[] e = d[1].split("}");
-			StringBuffer sb = new StringBuffer();
-			sb.append(c[0]).append(e[0]);
-			// add to the host list
-			hostList.add(sb.toString());		// format: ip_address:port_number
+		if (a.length < 2) {
+			System.out.println("Sorry, there is an error!");
+			System.out.println(a[0]);
+		} 
+		else {
+			String[] b = a[1].split("address\":\"");
+			for (int i = 1; i < b.length; i++) {
+				String[] c = b[i].split("\",\"");
+				String[] d = c[1].split("port\"");
+				String[] e = d[1].split("}");
+				StringBuffer sb = new StringBuffer();
+				sb.append(c[0]).append(e[0]);
+				// add to the host list
+				hostList.add(sb.toString());		// format: ip_address:port_number
+			}
 		}
     }
     
