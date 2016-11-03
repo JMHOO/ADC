@@ -8,6 +8,8 @@ import argparse
 import re
 import struct
 import binascii
+from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer
+from jsonrpclib import Server
 #json:{'operate': "" ,'key':"", 'value':""}#no[]means just a  json not json array
 dict = {}#reserve key:value
 dictdis ={}#reserve address:port  from the discovery
@@ -15,7 +17,58 @@ bufsiz = 1024
 PACK_HEADER_LENGTH = 16
 fout = open('logtcpserver.txt', 'w')
 ###############################################################################
-class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler): 
+def Put(key,value):
+    print "rpcput"
+    #msg = {"code":code, "value":value,"message":value}
+    dict[key] = value
+    msg = {"code":"0", "value":"0","message":"message is empty"}
+    jmsg = json.dumps(msg)
+    data = jmsg;
+    if not data:
+        print("There is no valid data")
+        fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
+    #write the log
+    fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + "put" + "(" + key + "," + value + ")" +' '+ '\n')
+    return jmsg
+###############################################################################
+def Delete(key):
+    print "rpcdelete"
+    if(dict.has_key(key)):
+        del dict[key]
+        msg = {"code":"0", "value":"0","message":"message is empty"}
+    else:
+        msg = {"code":"1", "value":"0","message":"server will explain"}
+        print "there is no key in the dict"
+    jmsg = json.dumps(msg)
+    data = jmsg;
+    if not data:
+        print("There is no valid data")
+        fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
+    #write the log
+    fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + "delete" + "(" + key +")" +' '+ '\n')
+    
+    return jmsg
+###############################################################################
+def Get(key):
+    print "rpcget"
+    if(dict.has_key(key)):
+        msg = {"code":"0", "value":dict[key],"message":"message is empty"}
+    else:
+        msg = {"code":"1", "value":"0","message":"server will explain"}
+        print"there is no key in the dict"
+    jmsg = json.dumps(msg)
+    data = jmsg;
+    if not data:
+        print("There is no valid data")
+        fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
+    #write the log
+    fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + "get" + "(" + key + ")" +' '+ '\n')
+    return jmsg
+###############################################################################
+class ThreadJSONRPCServer(SocketServer.ThreadingMixIn,SimpleJSONRPCServer): 
+    pass    
+###############################################################################
+class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler): #the function of tcp server and rpc client
     def handle(self):
         print '...connected from:', self.client_address
         #receive client message
@@ -38,7 +91,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
                 (version, type, length, resverse) = struct.unpack('!IIII',request[:PACK_HEADER_LENGTH])
                # print  (version, type, length, resverse)        
                 payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
-                payload = struct.unpack(payload_fmt, response[PACK_HEADER_LENGTH:])
+                payload = struct.unpack(payload_fmt, request[PACK_HEADER_LENGTH:])
             #write the log
             #this payload may be payload[0]
             reqdata = payload
@@ -75,9 +128,9 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
                         code = "1"
                         print "there is no this key in the client"
             
-            if code == "0":
+            if code == "0":#this says we have succeed, we should put this message to rpcserver which mean other server
                 message = "message is empty"
-                fout.write(str(datetime.datetime.now())+' '+"The server's operate is: " +' '+ req_operate + "(" + req_key + "," + req_value + ")" +' '+ '\n') 
+                fout.write(str(datetime.datetime.now())+' '+"The server's operate is: " +' '+ req_operate + "(" + req_key + "," + req_value + ")" +' '+ '\n')
             else:
                 message = "server will explain"
                 fout.write(str(datetime.datetime.now())+' '+"The server's operate is wrong " +' '+'\n')
@@ -113,89 +166,121 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler):
             fout.write(str(datetime.datetime.now())+' '+"The server has send the response successful" +' '+ '\n')
             self.request.sendall(pkg_header)
             self.request.sendall(pkg_payload)
+            ##################################
+            if code == "0":#this says we have succeed, we should put this message to rpcserver which mean other server
+                message = "message is empty"
+                for hostserver in dictdis:
+                    addserver = hostserver+":"+dictdis[hostserver]
+                    client = Server("http://"+addserver)#the addserver is in dictdis
+                    if req_operate == "PUT":
+                        rec  = client.Put(req_key,req_value)
+                    elif req_operate == "DELETE":
+                        rec = client.Delete(req_key)
+                    elif req_operate == "GET":
+                        rec = client.Get(req_key)
+                    print "rpc's respond(other server's respond)" + rec
+            ##################################
 #####################################################################################
-def handle(operate,host,port):  
-    msg = {'jsonagent':"1.0",'operate':operate, 'address':host,'port':port}
-    jmsg = json.dumps(msg)
-    data = jmsg;
-    if not data:
-        print("There is no valid data")
-        fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
-    #write the log
-    fout.write(str(datetime.datetime.now())+' '+"the server's opearte is:" + operate + " " + str(host) + ":" + str(port) +' '+ '\n')
-    
-    #add the header
-    datalen = len(data)
-    packageformat='%ds' % datalen
-    packagelen = PACK_HEADER_LENGTH + datalen
-    headervalues = (100, 0, packagelen, 0)
-    # ! means the bytes stream will use network order
-    # or use htonl() instead. for example: packagelen = htonl(16+datalen)
-    header_fmt = struct.Struct('!IIII')
-    pkg_header = header_fmt.pack(*headervalues)
-    pkg_payload = struct.pack(packageformat,data)
-    if not pkg_payload:
-        print("There is no valid payload")
-        fout.write(str(datetime.datetime.now())+' '+"The payload's type is incorrect" +' '+ '\n')
-    #send message
-    tcpCliSock.sendall(pkg_header)
-    tcpCliSock.sendall(pkg_payload)
-    
-    #receive response
-    response = tcpCliSock.recv(bufsiz)
-    if not response:
-        print("There is no valid response")
-        fout.write(str(datetime.datetime.now())+' '+"The response's type is incorrect" +' '+  '\n')
-    #response ,earse the header
-    if len(response) == PACK_HEADER_LENGTH:
-        (version, type, length, resverse) = struct.unpack('!IIII',response)
-        payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
-        response = tcpCliSock.recv(bufsiz)
-        payload = struct.unpack(payload_fmt, response)
-    elif len(response) > PACK_HEADER_LENGTH:
-        (version, type, length, resverse) = struct.unpack('!IIII',response[:PACK_HEADER_LENGTH])
-#        print  (version, type, length, resverse)        
-        payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
-        payload = struct.unpack(payload_fmt, response[PACK_HEADER_LENGTH:])
+def handle(operate,hosttcp,porttcp,postrpc):  #handle linkdiscovery
+        if operate == 'register':
+            msg = {'jsonagent':"1.0",'operate':operate, 'address':hosttcp,'tcpport':porttcp,'rpcport':postrpc}
+            print(msg)
+            print("caonima")
+        elif operate == 'getserverlist':
+            msg = {'jsonagent':"1.0",'operate':operate, 'protocol':"tcp"}
+        elif operate == "unregister":
+            msg = {'jsonagent':"1.0",'operate':operate}
+          
         
-    #handle the response
-    recdata = payload
-    #print(payload)
-    rec = json.loads(payload[0])
-    #fout.write(str(rec[0]['result'])+' '+'\n')
+        print(msg)
+        print("hahah")
+        jmsg = json.dumps(msg)
+        data = jmsg;
+        if not data:
+            print("There is no valid data")
+            fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
+        #write the log
+        fout.write(str(datetime.datetime.now())+' '+"the server's opearte is:" + operate + " " + str(hosttcp) + ":" + str(porttcp) +' '+ '\n')
     
-    if operate == 'getserverlist':
-        if rec['result']['code'] == "0":
-            recstr = "The value is " + str(rec['result']['value']) + ' ' + rec['result']['message']
-            fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + "value:" + str(rec['result']['value']) + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
-        else:
-            recstr = rec['result']['message']
-            fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
-        print recstr
-        for i in range(0,len(rec['result']['value'])):
-            dictdis[ rec['result']['value'][i]['address'] ]  =  rec['result']['value'][i]['port']
-    elif operate == 'register':
-        if rec['result']['code'] == "0":
-            recstr = "The server has registered successfullly"
-            fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
-        else:
-            recstr = rec['result']['message']
-            fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
-        print recstr
+        #add the header
+        datalen = len(data)
+        packageformat='%ds' % datalen
+        packagelen = PACK_HEADER_LENGTH + datalen
+        headervalues = (100, 0, packagelen, 0)
+        # ! means the bytes stream will use network order
+        # or use htonl() instead. for example: packagelen = htonl(16+datalen)
+        header_fmt = struct.Struct('!IIII')
+        pkg_header = header_fmt.pack(*headervalues)
+        pkg_payload = struct.pack(packageformat,data)
+        if not pkg_payload:
+            print("There is no valid payload")
+            fout.write(str(datetime.datetime.now())+' '+"The payload's type is incorrect" +' '+ '\n')
+        #send message
+        tcpCliSock.sendall(pkg_header)
+        tcpCliSock.sendall(pkg_payload)
+        
+        #receive response
+        response = tcpCliSock.recv(bufsiz)
+        if not response:
+            print("There is no valid response")
+            fout.write(str(datetime.datetime.now())+' '+"The response's type is incorrect" +' '+  '\n')
+        #response ,earse the header
+        if len(response) == PACK_HEADER_LENGTH:
+            (version, type, length, resverse) = struct.unpack('!IIII',response)
+            payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
+            response = tcpCliSock.recv(bufsiz)
+            payload = struct.unpack(payload_fmt, response)
+        elif len(response) > PACK_HEADER_LENGTH:
+            (version, type, length, resverse) = struct.unpack('!IIII',response[:PACK_HEADER_LENGTH])
+    #        print  (version, type, length, resverse)        
+            payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
+            payload = struct.unpack(payload_fmt, response[PACK_HEADER_LENGTH:])
+        
+        #handle the response
+        recdata = payload
+        #print(payload)
+        rec = json.loads(payload[0])
+        #fout.write(str(rec[0]['result'])+' '+'\n')
+            
+        if operate == 'getserverlist':
+            if rec['result']['code'] == "0":
+                recstr = "The value is " + str(rec['result']['value']) + ' ' + rec['result']['message']
+                fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + "value:" + str(rec['result']['value']) + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
+            else:
+                recstr = rec['result']['message']
+                fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
+            print recstr
+            for i in range(0,len(rec['result']['value'])):
+                dictdis[ rec['result']['value'][i]['address'] ]  =  rec['result']['value'][i]['port']
+        elif operate == 'register':
+            if rec['result']['code'] == "0":
+                recstr = "The server has registered successfullly"
+                fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
+            else:
+                recstr = rec['result']['message']
+                fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
+            print recstr
 ##################################################################################### 
-def resclient(host, port):
-    tcpServ = SocketServer.ThreadingTCPServer((host,port),ThreadedTCPRequestHandler)
+def resclient(hosttcp, porttcp):
+    tcpServ = SocketServer.ThreadingTCPServer((hosttcp,porttcp),ThreadedTCPRequestHandler)
     tcpServ.serve_forever()
 ##################################################################################### 
-def linkdiscovery(hostdis,portdis):
+def linkdiscovery(hostdis,portdis,portrpc):
     
     operate = 'register'
-    handle(operate,hostdis,portdis)
+    handle(operate,hostdis,portdis,portrpc)
     while 1==1:
         time.sleep(10.0)
         operate = 'getserverlist'
-        handle(operate,hostdis,portdis)
-#####################################################################################     
+        handle(operate,hostdis,portdis,portrpc)
+###############################################################################
+def AsRPCServer(hostrpc,portrpc):
+    server = ThreadJSONRPCServer((hostrpc, portrpc))
+    server.register_function(Put)
+    server.register_function(Delete)
+    server.register_function(Get)
+    server.serve_forever()        
+#####################################################################################
 if __name__=="__main__": 
     #we should handle the request of client
     parser = argparse.ArgumentParser(description='')
@@ -211,8 +296,8 @@ if __name__=="__main__":
         parser.print_help()
         exit()  
 
-    host = "0.0.0.0"
-    port = int(args.Port)
+    hosttcp = "0.0.0.0"
+    porttcp = int(args.Port)
     serverip = "0.0.0.0"
     fout = open('logtcpserver.txt', 'w')
     print " .... waiting for connection"
@@ -229,13 +314,19 @@ if __name__=="__main__":
     #link to the server
     tcpCliSock.connect(addr)
     #write the log
-    fout.write(str(datetime.datetime.now())+' '+"the server has linked to the discovery (" + host +"," + str(port) + ")"+' '+'\n')
+    fout.write(str(datetime.datetime.now())+' '+"the server has linked to the discovery (" + hostdis +"," + str(portdis) + ")"+' '+'\n')
+   
+   
+    #we should done as a rpc server   
+    hostrpc = 'localhost'
+    portrpc = 35000
    
    #create thread object
     thread_list = list();
-    thread_list.append(threading.Thread(target = resclient, name = "resclient", args = (host, port,)))
-    thread_list.append(threading.Thread(target = linkdiscovery, name = "linkdiscovery", args = (hostdis,portdis,)))
-    
+    thread_list.append(threading.Thread(target = resclient, name = "resclient", args = (hosttcp, porttcp,)))
+    thread_list.append(threading.Thread(target = linkdiscovery, name = "linkdiscovery", args = (hostdis,portdis,portrpc,)))
+    thread_list.append(threading.Thread(target = AsRPCServer, name = "AsRPCServer", args = (hostrpc, portrpc,)))
+   
     #start all the thread in the list
     for thread in thread_list:  
         thread.start()  
