@@ -19,11 +19,10 @@ import org.slf4j.LoggerFactory;
 
 
 public class JavaMain {
-	
 	private static String serverDomainName = "uw.umx.io";
 	private static String serverIP ="73.140.72.152";
 	private static String serverPortNumber = "15001";
-	private static Vector<String> hostList = new Vector();
+	private static Vector<String> hostList = new Vector<String>();
 
 	private static String inputFile = "src/kvp-operations.csv";
 	private static final String outputFileTcp = "src/output_tcp.csv";
@@ -80,7 +79,7 @@ public class JavaMain {
     	toServer = new DataOutputStream(socket.getOutputStream());
     	
     	// build json string to get server list
-    	String jsonRequest = "{\"jsonagent\":\"1.0\",\"operate\":\"getserverlist\"}";
+    	String jsonRequest = "{\"jsonagent\":\"1.0\",\"operate\":\"getserverlist\",\"protocol\":\"tcp\"}";
     	
     	// protocol
 		toServer.writeInt(0);
@@ -102,7 +101,7 @@ public class JavaMain {
 		
 		// phrase json
 		String[] a = new String(message).split("[\\[\\]]");
-		System.out.println(a[1]);
+//		System.out.println(a[1]);
 		String[] b = a[1].split("address\":\"");
 		for (int i = 1; i < b.length; i++) {
 			String[] c = b[i].split("\",\"");
@@ -118,8 +117,18 @@ public class JavaMain {
     
     // Execute operations
     public static void executeOperation() throws NumberFormatException, UnknownHostException, IOException {
-		// Create socket
-		Socket socket = new Socket(serverIP, Integer.parseInt(serverPortNumber));
+		String server, port;
+		String [] temp;
+		
+		// pop the first host address from the service list
+		temp = hostList.firstElement().split(":");
+		server = temp[0];
+		port = temp[1];
+		
+		// Get random 
+		
+    	// Create socket
+		Socket socket = new Socket(server, Integer.parseInt(port));
 		// Create input stream to receive data
 		fromServer = new DataInputStream(socket.getInputStream());
 		// Create output stream to send data
