@@ -1,20 +1,11 @@
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.Vector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 
@@ -24,8 +15,8 @@ public class JavaMain {
 	private static String serverPortNumber = "15001";
 	private static Vector<String> hostList = new Vector<String>();
 
-	private static String inputFile = "src/kvp-operations.csv";
-	private static final String outputFileTcp = "src/output_tcp.csv";
+	private static String inputFile = "kvp-operations.csv";
+	private static final String outputFileTcp = "output_tcp.csv";
 	
 	private final static OperateCSV csv = new OperateCSV();
 	// IO streams
@@ -60,7 +51,8 @@ public class JavaMain {
 			serviceDiscover();
 			
 			// execute operations
-			//executeOperation();
+			System.out.println("execute");
+			executeOperation();
 			
 			
     	}
@@ -124,6 +116,7 @@ public class JavaMain {
 		temp = hostList.firstElement().split(":");
 		server = temp[0];
 		port = temp[1];
+		System.out.println("Server: " + server + ", port: " + port);
 		
 		// Get random 
 		
@@ -147,7 +140,7 @@ public class JavaMain {
     		// execute TCP
     		String json = createJsonPayload(operate, key, value);
     		Long requestTime = System.currentTimeMillis();
-    		//System.out.println(json);
+    		System.out.println(json);
     		
     		// protocol
     		toServer.writeInt(0);
