@@ -16,6 +16,61 @@ dictdis ={}#reserve address:port  from the discovery
 bufsiz = 1024
 PACK_HEADER_LENGTH = 16
 fout = open('logtcpserver.txt', 'w')
+dictop={"operate":"","key"："","value":""}
+###############################################################################
+def SrvPut(coorid,clientid,key,value):
+    print "rpcSrvput"
+    #msg = {"code":code, "value":value,"message":value}
+    #dict[key] = value
+    ##this should write SrvGo whether success
+    dictop = {"operate":"Put","key":key,"value":value}
+    msg = {"code":"0", "value":"0","message":"message is empty"}
+    jmsg = json.dumps(msg)
+    data = jmsg;
+    if not data:
+        print("There is no valid data")
+        fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
+    #write the log
+    fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + "put" + "(" + key + "," + value + ")" +' '+ '\n')
+    return jmsg
+###############################################################################
+def SrvDelete(coorid,clientid,key):
+    print "rpcSrvdelete"
+    dictop = {"operate":"Delete","key":key,"value":"0"}
+    if(dict.has_key(key)):
+        #del dict[key]#operate is in go
+        msg = {"code":"0", "value":"0","message":"message is empty"}
+    else:
+        msg = {"code":"1", "value":"0","message":"server will explain"}
+        print "there is no key in the dict"
+    jmsg = json.dumps(msg)
+    data = jmsg;
+    if not data:
+        print("There is no valid data")
+        fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
+    #write the log
+    fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + "delete" + "(" + key +")" +' '+ '\n')
+    
+    return jmsg
+###############################################################################
+def SrvGo(coorid,clientid):
+    print "rpcSrvgo"
+    if dict.has_key(dictop['key']):
+        if dictop['operate'] == 'Put':
+            dict[dictop['key']] = dictop['value']
+        elif dictop['operate'] == 'Delete':
+            del dict[dictop['key']]
+        msg = {"code":"0","message":"success"}
+    else:
+        msg = {"code":"1","message":"unsuccess"}
+    jmsg = json.dumps(msg)
+    data = jmsg;
+    if not data:
+        print("There is no valid data")
+        fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
+    #write the log
+    fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + "get" + "(" + key + ")" +' '+ '\n')
+    return jmsg
 ###############################################################################
 def Put(key,value):
     print "rpcput"
@@ -315,7 +370,7 @@ if __name__=="__main__":
    
     #we should done as a rpc server   
     hostrpc = 'localhost'
-    portrpc = 35000
+    portrpc = 25001
     
     
     #local host.ip
