@@ -16,7 +16,7 @@ dictdis ={}#reserve address:port  from the discovery
 bufsiz = 1024
 PACK_HEADER_LENGTH = 16
 fout = open('logtcpserver.txt', 'w')
-dictop={"operate":"","key"："","value":""}
+dictop={"operate":"","key":"","value":""}
 ###############################################################################
 def SrvPut(coorid,clientid,key,value):
     print "rpcSrvput"
@@ -327,6 +327,8 @@ def AsRPCServer(hostrpc,portrpc):
     server = ThreadJSONRPCServer((hostrpc, portrpc))
     server.register_function(Put)
     server.register_function(Delete)
+    server.register_function(SrvPut)
+    server.register_function(SrvDelete)
     server.register_function(Get)
     server.serve_forever()        
 #####################################################################################
@@ -369,7 +371,7 @@ if __name__=="__main__":
    
    
     #we should done as a rpc server   
-    hostrpc = 'localhost'
+    hostrpc = '0.0.0.0'
     portrpc = 25001
     
     
