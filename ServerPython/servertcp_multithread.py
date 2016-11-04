@@ -16,7 +16,7 @@ dictdis ={}#reserve address:port  from the discovery
 bufsiz = 1024
 PACK_HEADER_LENGTH = 16
 fout = open('logtcpserver.txt', 'w')
-dictop={"operate":"","key":"","value":""}
+dictop ={}
 ###############################################################################
 def SrvPut(coorid,clientid,key,value):
     print "rpcSrvput"
@@ -65,7 +65,7 @@ def SrvGo(coorid,clientid):
     #    print("There is no valid data")
     #    fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
     #write the log
-    fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + "get" + "(" + key + ")" +' '+ '\n')
+    fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + dictop['operate'] + "(" + dictop['key'] + ")" +' '+ '\n')
     return msg
 ###############################################################################
 def Put(key,value):
