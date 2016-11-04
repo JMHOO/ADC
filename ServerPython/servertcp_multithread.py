@@ -136,6 +136,7 @@ class ThreadJSONRPCServer(SocketServer.ThreadingMixIn,SimpleJSONRPCServer):
 ###############################################################################
 class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler): #the function of tcp server and rpc client
     def handle(self):
+        global dictdis
         print '...connected from:', self.client_address
         #receive client message
         while True:
@@ -253,6 +254,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler): #the function 
             ##################################
 ######Reg###############################################################################
 def handle(operate,hostip,porttcp,postrpc):  #handle linkdiscovery 
+    global dictdis
     msgRegSrv = {'jsonagent':"1.0",'operate':'register', 'address':hostip,'tcpport':porttcp,'rpcport':postrpc}
     msgGetSrvList = {'jsonagent':"1.0",'operate':'getserverlist', 'protocol':'rpc'}
     jmsg = json.dumps(msgRegSrv) if operate == 'register' else json.dumps(msgGetSrvList)
@@ -349,6 +351,7 @@ if __name__=="__main__":
     global dictop 
     global dictkey 
     global dictvalue
+    global dictdis
     dictop = ""
     dictkey = ""
     dictvalue = ""
