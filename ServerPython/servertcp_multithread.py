@@ -281,7 +281,7 @@ def handle(operate,hostip,porttcp,postrpc):  #handle linkdiscovery
     tcpCliSock.sendall(pkg_header)
     tcpCliSock.sendall(pkg_payload)
     
-    global payload
+    payload
     #receive response
     response = tcpCliSock.recv(bufsiz)
     if not response:
