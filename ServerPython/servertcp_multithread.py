@@ -24,34 +24,30 @@ def SrvPut(coorid,clientid,key,value):
     #dict[key] = value
     ##this should write SrvGo whether success
     dictop = {"operate":"Put","key":key,"value":value}
-    msg = {"code":0, "value":"0","message":"message is empty"}
-    jmsg = json.dumps(msg)
-    data = jmsg;
-    if not data:
-        print("There is no valid data")
-        fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
+    msg = {'code':0, 'message':"pre-put success"}
+    #jmsg = json.dumps(msg)
+    #data = jmsg;
+    #if not data:
+    #    print("There is no valid data")
+    #    fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
     #write the log
     fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + "put" + "(" + key + "," + value + ")" +' '+ '\n')
-    return jmsg
+    return msg
 ###############################################################################
-def SrvDelete(coorid,clientid,key):
+def SrvDelete(coorid,clientid,key,value):
     print "rpcSrvdelete"
     dictop = {"operate":"Delete","key":key,"value":"0"}
-    if(dict.has_key(key)):
-        #del dict[key]#operate is in go
-        msg = {"code":0, "value":"0","message":"message is empty"}
-    else:
-        msg = {"code":1, "value":"0","message":"server will explain"}
-        print "there is no key in the dict"
-    jmsg = json.dumps(msg)
-    data = jmsg;
-    if not data:
-        print("There is no valid data")
-        fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
+    msg = {'code':0, 'message':"pre-delete success"}
+
+    #jmsg = json.dumps(msg)
+    #data = jmsg;
+    #if not data:
+    #    print("There is no valid data")
+    #    fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
     #write the log
     fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + "delete" + "(" + key +")" +' '+ '\n')
     
-    return jmsg
+    return msg
 ###############################################################################
 def SrvGo(coorid,clientid):
     print "rpcSrvgo"
@@ -63,14 +59,14 @@ def SrvGo(coorid,clientid):
         msg = {"code":0,"message":"success"}
     else:
         msg = {"code":1,"message":"unsuccess"}
-    jmsg = json.dumps(msg)
-    data = jmsg;
-    if not data:
-        print("There is no valid data")
-        fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
+    #jmsg = json.dumps(msg)
+    #data = jmsg;
+    #if not data:
+    #    print("There is no valid data")
+    #    fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
     #write the log
     fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + "get" + "(" + key + ")" +' '+ '\n')
-    return jmsg
+    return msg
 ###############################################################################
 def Put(key,value):
     print "rpcput"
@@ -241,10 +237,11 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler): #the function 
                     except:
                         print "cannot find other server"
             ##################################
-#####################################################################################
+######Reg###############################################################################
 def handle(operate,hostip,porttcp,postrpc):  #handle linkdiscovery 
-    msg = {'jsonagent':"1.0",'operate':operate, 'address':hostip,'tcpport':porttcp,'rpcport':postrpc,'protocol':"rpc"}
-    jmsg = json.dumps(msg)
+    msgRegSrv = {'jsonagent':"1.0",'operate':'register', 'address':hostip,'tcpport':porttcp,'rpcport':postrpc}
+    msgGetSrvList = {'jsonagent':"1.0",'operate':'getserverlist', 'protocol':'rpc'}
+    jmsg = json.dumps(msgRegSrv) if operate == 'register' else json.dumps(msgGetSrvList)
     data = jmsg;
     if not data:
         print("There is no valid data")
@@ -269,7 +266,7 @@ def handle(operate,hostip,porttcp,postrpc):  #handle linkdiscovery
     tcpCliSock.sendall(pkg_header)
     tcpCliSock.sendall(pkg_payload)
     
-    payload
+    global payload
     #receive response
     response = tcpCliSock.recv(bufsiz)
     if not response:
@@ -331,6 +328,7 @@ def AsRPCServer(hostrpc,portrpc):
     server.register_function(Delete)
     server.register_function(SrvPut)
     server.register_function(SrvDelete)
+    server.register_function(SrvGo)
     server.register_function(Get)
     server.serve_forever()        
 #####################################################################################
@@ -374,7 +372,7 @@ if __name__=="__main__":
    
     #we should done as a rpc server   
     hostrpc = '0.0.0.0'
-    portrpc = 25001
+    portrpc = int(args.Port) + 2
     
     
     #local host.ip
