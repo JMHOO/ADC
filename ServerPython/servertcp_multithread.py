@@ -11,21 +11,27 @@ import binascii
 from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer
 from jsonrpclib import Server
 #json:{'operate': "" ,'key':"", 'value':""}#no[]means just a  json not json array
+global dictop 
+global dictkey 
+global dictvalue
+global dictdis
+global dict
 dict = {}#reserve key:value
 dictdis ={}#reserve address:port  from the discovery
 bufsiz = 1024
 PACK_HEADER_LENGTH = 16
 fout = open('logtcpserver.txt', 'w')
-op={"operate":"","key":"","value":""}
-global dictop 
-global dictkey 
-global dictvalue
+
 ###############################################################################
 def SrvPut(coorid,clientid,key,value):
     print "rpcSrvput"
     #msg = {"code":code, "value":value,"message":value}
     #dict[key] = value
     ##this should write SrvGo whether success
+    global dictop 
+    global dictkey 
+    global dictvalue
+    global dictdis
     dictop = "Put"
     dictkey = key
     dictvalue = value
@@ -40,6 +46,10 @@ def SrvPut(coorid,clientid,key,value):
     return msg
 ###############################################################################
 def SrvDelete(coorid,clientid,key,value):
+    global dictop 
+    global dictkey 
+    global dictvalue
+    global dictdis
     print "rpcSrvdelete"
     dictop = "Delete"
     dictkey = key
@@ -55,6 +65,11 @@ def SrvDelete(coorid,clientid,key,value):
     return msg
 ###############################################################################
 def SrvGo(coorid,clientid):
+    global dictop 
+    global dictkey 
+    global dictvalue
+    global dictdis
+    global dict
     print "rpcSrvgo"
     if dict.has_key(dictkey):
         if dictop == 'Put':
@@ -74,6 +89,7 @@ def SrvGo(coorid,clientid):
     return msg
 ###############################################################################
 def Put(key,value):
+    global dict
     print "rpcput"
     #msg = {"code":code, "value":value,"message":value}
     dict[key] = value
@@ -88,6 +104,7 @@ def Put(key,value):
     return jmsg
 ###############################################################################
 def Delete(key):
+    global dict
     print "rpcdelete"
     if(dict.has_key(key)):
         del dict[key]
@@ -106,6 +123,7 @@ def Delete(key):
     return jmsg
 ###############################################################################
 def Get(key):
+    global dict
     print "rpcget"
     if(dict.has_key(key)):
         msg = {"code":"0", "value":dict[key],"message":"message is empty"}
@@ -126,6 +144,8 @@ class ThreadJSONRPCServer(SocketServer.ThreadingMixIn,SimpleJSONRPCServer):
 ###############################################################################
 class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler): #the function of tcp server and rpc client
     def handle(self):
+        global dictdis
+        global dict
         print '...connected from:', self.client_address
         #receive client message
         while True:
@@ -244,6 +264,8 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler): #the function 
             ##################################
 ######Reg###############################################################################
 def handle(operate,hostip,porttcp,postrpc):  #handle linkdiscovery 
+    global dictdis
+    global dict
     msgRegSrv = {'jsonagent':"1.0",'operate':'register', 'address':hostip,'tcpport':porttcp,'rpcport':postrpc}
     msgGetSrvList = {'jsonagent':"1.0",'operate':'getserverlist', 'protocol':'rpc'}
     jmsg = json.dumps(msgRegSrv) if operate == 'register' else json.dumps(msgGetSrvList)
@@ -338,6 +360,16 @@ def AsRPCServer(hostrpc,portrpc):
     server.serve_forever()        
 #####################################################################################
 if __name__=="__main__": 
+    global dictop 
+    global dictkey 
+    global dictvalue
+    global dictdis
+    global dict
+    dict = {}#reserve key:value
+    dictdis ={}#reserve address:port  from the discovery
+    dictop = ""
+    dictkey = ""
+    dictvalue = ""
     #we should handle the request of client
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('-p', '--port', dest='Port', metavar='25000', 
