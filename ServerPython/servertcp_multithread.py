@@ -143,7 +143,6 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler): #the function 
             #print(cur_thread.name)
             fout.write(str(datetime.datetime.now())+' '+"The server's threadname is " +' '+ str(cur_thread) + '\n')
             request = self.request.recv(bufsiz)
-            payload
             if not request:
                 print("There is no valid request")
                 fout.write(str(datetime.datetime.now())+' '+"The request's type is incorrect" +' '+  '\n')
@@ -281,7 +280,6 @@ def handle(operate,hostip,porttcp,postrpc):  #handle linkdiscovery
     tcpCliSock.sendall(pkg_header)
     tcpCliSock.sendall(pkg_payload)
     
-    payload
     #receive response
     response = tcpCliSock.recv(bufsiz)
     if not response:
