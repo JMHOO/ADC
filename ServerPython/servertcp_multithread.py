@@ -17,15 +17,18 @@ bufsiz = 1024
 PACK_HEADER_LENGTH = 16
 fout = open('logtcpserver.txt', 'w')
 op={"operate":"","key":"","value":""}
-dictop = json.dumps(op)
+global dictop 
+global dictkey 
+global dictvalue
 ###############################################################################
 def SrvPut(coorid,clientid,key,value):
     print "rpcSrvput"
     #msg = {"code":code, "value":value,"message":value}
     #dict[key] = value
     ##this should write SrvGo whether success
-    op = {"operate":"Put","key":key,"value":value}
-    dictop = json.dumps(op)
+    dictop = "Put"
+    dictkey = key
+    dictvalue = value
     msg = {'code':0, 'message':"pre-put success"}
     jmsg = json.dumps(msg)
     #data = jmsg;
@@ -34,14 +37,14 @@ def SrvPut(coorid,clientid,key,value):
     #    fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
     #write the log
     fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + "put" + "(" + key + "," + value + ")" +' '+ '\n')
-    return jmsg
+    return msg
 ###############################################################################
 def SrvDelete(coorid,clientid,key,value):
     print "rpcSrvdelete"
-    op = {"operate":"Delete","key":key,"value":"0"}
-    dictop = json.dumps(op)
+    dictop = "Delete"
+    dictkey = key
     msg = {'code':0, 'message':"pre-delete success"}
-    jmsg = json.dumps(msg)
+#    jmsg = json.dumps(msg)
     #data = jmsg;
     #if not data:
     #    print("There is no valid data")
@@ -49,15 +52,15 @@ def SrvDelete(coorid,clientid,key,value):
     #write the log
     fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + "delete" + "(" + key +")" +' '+ '\n')
     
-    return jmsg
+    return msg
 ###############################################################################
 def SrvGo(coorid,clientid):
     print "rpcSrvgo"
-    if dict.has_key(dictop['key']):
-        if dictop['operate'] == 'Put':
-            dict[dictop['key']] = dictop['value']
-        elif dictop['operate'] == 'Delete':
-            del dict[dictop['key']]
+    if dict.has_key(dictkey):
+        if dictop == 'Put':
+            dict[dictop] = dictvalue
+        elif dictop == 'Delete':
+            del dict[dictkey]
         msg = {"code":0,"message":"success"}
     else:
         msg = {"code":1,"message":"unsuccess"}
@@ -67,8 +70,8 @@ def SrvGo(coorid,clientid):
     #    print("There is no valid data")
     #    fout.write(str(datetime.datetime.now())+' '+"The data's type is incorrect" +' '+ '\n')
     #write the log
-    fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + dictop['operate'] + "(" + dictop['key'] + ")" +' '+ '\n')
-    return jmsg
+    fout.write(str(datetime.datetime.now())+' '+"other server recieves the client's opearte is:" + dictop + "(" + dictkey + ")" +' '+ '\n')
+    return msg
 ###############################################################################
 def Put(key,value):
     print "rpcput"
