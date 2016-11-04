@@ -305,6 +305,7 @@ def handle(operate,hostip,porttcp,postrpc):  #handle linkdiscovery
     rec = json.loads(payload[0])
     #fout.write(str(rec[0]['result'])+' '+'\n')
     if operate == 'getserverlist':
+        dictdis = {};
         if rec['result']['code'] == "0":
             #recstr = "The value is " + str(rec['result']['value']) + ' ' + rec['result']['message'] + '\n'
             recstr = "The server has get serverlist successfullly"
