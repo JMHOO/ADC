@@ -132,6 +132,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler): #the function 
             #print(cur_thread.name)
             fout.write(str(datetime.datetime.now())+' '+"The server's threadname is " +' '+ str(cur_thread) + '\n')
             request = self.request.recv(bufsiz)
+            payload
             if not request:
                 print("There is no valid request")
                 fout.write(str(datetime.datetime.now())+' '+"The request's type is incorrect" +' '+  '\n')
@@ -268,6 +269,7 @@ def handle(operate,hostip,porttcp,postrpc):  #handle linkdiscovery
     tcpCliSock.sendall(pkg_header)
     tcpCliSock.sendall(pkg_payload)
     
+    payload
     #receive response
     response = tcpCliSock.recv(bufsiz)
     if not response:
@@ -285,30 +287,30 @@ def handle(operate,hostip,porttcp,postrpc):  #handle linkdiscovery
         payload_fmt = '{0}s'.format(length-PACK_HEADER_LENGTH)
         payload = struct.unpack(payload_fmt, response[PACK_HEADER_LENGTH:])
         
-        #handle the response
-        recdata = payload
-        #print(payload)
-        rec = json.loads(payload[0])
-        #fout.write(str(rec[0]['result'])+' '+'\n')
-        if operate == 'getserverlist':
-            if rec['result']['code'] == "0":
-                #recstr = "The value is " + str(rec['result']['value']) + ' ' + rec['result']['message'] + '\n'
-                recstr = "The server has get serverlist successfullly"
-                fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + "value:" + str(rec['result']['value']) + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
-            else:
-                recstr = rec['result']['message']
-                fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
-            print recstr
-            for i in range(0,len(rec['result']['value'])):
-                dictdis[ rec['result']['value'][i]['address'] ]  =  rec['result']['value'][i]['port']
-        elif operate == 'register':
-            if rec['result']['code'] == "0":
-                recstr = "The server has registered successfullly"
-                fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
-            else:
-                recstr = rec['result']['message']
-                fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
-            print recstr
+    #handle the response
+    recdata = payload
+    #print(payload)
+    rec = json.loads(payload[0])
+    #fout.write(str(rec[0]['result'])+' '+'\n')
+    if operate == 'getserverlist':
+        if rec['result']['code'] == "0":
+            #recstr = "The value is " + str(rec['result']['value']) + ' ' + rec['result']['message'] + '\n'
+            recstr = "The server has get serverlist successfullly"
+            fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + "value:" + str(rec['result']['value']) + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
+        else:
+            recstr = rec['result']['message']
+            fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
+        print recstr
+        for i in range(0,len(rec['result']['value'])):
+            dictdis[ rec['result']['value'][i]['address'] ]  =  rec['result']['value'][i]['port']
+    elif operate == 'register':
+        if rec['result']['code'] == "0":
+            recstr = "The server has registered successfullly"
+            fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
+        else:
+            recstr = rec['result']['message']
+            fout.write(str(datetime.datetime.now())+' '+"the discovory's response is: " + " code:" + str(rec['result']['code']) + " message:" + rec['result']['message'] +' '+'\n')
+        print recstr
 ##################################################################################### 
 def resclient(hosttcp, porttcp):
     tcpServ = SocketServer.ThreadingTCPServer((hosttcp,porttcp),ThreadedTCPRequestHandler)
@@ -391,17 +393,3 @@ if __name__=="__main__":
     for thread in thread_list:  
         thread.join()  
 fout.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
