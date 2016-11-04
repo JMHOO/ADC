@@ -24,7 +24,7 @@ def SrvPut(coorid,clientid,key,value):
     #dict[key] = value
     ##this should write SrvGo whether success
     dictop = {"operate":"Put","key":key,"value":value}
-    msg = {"code":"0", "value":"0","message":"message is empty"}
+    msg = {"code":0, "value":"0","message":"message is empty"}
     jmsg = json.dumps(msg)
     data = jmsg;
     if not data:
@@ -39,9 +39,9 @@ def SrvDelete(coorid,clientid,key):
     dictop = {"operate":"Delete","key":key,"value":"0"}
     if(dict.has_key(key)):
         #del dict[key]#operate is in go
-        msg = {"code":"0", "value":"0","message":"message is empty"}
+        msg = {"code":0, "value":"0","message":"message is empty"}
     else:
-        msg = {"code":"1", "value":"0","message":"server will explain"}
+        msg = {"code":1, "value":"0","message":"server will explain"}
         print "there is no key in the dict"
     jmsg = json.dumps(msg)
     data = jmsg;
@@ -60,9 +60,9 @@ def SrvGo(coorid,clientid):
             dict[dictop['key']] = dictop['value']
         elif dictop['operate'] == 'Delete':
             del dict[dictop['key']]
-        msg = {"code":"0","message":"success"}
+        msg = {"code":0,"message":"success"}
     else:
-        msg = {"code":"1","message":"unsuccess"}
+        msg = {"code":1,"message":"unsuccess"}
     jmsg = json.dumps(msg)
     data = jmsg;
     if not data:
