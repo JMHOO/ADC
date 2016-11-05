@@ -1,22 +1,31 @@
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Vector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
 public class JavaMain {
 	private static String serverDomainName = "uw.umx.io";
-	private static String serverIP ="73.140.72.152";
-	private static String serverPortNumber = "15001";
+	private static String serverIP ="uw.umx.io";
+	private static String serverPortNumber = "15000";
 	private static Vector<String> hostList = new Vector<String>();
 
-	private static String inputFile = "kvp-operations.csv";
-	private static final String outputFileTcp = "output_tcp.csv";
+	private static String inputFile = "src/kvp-operations.csv";
+	private static final String outputFileTcp = "src/output_tcp.csv";
 	
 	private final static OperateCSV csv = new OperateCSV();
 	// IO streams
@@ -34,24 +43,15 @@ public class JavaMain {
     			serverPortNumber= args[1];
     			inputFile = args[2];
     		}
-    		else if (args.length == 2) {
-    			serverIP = args[0];
-    			serverPortNumber= args[1];
-    		}
-    		else {
-    			// prompt the user to enter the serverIP
-				System.out.println("Please enter the server IP or name: ");		 /** Server name/IP 处理 */
-				serverIP = input.nextLine();
-				// prompt the user to enter the port number
-				System.out.println("Please enter the server port number: ");
-				serverPortNumber = input.nextLine();
+    		else if (args.length == 1) {
+                inputFile = args[0];
     		}
 			
 			//service discovery
 			serviceDiscover();
 			
 			// execute operations
-			executeOperation();
+			//executeOperation();
 			
 			
     	}
@@ -92,21 +92,16 @@ public class JavaMain {
 		
 		// phrase json
 		String[] a = new String(message).split("[\\[\\]]");
-		if (a.length < 2) {
-			System.out.println("Sorry, there is an error!");
-			System.out.println(a[0]);
-		} 
-		else {
-			String[] b = a[1].split("address\":\"");
-			for (int i = 1; i < b.length; i++) {
-				String[] c = b[i].split("\",\"");
-				String[] d = c[1].split("port\"");
-				String[] e = d[1].split("}");
-				StringBuffer sb = new StringBuffer();
-				sb.append(c[0]).append(e[0]);
-				// add to the host list
-				hostList.add(sb.toString());		// format: ip_address:port_number
-			}
+//		System.out.println(a[1]);
+		String[] b = a[1].split("address\":\"");
+		for (int i = 1; i < b.length; i++) {
+			String[] c = b[i].split("\",\"");
+			String[] d = c[1].split("port\"");
+			String[] e = d[1].split("}");
+			StringBuffer sb = new StringBuffer();
+			sb.append(c[0]).append(e[0]);
+			// add to the host list
+			hostList.add(sb.toString());		// format: ip_address:port_number
 		}
     }
     
@@ -120,7 +115,6 @@ public class JavaMain {
 		temp = hostList.firstElement().split(":");
 		server = temp[0];
 		port = temp[1];
-		System.out.println("Server: " + server + ", port: " + port);
 		
 		// Get random 
 		
@@ -144,7 +138,7 @@ public class JavaMain {
     		// execute TCP
     		String json = createJsonPayload(operate, key, value);
     		Long requestTime = System.currentTimeMillis();
-    		System.out.println(json);
+    		//System.out.println(json);
     		
     		// protocol
     		toServer.writeInt(0);
