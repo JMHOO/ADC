@@ -2,7 +2,7 @@ JFLAGS = -classpath .:opencsv-3.7.jar:slf4j-api-1.7.21.jar
 JC = javac
 JVM= java
 
-INPUT=73.140.72.152 15001 kvp-operations.csv
+INPUT=uw.umx.io 15000 input.csv
 
 .SUFFIXES: .java .class
 .java.class:
