@@ -10,5 +10,8 @@
 
 namespace Paxos
 {
-    
+    Learner::Learner(ILog* ptrLog) : logger(ptrLog)
+    {
+        
+    }
 }

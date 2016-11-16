@@ -9,11 +9,19 @@
 #ifndef _ADCS__paxosAcceptor_H_
 #define _ADCS__paxosAcceptor_H_
 
+class ILog;
+
 namespace Paxos
 {
     class Acceptor
     {
-        
+    public:
+        Acceptor(ILog* ptrLog);
+
+
+    private:
+        ILog* logger;
+
     };
 }
 

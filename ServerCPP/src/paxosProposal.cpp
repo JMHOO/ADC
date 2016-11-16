@@ -7,9 +7,27 @@
 //
 
 #include "paxosProposal.h"
+#include "GLog.h"
 
 namespace Paxos
 {
+    Proposal::Proposal(ILog* ptrLog) : logger(ptrLog)
+    {
+        
+    }
     
+    Proposal::~Proposal()
+    {
+        
+    }
     
+    void Proposal::OnPrepareTimeout()
+    {
+        
+    }
+    
+    void Proposal::OnAcceptTimeout()
+    {
+        
+    }
 }

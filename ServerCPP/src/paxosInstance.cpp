@@ -17,7 +17,8 @@ namespace Paxos
     {
         if( _paxos_instance == nullptr )
         {
-            _paxos_instance = new Instance();
+            
+            _paxos_instance = new Instance(new GlobalLog("Paxos", LL_DEBUG));
             if( _paxos_instance == nullptr )
                 return false;
         }
@@ -38,16 +39,42 @@ namespace Paxos
     
     
     
-    Instance::Instance() : loop(this)
+    Instance::Instance(ILog* ptrLog) : loop(this), proposal(ptrLog), acceptor(ptrLog), learner(ptrLog), logger(ptrLog)
     {
         
     }
     
-    void Instance::ProcessPackage(IPacket* p)
+    Instance::~Instance()
     {
+        delete logger;
+    }
+    
+    void Instance::PushToMessageQueue(IPacket* p)
+    {
+        // add message to message queue, message queue will notify the instance again
         loop.AddMessage(p);
     }
     
+    void Instance::ProcessMessage(IPacket* p)
+    {
+        
+    }
     
+    
+    void Instance::OnTimeout(unsigned int id, TimeoutType type)
+    {
+        switch(type)
+        {
+            case TimeoutType::Proposal_Accept:
+                proposal.OnAcceptTimeout();
+                break;
+            case TimeoutType::Proposal_Prepare:
+                proposal.OnPrepareTimeout();
+                break;
+                
+            default:
+                break;
+        }
+    }
     
 }

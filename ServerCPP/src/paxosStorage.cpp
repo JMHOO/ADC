@@ -7,3 +7,12 @@
 //
 
 #include "paxosStorage.h"
+#include "GLog.h"
+
+namespace Paxos
+{
+    Storage::Storage(ILog* ptrLog) : logger(ptrLog)
+    {
+        
+    }
+}

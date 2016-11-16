@@ -8,6 +8,7 @@
 
 #include "MessageLoop.h"
 #include "PackageInterface.h"
+#include "paxosInstance.h"
 #include "Utility.h"
 
 MessageLoop::MessageLoop(Paxos::Instance * ptrInstance) : m_pInstance(ptrInstance)
@@ -92,7 +93,7 @@ void MessageLoop::Process(const int nWaitTimeoutMS)
         
         if (p != nullptr )
         {
-            //m_Instance->OnPaxosMessage(p);
+            m_pInstance->ProcessMessage(p);
         }
         
         delete p;
@@ -101,7 +102,7 @@ void MessageLoop::Process(const int nWaitTimeoutMS)
     //m_Instance->CheckNewValue();
 }
 
-bool MessageLoop::AddTimer(const int nTimeoutMS, const int type, unsigned int& id)
+bool MessageLoop::AddTimer(const int nTimeoutMS, const TimeoutType type, unsigned int& id)
 {
     if (nTimeoutMS <= 0){ return true; }
     
@@ -125,7 +126,7 @@ void MessageLoop::RemoveTimer(unsigned int& id)
     id = 0;
 }
 
-void MessageLoop::ProcessTimeout(const unsigned int id, const int type)
+void MessageLoop::ProcessTimeout(const unsigned int id, const TimeoutType type)
 {
     auto it = m_timerMarker.find(id);
     if (it == m_timerMarker.end())
@@ -137,7 +138,7 @@ void MessageLoop::ProcessTimeout(const unsigned int id, const int type)
     m_timerMarker.erase(it);
     
     
-    //m_Instance->OnTimeout(id, type);
+    m_pInstance->OnTimeout(id, type);
 }
 
 void MessageLoop::CheckTimeOut(int& nNextTimeout)
@@ -147,7 +148,7 @@ void MessageLoop::CheckTimeOut(int& nNextTimeout)
     while(bTimeout)
     {
         unsigned int id = 0;
-        int type = 0;
+        TimeoutType type = TimeoutType::None;
         
         bTimeout = PopTimer(id, type);
         
@@ -184,7 +185,7 @@ int MessageLoop::GetNextTimeout()
     return nSpanOfNextTimeout;
 }
 
-bool MessageLoop::PopTimer(unsigned int& id, int& type)
+bool MessageLoop::PopTimer(unsigned int& id, TimeoutType& type)
 {
     if (m_timers.empty())
     {

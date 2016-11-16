@@ -10,11 +10,18 @@
 #ifndef _ADCS__paxosLearner_H_
 #define _ADCS__paxosLearner_H_
 
+class ILog;
+
 namespace Paxos
 {
     class Learner
     {
+    public:
+        Learner(ILog* ptrLog);
         
+    private:
+        ILog* logger;
+
     };
 }
 #endif /* paxosLearner_h */

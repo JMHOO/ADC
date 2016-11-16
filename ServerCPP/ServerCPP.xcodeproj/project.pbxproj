@@ -222,8 +222,6 @@
 				BF20597F1DACA31B00B11921 /* Utility.h */,
 				BF9CE8A51DDAB40500A902C9 /* Thread.h */,
 				BF9CE8A61DDAB41300A902C9 /* Thread.cpp */,
-				BF9CE8A81DDACCC000A902C9 /* MessageLoop.h */,
-				BF9CE8A91DDACD0900A902C9 /* MessageLoop.cpp */,
 			);
 			name = Framework;
 			sourceTree = "<group>";
@@ -260,6 +258,8 @@
 		BF9CE8AB1DDB8ED800A902C9 /* Paxos */ = {
 			isa = PBXGroup;
 			children = (
+				BF9CE8A81DDACCC000A902C9 /* MessageLoop.h */,
+				BF9CE8A91DDACD0900A902C9 /* MessageLoop.cpp */,
 				BF9CE8AF1DDBA09F00A902C9 /* paxosInstance.h */,
 				BF9CE8B01DDBA0AC00A902C9 /* paxosInstance.cpp */,
 				BF9CE8B21DDBA12B00A902C9 /* paxosProposal.h */,

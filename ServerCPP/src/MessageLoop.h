@@ -17,6 +17,7 @@
 
 using namespace std;
 
+// thread safe queue
 template <class T>
 class TSQueue {
 public:
@@ -120,6 +121,13 @@ protected:
     size_t m_size;
 };
 
+enum class TimeoutType
+{
+    None,
+    Proposal_Prepare,
+    Proposal_Accept,
+};
+
 
 namespace Paxos
 {
@@ -151,10 +159,10 @@ public:
     void AddNotify();
     
 public:
-    bool AddTimer(const int nTimeoutMS, const int type, unsigned int& id);
+    bool AddTimer(const int nTimeoutMS, const TimeoutType type, unsigned int& id);
     void RemoveTimer(unsigned int & iTimerID);
     void CheckTimeOut(int& nNextTimeout);
-    void ProcessTimeout(const unsigned int id, const int type);
+    void ProcessTimeout(const unsigned int id, const TimeoutType type);
     
 private:
     bool m_bExitFlag;
@@ -168,16 +176,16 @@ private:
     Paxos::Instance * m_pInstance;
     
     int GetNextTimeout();
-    bool PopTimer(unsigned int& id, int& type);
+    bool PopTimer(unsigned int& id, TimeoutType& type);
     
 private:
     struct Timer
     {
-        Timer(unsigned int id, uint64_t time, int type) : m_id(id), m_time(time), m_type(type) {}
+        Timer(unsigned int id, uint64_t time, TimeoutType type) : m_id(id), m_time(time), m_type(type) {}
         
         unsigned int m_id;
         uint64_t m_time;
-        int m_type;
+        TimeoutType m_type;
         
         bool operator < (const Timer & obj) const
         {

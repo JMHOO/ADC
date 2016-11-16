@@ -9,7 +9,12 @@
 #ifndef _ADCS__paxosInstance_H_
 #define _ADCS__paxosInstance_H_
 
+#include "GLog.h"
 #include "MessageLoop.h"
+#include "paxosProposal.h"
+#include "paxosAcceptor.h"
+#include "paxosLearner.h"
+
 
 #define PaxosInstance Paxos::Instance::GetInstance()
 
@@ -26,13 +31,23 @@ namespace Paxos
         
         
     public:
-        Instance();
+        Instance(ILog* ptrLog);
+        ~Instance();
         
-        void ProcessPackage(IPacket* p);
+        void ProcessMessage(IPacket* p);
+        void PushToMessageQueue(IPacket* p);
+        
+        void OnTimeout(unsigned int id, TimeoutType type);
         
         
     private:
         MessageLoop loop;
+        
+        Proposal proposal;
+        Acceptor acceptor;
+        Learner learner;
+        
+        ILog*  logger;
         
         static Instance*   _paxos_instance;
     };

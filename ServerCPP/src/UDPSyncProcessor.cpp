@@ -62,7 +62,7 @@ bool UDPServerProcessor::Execute( void * pdata )
     {
         if( packet->Type() == ADCS::PackageType::Paxos )
         {
-            PaxosInstance->ProcessPackage(packet);
+            PaxosInstance->PushToMessageQueue(packet);
         }
         else
         {

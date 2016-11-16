@@ -7,8 +7,12 @@
 //
 
 #include "paxosAcceptor.h"
+#include "GLog.h"
 
 namespace Paxos
 {
-    
+    Acceptor::Acceptor(ILog* ptrLog) : logger(ptrLog)
+    {
+        
+    }
 }

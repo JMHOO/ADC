@@ -9,12 +9,17 @@
 #ifndef _ADCS__paxosStorage_H_
 #define _ADCS__paxosStorage_H_
 
+class ILog;
 
 namespace Paxos
 {
     class Storage
     {
+    public:
+        Storage(ILog* ptrLog);
         
+    private:
+        ILog* logger;
     };
 }
 
