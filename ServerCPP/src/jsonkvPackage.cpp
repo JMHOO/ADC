@@ -9,6 +9,8 @@ using namespace ADCS;
 
 jsonkvPacket::jsonkvPacket(const char* pData, unsigned int nDataLen, int clientSocket) : IPacket(pData, nDataLen, clientSocket)
 {
+    m_type = PackageType::KV;
+    
     try
     {
         m_json_request = json::parse(m_data.data);

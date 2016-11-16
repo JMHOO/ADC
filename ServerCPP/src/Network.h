@@ -30,6 +30,8 @@ namespace ADCS
     typedef	_PackageHeader_	PACK_HEADER, *PtrPACK_HEADER;
     
     const unsigned int LENGTH_PACKHEADER = sizeof(PACK_HEADER);
+    
+    enum class PackageType { None = 0, KV, Discovery, Paxos };
 }
 
 

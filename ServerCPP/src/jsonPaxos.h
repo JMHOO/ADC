@@ -5,7 +5,7 @@
 #include "PackageInterface.h"
 #include "json.hpp"
 
-enum class PaxosType : unsigned int
+enum class PaxosType
 {
     Prepare = 1,
     PrepareResponse,
@@ -25,7 +25,7 @@ public:
     virtual bool IsValid() const;
     virtual bool NeedResponse() const;
     
-    PaxosType Type() const;
+    PaxosType MessageType() const;
     
     
 protected:
@@ -36,7 +36,7 @@ private:
     nlohmann::json m_json_result;
 
     
-    PaxosType m_type;
+    PaxosType m_paxosType;
 };
 
 #endif

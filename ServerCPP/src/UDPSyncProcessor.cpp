@@ -4,6 +4,7 @@
 #include "Network.h"
 #include "UDPSyncIOServer.h"
 #include "PackageInterface.h"
+#include "paxosInstance.h"
 
 bool UDPServerProcessor::ParseBuffer(char * buf, int len)
 {
@@ -59,34 +60,41 @@ bool UDPServerProcessor::Execute( void * pdata )
     IPacket* packet = IPacket::CreatePackage(pConnParam->Buffer, ntohl(pHeader->Length), pConnParam->socketid);
     if( packet )
     {
-        packet->Process();
-        const char* ptrResponse = nullptr;
-        unsigned long ulResponseLength = 0;
-        packet->ToBytes(ptrResponse, ulResponseLength);
-        
-        if( m_logger)m_logger->Info("UDP Server: sending response[len=%d] to client:%s -- %s", ulResponseLength, inet_ntoa(pConnParam->ClientIP.sin_addr), ptrResponse+sizeof(ADCS::PACK_HEADER));
-        
-        // send whole package
-        int nTransferedLen = pConnParam->Send( ptrResponse, (int)ulResponseLength );
-        if( nTransferedLen == 0 )
+        if( packet->Type() == ADCS::PackageType::Paxos )
         {
-            if(m_logger)m_logger->Info("UDP Server: sending data failed, nothing sent.");
-            pConnParam->CloseSession();
-            bRet = true;
+            PaxosInstance->ProcessPackage(packet);
         }
-        else if( nTransferedLen != (int)ulResponseLength )
+        else
         {
-            if( (int)ulResponseLength > nTransferedLen )
+            packet->Process();
+            const char* ptrResponse = nullptr;
+            unsigned long ulResponseLength = 0;
+            packet->ToBytes(ptrResponse, ulResponseLength);
+            
+            if( m_logger)m_logger->Info("UDP Server: sending kv response[len=%d] to client:%s -- %s", ulResponseLength, inet_ntoa(pConnParam->ClientIP.sin_addr), ptrResponse+sizeof(ADCS::PACK_HEADER));
+            
+            // send whole package
+            int nTransferedLen = pConnParam->Send( ptrResponse, (int)ulResponseLength );
+            if( nTransferedLen == 0 )
             {
-                if(m_logger)m_logger->Error("UDP Server: sent data less than required(excpet:%d, realsent:%d), close session.", ulResponseLength, nTransferedLen);
+                if(m_logger)m_logger->Info("UDP Server: sending data failed, nothing sent.");
+                pConnParam->CloseSession();
+                bRet = true;
             }
-            else
+            else if( nTransferedLen != (int)ulResponseLength )
             {
-                if(m_logger)m_logger->Error("UDP Server: sent data larger than requiredexcpet:%d, realsent:%d), close session.", ulResponseLength, nTransferedLen);
-                
+                if( (int)ulResponseLength > nTransferedLen )
+                {
+                    if(m_logger)m_logger->Error("UDP Server: sent data less than required(excpet:%d, realsent:%d), close session.", ulResponseLength, nTransferedLen);
+                }
+                else
+                {
+                    if(m_logger)m_logger->Error("UDP Server: sent data larger than requiredexcpet:%d, realsent:%d), close session.", ulResponseLength, nTransferedLen);
+                    
+                }
+                pConnParam->CloseSession();
+                bRet = false;
             }
-            pConnParam->CloseSession();
-            bRet = false;
         }
         
         delete packet;

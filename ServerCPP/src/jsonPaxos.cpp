@@ -8,6 +8,8 @@ using namespace ADCS;
 
 jsonPaxos::jsonPaxos(const char* pData, unsigned int nDataLen, int clientSocket) : IPacket(pData, nDataLen, clientSocket)
 {
+    m_type = PackageType::Paxos;
+    
     try
     {
         m_json_request = json::parse(m_data.data);
@@ -56,9 +58,9 @@ bool jsonPaxos::NeedResponse() const
     return true;
 }
 
-PaxosType jsonPaxos::Type() const
+PaxosType jsonPaxos::MessageType() const
 {
-    return m_type;
+    return m_paxosType;
 }
 
 
