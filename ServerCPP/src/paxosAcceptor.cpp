@@ -11,7 +11,7 @@
 
 namespace Paxos
 {
-    Acceptor::Acceptor(ILog* ptrLog) : logger(ptrLog)
+    Acceptor::Acceptor(Paxos::Instance * instance, ILog* ptrLog) : m_pInstance(instance), logger(ptrLog)
     {
         
     }

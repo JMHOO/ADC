@@ -13,13 +13,15 @@ class ILog;
 
 namespace Paxos
 {
+    class Instance;
     class Acceptor
     {
     public:
-        Acceptor(ILog* ptrLog);
+        Acceptor(Paxos::Instance * instance, ILog* ptrLog);
 
 
     private:
+        Paxos::Instance * m_pInstance;
         ILog* logger;
 
     };

@@ -9,14 +9,17 @@
 #ifndef _ADCS__paxosProposal_H_
 #define _ADCS__paxosProposal_H_
 
+#include "paxosCounter.h"
+
 class ILog;
 
 namespace Paxos
 {
+    class Instance;
     class Proposal
     {
     public:
-        Proposal(ILog* ptrLog);
+        Proposal(Paxos::Instance * instance, ILog* ptrLog);
         ~Proposal();
         
         
@@ -26,7 +29,10 @@ namespace Paxos
         void OnAcceptTimeout();
 
     private:
+        Paxos::Instance * m_pInstance;
         ILog* logger;
+        
+        Counter counter;
     };
 }
 

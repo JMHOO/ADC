@@ -38,6 +38,7 @@
 		BF9CE8B71DDBB89600A902C9 /* paxosAcceptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8B61DDBB89600A902C9 /* paxosAcceptor.cpp */; };
 		BF9CE8BA1DDBB9A200A902C9 /* paxosLearner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8B91DDBB9A200A902C9 /* paxosLearner.cpp */; };
 		BF9CE8BE1DDC0F9C00A902C9 /* paxosStorage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8BD1DDC0F9C00A902C9 /* paxosStorage.cpp */; };
+		BF9CE8C11DDD278800A902C9 /* paxosCounter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8C01DDD278800A902C9 /* paxosCounter.cpp */; };
 		BF9D36EC1DC7C4080067E556 /* UDPClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9D36EA1DC7C4080067E556 /* UDPClient.cpp */; };
 		BF9D36EF1DC7F7320067E556 /* KVCoordinator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9D36EE1DC7F7320067E556 /* KVCoordinator.cpp */; };
 /* End PBXBuildFile section */
@@ -122,6 +123,8 @@
 		BF9CE8B91DDBB9A200A902C9 /* paxosLearner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = paxosLearner.cpp; path = src/paxosLearner.cpp; sourceTree = "<group>"; };
 		BF9CE8BB1DDC0F8700A902C9 /* paxosStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = paxosStorage.h; path = src/paxosStorage.h; sourceTree = "<group>"; };
 		BF9CE8BD1DDC0F9C00A902C9 /* paxosStorage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = paxosStorage.cpp; path = src/paxosStorage.cpp; sourceTree = "<group>"; };
+		BF9CE8BF1DDD277A00A902C9 /* paxosCounter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = paxosCounter.h; path = src/paxosCounter.h; sourceTree = "<group>"; };
+		BF9CE8C01DDD278800A902C9 /* paxosCounter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = paxosCounter.cpp; path = src/paxosCounter.cpp; sourceTree = "<group>"; };
 		BF9D36EA1DC7C4080067E556 /* UDPClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UDPClient.cpp; path = src/UDPClient.cpp; sourceTree = "<group>"; };
 		BF9D36EB1DC7C4080067E556 /* UDPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UDPClient.h; path = src/UDPClient.h; sourceTree = "<group>"; };
 		BF9D36ED1DC7F7220067E556 /* KVCoordinator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = KVCoordinator.h; path = src/KVCoordinator.h; sourceTree = "<group>"; };
@@ -270,6 +273,8 @@
 				BF9CE8B91DDBB9A200A902C9 /* paxosLearner.cpp */,
 				BF9CE8BB1DDC0F8700A902C9 /* paxosStorage.h */,
 				BF9CE8BD1DDC0F9C00A902C9 /* paxosStorage.cpp */,
+				BF9CE8BF1DDD277A00A902C9 /* paxosCounter.h */,
+				BF9CE8C01DDD278800A902C9 /* paxosCounter.cpp */,
 			);
 			name = Paxos;
 			sourceTree = "<group>";
@@ -357,6 +362,7 @@
 				BF7160611DB2957D00F09E59 /* jsonkvPackage.cpp in Sources */,
 				BF7160581DB282F200F09E59 /* PackageInterface.cpp in Sources */,
 				BF71606A1DB4778500F09E59 /* CKvJSONRPCService.cpp in Sources */,
+				BF9CE8C11DDD278800A902C9 /* paxosCounter.cpp in Sources */,
 				BF2059801DACA31B00B11921 /* GLog.cpp in Sources */,
 				BF9D36EF1DC7F7320067E556 /* KVCoordinator.cpp in Sources */,
 				BF9CE8A71DDAB41300A902C9 /* Thread.cpp in Sources */,

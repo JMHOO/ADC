@@ -11,7 +11,7 @@
 
 namespace Paxos
 {
-    Proposal::Proposal(ILog* ptrLog) : logger(ptrLog)
+    Proposal::Proposal(Paxos::Instance * instance, ILog* ptrLog) : m_pInstance(instance), logger(ptrLog)
     {
         
     }

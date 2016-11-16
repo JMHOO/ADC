@@ -10,8 +10,9 @@
 #include "PackageInterface.h"
 #include "paxosInstance.h"
 #include "Utility.h"
+#include "GLog.h"
 
-MessageLoop::MessageLoop(Paxos::Instance * ptrInstance) : m_pInstance(ptrInstance)
+MessageLoop::MessageLoop(Paxos::Instance * ptrInstance, ILog* ptrLog) : m_pInstance(ptrInstance), logger(ptrLog)
 {
     m_bExitFlag = false;
     m_bIsStart = false;

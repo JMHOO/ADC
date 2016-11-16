@@ -14,12 +14,14 @@ class ILog;
 
 namespace Paxos
 {
+    class Instance;
     class Learner
     {
     public:
-        Learner(ILog* ptrLog);
+        Learner(Paxos::Instance * instance, ILog* ptrLog);
         
     private:
+        Paxos::Instance * m_pInstance;
         ILog* logger;
 
     };

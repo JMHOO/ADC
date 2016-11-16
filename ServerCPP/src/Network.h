@@ -1,6 +1,8 @@
 #ifndef _ACDS__Network_H_
 #define _ACDS__Network_H_
 
+#include <string>
+#include <vector>
 
 namespace ADCS
 {
@@ -32,6 +34,9 @@ namespace ADCS
     const unsigned int LENGTH_PACKHEADER = sizeof(PACK_HEADER);
     
     enum class PackageType { None = 0, KV, Discovery, Paxos };
+    
+    typedef std::pair<std::string,int> ServerDesc;
+    typedef std::vector<ServerDesc> ServerList;
 }
 
 

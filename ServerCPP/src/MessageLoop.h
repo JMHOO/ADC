@@ -135,14 +135,14 @@ namespace Paxos
 }
 
 class IPacket;
-
+class ILog;
 
 #define MAX_QUEUE_LENGTH 20
 
 class MessageLoop : public ADCS::Thread
 {
 public:
-    MessageLoop(Paxos::Instance * instance);
+    MessageLoop(Paxos::Instance * instance, ILog* ptrLog);
     virtual ~MessageLoop();
     
     virtual void Run();
@@ -174,6 +174,7 @@ private:
     TSQueue<IPacket *> m_messageQueue;
     
     Paxos::Instance * m_pInstance;
+    ILog* logger;
     
     int GetNextTimeout();
     bool PopTimer(unsigned int& id, TimeoutType& type);

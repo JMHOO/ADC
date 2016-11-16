@@ -10,6 +10,7 @@
 #define _ADCS__paxosInstance_H_
 
 #include "GLog.h"
+#include "Network.h"
 #include "MessageLoop.h"
 #include "paxosProposal.h"
 #include "paxosAcceptor.h"
@@ -39,6 +40,7 @@ namespace Paxos
         
         void OnTimeout(unsigned int id, TimeoutType type);
         
+        void UpdateServerList(ADCS::ServerList list);
         
     private:
         MessageLoop loop;
@@ -48,6 +50,8 @@ namespace Paxos
         Learner learner;
         
         ILog*  logger;
+        
+        ADCS::ServerList m_aliveSrvList;
         
         static Instance*   _paxos_instance;
     };

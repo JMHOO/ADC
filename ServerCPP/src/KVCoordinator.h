@@ -2,18 +2,14 @@
 #ifndef __KVCoordinator_H_
 #define __KVCoordinator_H_
 
-#include <string>
-#include <vector>
 #include "ErrorCode.h"
 #include "GLog.h"
+#include "Network.h"
 
 using namespace std;
 
 namespace ADCS
 {
-    
-    typedef std::pair<string,int> ServerDesc;
-    typedef std::vector<ServerDesc> ServerList;
 
     class CKvCoordinator
     {

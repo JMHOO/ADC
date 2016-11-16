@@ -10,7 +10,7 @@
 
 namespace Paxos
 {
-    Learner::Learner(ILog* ptrLog) : logger(ptrLog)
+    Learner::Learner(Paxos::Instance * instance, ILog* ptrLog) : m_pInstance(instance), logger(ptrLog)
     {
         
     }

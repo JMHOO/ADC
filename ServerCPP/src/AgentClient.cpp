@@ -3,6 +3,7 @@
 #include "AgentClient.h"
 #include "jsonAgentPackage.h"
 #include "KVCoordinator.h"
+#include "Network.h"
 
 namespace ADCS
 {

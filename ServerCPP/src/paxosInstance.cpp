@@ -39,7 +39,8 @@ namespace Paxos
     
     
     
-    Instance::Instance(ILog* ptrLog) : loop(this), proposal(ptrLog), acceptor(ptrLog), learner(ptrLog), logger(ptrLog)
+    Instance::Instance(ILog* ptrLog) : loop(this, ptrLog), proposal(this, ptrLog),
+            acceptor(this, ptrLog), learner(this, ptrLog), logger(ptrLog)
     {
         
     }
@@ -60,6 +61,10 @@ namespace Paxos
         
     }
     
+    void Instance::UpdateServerList(ADCS::ServerList list)
+    {
+        this->m_aliveSrvList = list;
+    }
     
     void Instance::OnTimeout(unsigned int id, TimeoutType type)
     {
