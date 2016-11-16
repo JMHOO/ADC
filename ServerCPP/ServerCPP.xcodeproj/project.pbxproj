@@ -30,6 +30,13 @@
 		BF76A2681DC3C9030001D0B1 /* jsonAgentPackage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF76A2661DC3C9030001D0B1 /* jsonAgentPackage.cpp */; };
 		BF76A26D1DC3F93F0001D0B1 /* TCPClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF76A26A1DC3F93F0001D0B1 /* TCPClient.cpp */; };
 		BF76A2701DC3F9F80001D0B1 /* AgentClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF76A26F1DC3F9F80001D0B1 /* AgentClient.cpp */; };
+		BF9CE8A71DDAB41300A902C9 /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8A61DDAB41300A902C9 /* Thread.cpp */; };
+		BF9CE8AA1DDACD0900A902C9 /* MessageLoop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8A91DDACD0900A902C9 /* MessageLoop.cpp */; };
+		BF9CE8AE1DDB9ED800A902C9 /* jsonPaxos.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8AC1DDB9ED800A902C9 /* jsonPaxos.cpp */; };
+		BF9CE8B11DDBA0AC00A902C9 /* paxosInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8B01DDBA0AC00A902C9 /* paxosInstance.cpp */; };
+		BF9CE8B41DDBA13800A902C9 /* paxosProposal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8B31DDBA13800A902C9 /* paxosProposal.cpp */; };
+		BF9CE8B71DDBB89600A902C9 /* paxosAcceptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8B61DDBB89600A902C9 /* paxosAcceptor.cpp */; };
+		BF9CE8BA1DDBB9A200A902C9 /* paxosLearner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8B91DDBB9A200A902C9 /* paxosLearner.cpp */; };
 		BF9D36EC1DC7C4080067E556 /* UDPClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9D36EA1DC7C4080067E556 /* UDPClient.cpp */; };
 		BF9D36EF1DC7F7320067E556 /* KVCoordinator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9D36EE1DC7F7320067E556 /* KVCoordinator.cpp */; };
 /* End PBXBuildFile section */
@@ -98,6 +105,20 @@
 		BF76A26C1DC3F93F0001D0B1 /* IClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IClient.h; path = src/IClient.h; sourceTree = "<group>"; };
 		BF76A26E1DC3F9EA0001D0B1 /* AgentClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AgentClient.h; path = src/AgentClient.h; sourceTree = "<group>"; };
 		BF76A26F1DC3F9F80001D0B1 /* AgentClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AgentClient.cpp; path = src/AgentClient.cpp; sourceTree = "<group>"; };
+		BF9CE8A51DDAB40500A902C9 /* Thread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Thread.h; path = src/Thread.h; sourceTree = "<group>"; };
+		BF9CE8A61DDAB41300A902C9 /* Thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Thread.cpp; path = src/Thread.cpp; sourceTree = "<group>"; };
+		BF9CE8A81DDACCC000A902C9 /* MessageLoop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MessageLoop.h; path = src/MessageLoop.h; sourceTree = "<group>"; };
+		BF9CE8A91DDACD0900A902C9 /* MessageLoop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MessageLoop.cpp; path = src/MessageLoop.cpp; sourceTree = "<group>"; };
+		BF9CE8AC1DDB9ED800A902C9 /* jsonPaxos.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = jsonPaxos.cpp; path = src/jsonPaxos.cpp; sourceTree = "<group>"; };
+		BF9CE8AD1DDB9ED800A902C9 /* jsonPaxos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = jsonPaxos.h; path = src/jsonPaxos.h; sourceTree = "<group>"; };
+		BF9CE8AF1DDBA09F00A902C9 /* paxosInstance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = paxosInstance.h; path = src/paxosInstance.h; sourceTree = "<group>"; };
+		BF9CE8B01DDBA0AC00A902C9 /* paxosInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = paxosInstance.cpp; path = src/paxosInstance.cpp; sourceTree = "<group>"; };
+		BF9CE8B21DDBA12B00A902C9 /* paxosProposal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = paxosProposal.h; path = src/paxosProposal.h; sourceTree = "<group>"; };
+		BF9CE8B31DDBA13800A902C9 /* paxosProposal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = paxosProposal.cpp; path = src/paxosProposal.cpp; sourceTree = "<group>"; };
+		BF9CE8B51DDBB88700A902C9 /* paxosAcceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = paxosAcceptor.h; path = src/paxosAcceptor.h; sourceTree = "<group>"; };
+		BF9CE8B61DDBB89600A902C9 /* paxosAcceptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = paxosAcceptor.cpp; path = src/paxosAcceptor.cpp; sourceTree = "<group>"; };
+		BF9CE8B81DDBB99600A902C9 /* paxosLearner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = paxosLearner.h; path = src/paxosLearner.h; sourceTree = "<group>"; };
+		BF9CE8B91DDBB9A200A902C9 /* paxosLearner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = paxosLearner.cpp; path = src/paxosLearner.cpp; sourceTree = "<group>"; };
 		BF9D36EA1DC7C4080067E556 /* UDPClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UDPClient.cpp; path = src/UDPClient.cpp; sourceTree = "<group>"; };
 		BF9D36EB1DC7C4080067E556 /* UDPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UDPClient.h; path = src/UDPClient.h; sourceTree = "<group>"; };
 		BF9D36ED1DC7F7220067E556 /* KVCoordinator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = KVCoordinator.h; path = src/KVCoordinator.h; sourceTree = "<group>"; };
@@ -142,6 +163,7 @@
 				BF7160551DB282B100F09E59 /* Package */,
 				BF7160541DB2816600F09E59 /* Framework */,
 				BF7160531DB2814200F09E59 /* Processors */,
+				BF9CE8AB1DDB8ED800A902C9 /* Paxos */,
 				BF7160521DB2100100F09E59 /* json.hpp */,
 				BF20598F1DADBCD500B11921 /* SrvApp.cpp */,
 				BF20598E1DADBCC200B11921 /* SrvApp.h */,
@@ -195,6 +217,10 @@
 				BF20597B1DACA31B00B11921 /* GLog.h */,
 				BF20597E1DACA31B00B11921 /* Utility.cpp */,
 				BF20597F1DACA31B00B11921 /* Utility.h */,
+				BF9CE8A51DDAB40500A902C9 /* Thread.h */,
+				BF9CE8A61DDAB41300A902C9 /* Thread.cpp */,
+				BF9CE8A81DDACCC000A902C9 /* MessageLoop.h */,
+				BF9CE8A91DDACD0900A902C9 /* MessageLoop.cpp */,
 			);
 			name = Framework;
 			sourceTree = "<group>";
@@ -202,6 +228,8 @@
 		BF7160551DB282B100F09E59 /* Package */ = {
 			isa = PBXGroup;
 			children = (
+				BF9CE8AC1DDB9ED800A902C9 /* jsonPaxos.cpp */,
+				BF9CE8AD1DDB9ED800A902C9 /* jsonPaxos.h */,
 				BF76A2661DC3C9030001D0B1 /* jsonAgentPackage.cpp */,
 				BF76A2671DC3C9030001D0B1 /* jsonAgentPackage.h */,
 				BF7160561DB282E300F09E59 /* PackageInterface.h */,
@@ -224,6 +252,21 @@
 				BF76A26F1DC3F9F80001D0B1 /* AgentClient.cpp */,
 			);
 			name = Agent;
+			sourceTree = "<group>";
+		};
+		BF9CE8AB1DDB8ED800A902C9 /* Paxos */ = {
+			isa = PBXGroup;
+			children = (
+				BF9CE8AF1DDBA09F00A902C9 /* paxosInstance.h */,
+				BF9CE8B01DDBA0AC00A902C9 /* paxosInstance.cpp */,
+				BF9CE8B21DDBA12B00A902C9 /* paxosProposal.h */,
+				BF9CE8B31DDBA13800A902C9 /* paxosProposal.cpp */,
+				BF9CE8B51DDBB88700A902C9 /* paxosAcceptor.h */,
+				BF9CE8B61DDBB89600A902C9 /* paxosAcceptor.cpp */,
+				BF9CE8B81DDBB99600A902C9 /* paxosLearner.h */,
+				BF9CE8B91DDBB9A200A902C9 /* paxosLearner.cpp */,
+			);
+			name = Paxos;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -283,13 +326,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF9CE8B71DDBB89600A902C9 /* paxosAcceptor.cpp in Sources */,
 				BF76A2651DC3C5340001D0B1 /* ServerManager.cpp in Sources */,
+				BF9CE8B41DDBA13800A902C9 /* paxosProposal.cpp in Sources */,
 				BF2059841DACA33F00B11921 /* makefile in Sources */,
 				BF76A2701DC3F9F80001D0B1 /* AgentClient.cpp in Sources */,
 				BF2059821DACA31B00B11921 /* Utility.cpp in Sources */,
 				BF7160481DB1AD1800F09E59 /* TCPSyncProcessor.cpp in Sources */,
+				BF9CE8AA1DDACD0900A902C9 /* MessageLoop.cpp in Sources */,
 				BF7160641DB2C81B00F09E59 /* KVServer.cpp in Sources */,
 				BF2059811DACA31B00B11921 /* main.cpp in Sources */,
+				BF9CE8B11DDBA0AC00A902C9 /* paxosInstance.cpp in Sources */,
 				BF76A26D1DC3F93F0001D0B1 /* TCPClient.cpp in Sources */,
 				BF7160451DB1A79000F09E59 /* TCPSyncIOServer.cpp in Sources */,
 				BF76A2681DC3C9030001D0B1 /* jsonAgentPackage.cpp in Sources */,
@@ -297,13 +344,16 @@
 				BF76A2621DC3C0E80001D0B1 /* AgentServProcessor.cpp in Sources */,
 				BF7160661DB312F200F09E59 /* ErrorCode.cpp in Sources */,
 				BF71604B1DB1B79100F09E59 /* SocketHelper.cpp in Sources */,
+				BF9CE8AE1DDB9ED800A902C9 /* jsonPaxos.cpp in Sources */,
 				BF71606D1DB487F600F09E59 /* RPCServer.cpp in Sources */,
 				BF2059941DADE98100B11921 /* ServerInterface.cpp in Sources */,
+				BF9CE8BA1DDBB9A200A902C9 /* paxosLearner.cpp in Sources */,
 				BF7160611DB2957D00F09E59 /* jsonkvPackage.cpp in Sources */,
 				BF7160581DB282F200F09E59 /* PackageInterface.cpp in Sources */,
 				BF71606A1DB4778500F09E59 /* CKvJSONRPCService.cpp in Sources */,
 				BF2059801DACA31B00B11921 /* GLog.cpp in Sources */,
 				BF9D36EF1DC7F7320067E556 /* KVCoordinator.cpp in Sources */,
+				BF9CE8A71DDAB41300A902C9 /* Thread.cpp in Sources */,
 				BF2059901DADBCD500B11921 /* SrvApp.cpp in Sources */,
 				BF2059881DACB4EA00B11921 /* ThreadPool.cpp in Sources */,
 				BF9D36EC1DC7C4080067E556 /* UDPClient.cpp in Sources */,

@@ -3,6 +3,7 @@
 #include "PackageInterface.h"
 #include "jsonkvPackage.h"
 #include "jsonAgentPackage.h"
+#include "jsonPaxos.h"
 
 IPacket* IPacket::CreatePackage(const char* sdata, unsigned int uiDataLen, int clientSocket)
 {
@@ -28,6 +29,10 @@ IPacket* IPacket::CreatePackage(const char* sdata, unsigned int uiDataLen, int c
             {
                 // jsonagent package
                 packet = new jsonAgentPacket(sdata, uiDataLen, clientSocket);
+            }
+            else if( strstr(sdata+ADCS::LENGTH_PACKHEADER, "jsonpaxos") != NULL)
+            {
+                packet = new jsonPaxos(sdata, uiDataLen, clientSocket);
             }
             
             if( packet && !packet->IsValid() )
@@ -106,6 +111,11 @@ bool IPacket::IsValid() const
     if( m_header.Length == 0 || m_data.length == 0 || m_data.data == nullptr )
         return false;
     
+    return true;
+}
+
+bool IPacket::NeedResponse() const
+{
     return true;
 }
 

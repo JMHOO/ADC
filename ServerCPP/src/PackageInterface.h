@@ -17,6 +17,7 @@ public:
     virtual ~IPacket();
     virtual void Process(){ };
     virtual bool IsValid() const;
+    virtual bool NeedResponse() const;
     
     bool ToBytes(const char*& pStreamData, unsigned long& ulDataLen);
     const ADCS::PACK_HEADER GetPackHead() const { return m_header; }
