@@ -13,46 +13,7 @@
 
 namespace Paxos
 {
-    
-    IDNumber::IDNumber() : m_proposalID(0), m_nodeID(0)
-    { }
-    
-    IDNumber::IDNumber(uint64_t proposalID, int nodeID) : m_proposalID(proposalID), m_nodeID(nodeID)
-    { }
-    
-    IDNumber::~IDNumber() { }
-    
-    bool IDNumber::operator >= (const IDNumber & other) const
-    {
-        return m_proposalID == other.m_proposalID ? (m_nodeID >= other.m_nodeID) : (m_proposalID >= other.m_proposalID);
-    }
-    
-    bool IDNumber::operator > (const IDNumber & other) const
-    {
-        return m_proposalID == other.m_proposalID ? (m_nodeID > other.m_nodeID) : (m_proposalID > other.m_proposalID);
-    }
-    
-    bool IDNumber::operator != (const IDNumber & other) const
-    {
-        return m_proposalID != other.m_proposalID || m_nodeID != other.m_nodeID;
-    }
-    
-    bool IDNumber::operator == (const IDNumber & other) const
-    {
-        return m_proposalID == other.m_proposalID && m_nodeID == other.m_nodeID;
-    }
-
-    const bool IDNumber::isValid() const
-    {
-        return m_proposalID > 0;
-    }
-    
-    void IDNumber::reset()
-    {
-        m_proposalID = 0;
-        m_nodeID = 0;
-    }
-    
+    // --------------------------------------------------------------------------------------------------------
     
     Instance* Instance::_paxos_instance = nullptr;
     
@@ -67,6 +28,7 @@ namespace Paxos
         }
         return true;
     }
+    
     void Instance::Destory()
     {
         if(_paxos_instance)
@@ -75,6 +37,7 @@ namespace Paxos
             _paxos_instance = nullptr;
         }
     }
+    
     Instance* Instance::GetInstance()
     {
         return _paxos_instance;
@@ -101,6 +64,11 @@ namespace Paxos
     void Instance::SetInstanceID(const uint64_t id)
     {
         m_ID64 = id;
+    }
+    
+    int Instance::GetNodeID()
+    {
+        return m_nodeid;
     }
     
     void Instance::NewTransaction()
@@ -132,9 +100,10 @@ namespace Paxos
         
     }
     
-    void Instance::UpdateServerList(ADCS::ServerList list)
+    void Instance::UpdateServerList(ADCS::ServerList list, int nodeid)
     {
         this->m_aliveSrvList = list;
+        m_nodeid = nodeid;
     }
     
     void Instance::OnTimeout(unsigned int id, TimeoutType type)

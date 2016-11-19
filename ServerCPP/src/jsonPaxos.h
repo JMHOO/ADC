@@ -5,7 +5,7 @@
 #include "PackageInterface.h"
 #include "json.hpp"
 
-enum class PaxosType
+enum class PaxosType : unsigned int
 {
     Prepare = 1,
     PrepareResponse,
@@ -18,6 +18,7 @@ enum class PaxosType
 class jsonPaxos : public IPacket
 {
 public:
+    jsonPaxos();
     jsonPaxos(const char* pData, unsigned int nDataLen, int clientSocket);
     
     virtual ~jsonPaxos();
@@ -25,8 +26,15 @@ public:
     virtual bool IsValid() const;
     virtual bool NeedResponse() const;
     
-    PaxosType MessageType() const;
+    PaxosType GetMessageType();
+    uint64_t GetInstanceID();
+    uint64_t GetProposalID();
+    int GetNodeID();
     
+    void SetMessageType(PaxosType type);
+    void SetInstanceID(uint64_t instanceID);
+    void SetProposalID(uint64_t proposalID);
+    void SetNodeID(int nodeID);
     
 protected:
     virtual bool GetResult(char*& pStreamData, unsigned long& ulDataLen);

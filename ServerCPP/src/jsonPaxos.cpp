@@ -6,6 +6,11 @@
 using namespace nlohmann;
 using namespace ADCS;
 
+jsonPaxos::jsonPaxos()
+{
+    
+}
+
 jsonPaxos::jsonPaxos(const char* pData, unsigned int nDataLen, int clientSocket) : IPacket(pData, nDataLen, clientSocket)
 {
     m_type = PackageType::Paxos;
@@ -35,16 +40,7 @@ bool jsonPaxos::IsValid() const
 {
     if(!IPacket::IsValid()) return false;
     
-    if(m_json_request.is_array())
-    {
-        for(size_t i = 0; i < m_json_request.size(); i++)
-        {
-            auto j = m_json_request[i];
-            if(j["jsonpaxos"] == "1.0")
-                return true;
-        }
-    }
-    else if( m_json_request.is_object())
+    if( m_json_request.is_object())
     {
         if(m_json_request["jsonpaxos"] == "1.0")
             return true;
@@ -58,11 +54,85 @@ bool jsonPaxos::NeedResponse() const
     return true;
 }
 
-PaxosType jsonPaxos::MessageType() const
+PaxosType jsonPaxos::GetMessageType()
 {
+    unsigned int type = 0;
+    try
+    {
+        type = m_json_request["type"];
+    }
+    catch (std::domain_error e)
+    {
+        // wront parameter
+    }
+    
+    m_paxosType = (PaxosType)type;
     return m_paxosType;
 }
 
+uint64_t jsonPaxos::GetInstanceID()
+{
+    uint64_t instanceid = 0;
+    try
+    {
+        instanceid = m_json_request["instanceid"];
+    }
+    catch(std::domain_error e)
+    {
+        // wrong parameter, drop
+    }
+    return instanceid;
+}
+
+uint64_t jsonPaxos::GetProposalID()
+{
+    uint64_t proposalid = 0;
+    try
+    {
+        proposalid = m_json_request["proposalid"];
+    }
+    catch(std::domain_error e)
+    {
+        // wrong parameter, drop
+    }
+    return proposalid;
+}
+
+int jsonPaxos::GetNodeID()
+{
+    int nodeid = 0;
+    try
+    {
+        nodeid = m_json_request["nodeid"];
+    }
+    catch(std::domain_error e)
+    {
+        // wrong parameter, drop
+    }
+    return nodeid;
+}
+
+void jsonPaxos::SetMessageType(PaxosType type)
+{
+    unsigned int uiType = (unsigned int)type;
+    m_json_result["type"] = uiType;
+    m_paxosType = type;
+}
+
+void jsonPaxos::SetInstanceID(uint64_t instanceID)
+{
+    m_json_result["instanceid"] = instanceID;
+}
+
+void jsonPaxos::SetProposalID(uint64_t proposalID)
+{
+    m_json_result["proposalid"] = proposalID;
+}
+
+void jsonPaxos::SetNodeID(int nodeID)
+{
+    m_json_result["nodeid"] = nodeID;
+}
 
 bool jsonPaxos::GetResult(char*& pStreamData, unsigned long& ulDataLen)
 {

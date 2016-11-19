@@ -9,6 +9,7 @@
 #ifndef _ADCS__paxosProposal_H_
 #define _ADCS__paxosProposal_H_
 
+#include "paxosFoundation.h"
 #include "paxosCounter.h"
 #include <string>
 
@@ -20,9 +21,15 @@ namespace Paxos
     class Proposal
     {
     public:
+        enum State { Idle = 0, Preparing, Accepting };
+        
+    public:
         Proposal(Paxos::Instance * instance, ILog* ptrLog);
         ~Proposal();
         
+        void Prepare(bool bUseNewID = false);
+        void Accept();
+        void AddPrepareTimeout(const int nTimeout = 0);
         
     public:
         void NewTransaction();
@@ -39,7 +46,17 @@ namespace Paxos
         uint64_t m_proposalID;
         uint64_t m_otherHighestID;
         
+        unsigned int m_idPrepareTimer;
+        unsigned int m_idAcceptTimer;
+        
         std::string m_value;
+        
+        State m_state;
+        
+        IDNumber m_otherPreAcceptedID;
+        
+        void ExitPrepare();
+        void ExitAccept();
     };
 }
 

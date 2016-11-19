@@ -24,25 +24,6 @@ class IPacket;
 namespace Paxos
 {
     
-    struct IDNumber
-    {
-    public:
-        IDNumber();
-        IDNumber(uint64_t proposalID, int nodeID);
-        ~IDNumber();
-        
-        bool operator >= (const IDNumber & other) const;
-        bool operator != (const IDNumber & other) const;
-        bool operator == (const IDNumber & other) const;
-        bool operator > (const IDNumber & other) const;
-        
-        const bool isValid() const;
-        void reset();
-        
-        uint64_t m_proposalID;
-        int m_nodeID;
-    };
-    
     class Instance
     {
     public:
@@ -59,6 +40,7 @@ namespace Paxos
         uint64_t    GetInstanceID();
         void        SetInstanceID(const uint64_t id);
         void        NewTransaction();
+        int         GetNodeID();
         
         int NodeCount();
         int QuantumCount();
@@ -67,10 +49,12 @@ namespace Paxos
         
         void OnTimeout(unsigned int id, TimeoutType type);
         
-        void UpdateServerList(ADCS::ServerList list);
+        void UpdateServerList(ADCS::ServerList list, int nodeid);
         
         bool SendMessage(int nNodeID, IPacket* paxosPackage);
         bool BroadcastMessage(IPacket* paxosPackage);
+        
+        MessageLoop* GetMessageLoop(){ return &loop; }
         
     private:
         MessageLoop loop;
@@ -83,9 +67,11 @@ namespace Paxos
         
         ADCS::ServerList m_aliveSrvList;
         
-        static Instance*   _paxos_instance;
+        static Instance* _paxos_instance;
         
         uint64_t m_ID64;
+        
+        int m_nodeid;
         
         bool __send__udp_message__(const char* szServerIP, int port, IPacket* paxosPackage);
     };

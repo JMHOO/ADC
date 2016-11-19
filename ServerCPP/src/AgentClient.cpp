@@ -3,6 +3,7 @@
 #include "AgentClient.h"
 #include "jsonAgentPackage.h"
 #include "KVCoordinator.h"
+#include "paxosInstance.h"
 #include "Network.h"
 
 namespace ADCS
@@ -44,6 +45,7 @@ namespace ADCS
                 {
                     //if(plogger)plogger->Info("Discovery Client: server list [%s]", jSrvList.dump().c_str());
                     ServerList list;
+                    int myNodeid = 0;
                     for(size_t i = 0; i < jSrvList.size(); i++)
                     {
                         ServerDesc sd;
@@ -53,10 +55,14 @@ namespace ADCS
                         
                         //if(plogger)plogger->Info("ExtAddr: %s:%d, cur:%s:%d", pAgent->m_serverExternalIP.c_str(), pAgent->m_rpcserverPort,
                          //                        sd.first.c_str(), sd.second);
-                        if( sd.address != pAgent->m_serverExternalIP || sd.port != pAgent->m_rpcserverPort)
+                        if( sd.address != pAgent->m_serverExternalIP || sd.port != pAgent->m_udpserverPort)
                             list.push_back(sd);
+                        
+                        if( sd.address == pAgent->m_serverExternalIP && sd.port == pAgent->m_udpserverPort)
+                            myNodeid = sd.nodeid;
                     }
                     CKvCoordinator::GetInstance()->UpdateServerList(list);
+                    PaxosInstance->UpdateServerList(list, myNodeid);
                 }
             }
             

@@ -129,7 +129,7 @@ json jsonAgentPacket::__process_one_operation__(json jrequest)
         
         std::transform(strProtocol.begin(),strProtocol.end(),strProtocol.begin(), ::tolower);
 
-        bool bTCP = strProtocol == "tcp";
+        //bool bTCP = strProtocol == "tcp";
         if( srvList.size() == 0 )
         {
             jresult["result"]["code"] = std::to_string((int)903);
