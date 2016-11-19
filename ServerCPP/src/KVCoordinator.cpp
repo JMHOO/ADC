@@ -78,7 +78,7 @@ namespace ADCS
         // 1-phrase
         for( size_t i = 0; i < svl.size(); i++ )
         {
-            string strHttpURL = "http://" + svl[i].first + ":" + std::to_string(svl[i].second);
+            string strHttpURL = "http://" + svl[i].address + ":" + std::to_string(svl[i].port);
             
             m_logger->Info("Coordinator: commnicating with server: %s", strHttpURL.c_str());
             
@@ -122,7 +122,7 @@ namespace ADCS
             
             for( size_t i = 0; i < svl.size(); i++ )
             {
-                string strHttpURL = "http://" + svl[i].first + ":" + std::to_string(svl[i].second);
+                string strHttpURL = "http://" + svl[i].address + ":" + std::to_string(svl[i].port);
                 
                 jsonrpc::HttpClient httpClient(strHttpURL);
                 CKvRPCClient rpcClient(httpClient);

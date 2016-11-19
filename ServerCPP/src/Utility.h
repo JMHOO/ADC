@@ -24,7 +24,7 @@ namespace ADCS
         
         ssize_t						ReadFile(  int fd, void * buf, size_t count );
         ssize_t						WriteFile( int fd, void * buf, size_t count );
-
+        uint64_t                    GetCurrentTimeMS();
     }
 }
 

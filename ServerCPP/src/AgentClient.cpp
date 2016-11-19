@@ -3,6 +3,8 @@
 #include "AgentClient.h"
 #include "jsonAgentPackage.h"
 #include "KVCoordinator.h"
+#include "paxosInstance.h"
+#include "Network.h"
 
 namespace ADCS
 {
@@ -28,7 +30,7 @@ namespace ADCS
             bool bSuccess = false;
             // request online rpc server list
             jsonAgentPacket p;
-            p.BuildGetServerListRequest("rpc");
+            p.BuildGetServerListRequest("udp");
             bool bSent = pAgent->__do_send(&p);
             
             IPacket* pRes = pAgent->__do_recv();
@@ -43,18 +45,24 @@ namespace ADCS
                 {
                     //if(plogger)plogger->Info("Discovery Client: server list [%s]", jSrvList.dump().c_str());
                     ServerList list;
+                    int myNodeid = 0;
                     for(size_t i = 0; i < jSrvList.size(); i++)
                     {
                         ServerDesc sd;
-                        sd.first = jSrvList[i]["address"];
-                        sd.second = jSrvList[i]["port"];
+                        sd.nodeid = jSrvList[i]["nodeid"];
+                        sd.address = jSrvList[i]["address"];
+                        sd.port = jSrvList[i]["port"];
                         
                         //if(plogger)plogger->Info("ExtAddr: %s:%d, cur:%s:%d", pAgent->m_serverExternalIP.c_str(), pAgent->m_rpcserverPort,
                          //                        sd.first.c_str(), sd.second);
-                        if( sd.first != pAgent->m_serverExternalIP || sd.second != pAgent->m_rpcserverPort)
+                        if( sd.address != pAgent->m_serverExternalIP || sd.port != pAgent->m_udpserverPort)
                             list.push_back(sd);
+                        
+                        if( sd.address == pAgent->m_serverExternalIP && sd.port == pAgent->m_udpserverPort)
+                            myNodeid = sd.nodeid;
                     }
                     CKvCoordinator::GetInstance()->UpdateServerList(list);
+                    PaxosInstance->UpdateServerList(list, myNodeid);
                 }
             }
             
@@ -173,7 +181,7 @@ namespace ADCS
         bool bResult = true;
         
         jsonAgentPacket p;
-        p.BuildRegisterRequest(m_serverExternalIP, m_tcpserverPort, m_rpcserverPort);
+        p.BuildRegisterRequest(m_serverExternalIP, m_tcpserverPort, m_rpcserverPort, m_udpserverPort);
         
         __do_send(&p);
         IPacket* pRes = __do_recv();
@@ -200,11 +208,12 @@ namespace ADCS
         return bResult;
     }
     
-    bool CDiscoveryClient::Start(std::string strAgentSrvAddr, std::string strExternalIP, int nTCPServerPort, int nRPCServerPort)
+    bool CDiscoveryClient::Start(std::string strAgentSrvAddr, std::string strExternalIP, int nTCPServerPort, int nRPCServerPort, int nUDPServerPort)
     {
         m_serverExternalIP = strExternalIP;
         m_tcpserverPort = nTCPServerPort;
         m_rpcserverPort = nRPCServerPort;
+        m_udpserverPort = nUDPServerPort;
         
         bool bStarted = false;
         m_tcpClient.SetIP(strAgentSrvAddr.c_str());

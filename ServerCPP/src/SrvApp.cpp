@@ -10,6 +10,7 @@
 #include "RPCServer.h"
 #include "ServerManager.h"
 #include "KVCoordinator.h"
+#include "paxosInstance.h"
 
 const char kvserver_cluster[INTERAL_SERVER_COUNT][16] = { "tcp", "udp", "rpc" };
 
@@ -65,9 +66,15 @@ bool CServerApp::Start(unsigned short usPort, std::string sMode,  std::string se
             // ......
         }
         
+        // initialize paxos instance
+        if( !Paxos::Instance::Create() )
+        {
+            // ......
+        }
+        
         // Start discovery Client
         m_discoveryClient = new ADCS::CDiscoveryClient();
-        if( m_discoveryClient->Start(m_discoverySrvAddr, m_serverExternalAddr, usPort, usPort + 2))
+        if( m_discoveryClient->Start(m_discoverySrvAddr, m_serverExternalAddr, usPort, usPort + 2, usPort + 1))
         {
             std::cout << "Discovery Client is started. " << std::endl;
         }
@@ -152,7 +159,7 @@ void CServerApp::ListAllServer()
         
         for(size_t i = 0; i < serverList.size(); i++ )
         {
-            std::cout << "Server: " << serverList[i].first << ":" << serverList[i].second << endl;
+            std::cout << "Server: " << serverList[i].address << ":" << serverList[i].port << endl;
         }
 
     }

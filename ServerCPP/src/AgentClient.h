@@ -25,6 +25,7 @@ namespace ADCS
         std::string m_serverExternalIP;
         int         m_tcpserverPort;
         int         m_rpcserverPort;
+        int         m_udpserverPort;
         
         int         m_globalServerID;
         
@@ -37,7 +38,7 @@ namespace ADCS
         bool        __register();
         
     public:
-        bool Start(std::string strAgentSrvAddr, std::string strExternalIP, int nTCPServerPort, int nRPCServerPort );
+        bool Start(std::string strAgentSrvAddr, std::string strExternalIP, int nTCPServerPort, int nRPCServerPort, int nUDPServerPort );
         bool Stop();
         IClient* GetClient();
         

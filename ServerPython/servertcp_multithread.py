@@ -13,19 +13,23 @@ from jsonrpclib import Server
 #json:{'operate': "" ,'key':"", 'value':""}#no[]means just a  json not json array
 dict = {}#reserve key:value
 dictdis ={}#reserve address:port  from the discovery
+dictop = ""
+dictkey = ""
+dictvalue = ""
+
 bufsiz = 1024
 PACK_HEADER_LENGTH = 16
 fout = open('logtcpserver.txt', 'w')
-op={"operate":"","key":"","value":""}
-global dictop 
-global dictkey 
-global dictvalue
+
 ###############################################################################
 def SrvPut(coorid,clientid,key,value):
     print "rpcSrvput"
     #msg = {"code":code, "value":value,"message":value}
     #dict[key] = value
     ##this should write SrvGo whether success
+    global dictop 
+    global dictkey 
+    global dictvalue
     dictop = "Put"
     dictkey = key
     dictvalue = value
@@ -40,6 +44,9 @@ def SrvPut(coorid,clientid,key,value):
     return msg
 ###############################################################################
 def SrvDelete(coorid,clientid,key,value):
+    global dictop 
+    global dictkey 
+    global dictvalue
     print "rpcSrvdelete"
     dictop = "Delete"
     dictkey = key
@@ -55,6 +62,9 @@ def SrvDelete(coorid,clientid,key,value):
     return msg
 ###############################################################################
 def SrvGo(coorid,clientid):
+    global dictop 
+    global dictkey 
+    global dictvalue
     print "rpcSrvgo"
     if dict.has_key(dictkey):
         if dictop == 'Put':
@@ -126,6 +136,7 @@ class ThreadJSONRPCServer(SocketServer.ThreadingMixIn,SimpleJSONRPCServer):
 ###############################################################################
 class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler): #the function of tcp server and rpc client
     def handle(self):
+        global dictdis
         print '...connected from:', self.client_address
         #receive client message
         while True:
@@ -133,7 +144,6 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler): #the function 
             #print(cur_thread.name)
             fout.write(str(datetime.datetime.now())+' '+"The server's threadname is " +' '+ str(cur_thread) + '\n')
             request = self.request.recv(bufsiz)
-            payload
             if not request:
                 print("There is no valid request")
                 fout.write(str(datetime.datetime.now())+' '+"The request's type is incorrect" +' '+  '\n')
@@ -244,6 +254,7 @@ class ThreadedTCPRequestHandler(SocketServer.BaseRequestHandler): #the function 
             ##################################
 ######Reg###############################################################################
 def handle(operate,hostip,porttcp,postrpc):  #handle linkdiscovery 
+    global dictdis
     msgRegSrv = {'jsonagent':"1.0",'operate':'register', 'address':hostip,'tcpport':porttcp,'rpcport':postrpc}
     msgGetSrvList = {'jsonagent':"1.0",'operate':'getserverlist', 'protocol':'rpc'}
     jmsg = json.dumps(msgRegSrv) if operate == 'register' else json.dumps(msgGetSrvList)
@@ -271,7 +282,6 @@ def handle(operate,hostip,porttcp,postrpc):  #handle linkdiscovery
     tcpCliSock.sendall(pkg_header)
     tcpCliSock.sendall(pkg_payload)
     
-    global payload
     #receive response
     response = tcpCliSock.recv(bufsiz)
     if not response:
@@ -295,6 +305,7 @@ def handle(operate,hostip,porttcp,postrpc):  #handle linkdiscovery
     rec = json.loads(payload[0])
     #fout.write(str(rec[0]['result'])+' '+'\n')
     if operate == 'getserverlist':
+        dictdis = {};
         if rec['result']['code'] == "0":
             #recstr = "The value is " + str(rec['result']['value']) + ' ' + rec['result']['message'] + '\n'
             recstr = "The server has get serverlist successfullly"
@@ -338,6 +349,13 @@ def AsRPCServer(hostrpc,portrpc):
     server.serve_forever()        
 #####################################################################################
 if __name__=="__main__": 
+    global dictop 
+    global dictkey 
+    global dictvalue
+    global dictdis
+    dictop = ""
+    dictkey = ""
+    dictvalue = ""
     #we should handle the request of client
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('-p', '--port', dest='Port', metavar='25000', 

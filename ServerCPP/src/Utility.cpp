@@ -11,6 +11,7 @@
 #include <stdlib.h>								//-- for exit()
 #include <fcntl.h>								//-- for open()
 #include <sys/resource.h>						//-- for getrlimit()
+#include <sys/time.h>
 #include "Utility.h"
 
 
@@ -288,4 +289,18 @@ ssize_t ADCS::Utility::WriteFile( int fd, void * buf, size_t count )
     }
     
     return ssizeAllWriteBytes;
+}
+
+uint64_t ADCS::Utility::GetCurrentTimeMS()
+{
+    uint64_t now;
+    struct timeval tv;
+    
+    gettimeofday(&tv, NULL);
+    
+    now = tv.tv_sec;
+    now *= 1000;
+    now += tv.tv_usec / 1000;
+    
+    return now;
 }

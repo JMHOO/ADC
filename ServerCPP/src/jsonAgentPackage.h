@@ -16,7 +16,7 @@ public:
     virtual bool IsValid() const;
     
 public:
-    void BuildRegisterRequest(std::string strIP, int tcpport, int rpcport);
+    void BuildRegisterRequest(std::string strIP, int tcpport, int rpcport, int udpPort);
     void BuildUnRegisterRequest();
     void BuildGetServerListRequest(std::string serverType);
     nlohmann::json GetServerList();
