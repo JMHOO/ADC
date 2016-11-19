@@ -20,17 +20,15 @@ namespace Paxos
     public:
         Storage(ILog* ptrLog);
         
-        void Init();
-        std::string Seek(const int Id);
-        void write(const std:: string data);
-        void setFilePath(const std::string newFilePath);
-        std::string getFilePath();
-        
+        void Init();	//Init() check if default storage file is exist. Create file if not exist 
+    	std::string Seek(const int64_t instanceId);
+    	void write(const int64_t instanceId, const int64_t proposalId, const std::string value);
+    	std::string getFilePath();
         
     private:
         ILog* logger;
         
-        std::string file_path;
+        const std::string file_path = "paxosStorage.txt";	//default storage file
         void CreateFile();
         bool IsFileExist();
     };
