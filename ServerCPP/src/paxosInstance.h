@@ -35,6 +35,13 @@ namespace Paxos
         Instance(ILog* ptrLog);
         ~Instance();
         
+        
+        uint64_t    GetInstanceID();
+        void        SetInstanceID(const uint64_t id);
+        void        NewTransaction();
+        
+        int NodeCount();
+        int QuantumCount();
         void ProcessMessage(IPacket* p);
         void PushToMessageQueue(IPacket* p);
         
@@ -57,6 +64,8 @@ namespace Paxos
         ADCS::ServerList m_aliveSrvList;
         
         static Instance*   _paxos_instance;
+        
+        uint64_t m_ID64;
         
         bool __send__udp_message__(const char* szServerIP, int port, IPacket* paxosPackage);
     };

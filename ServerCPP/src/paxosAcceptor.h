@@ -19,6 +19,7 @@ namespace Paxos
     public:
         Acceptor(Paxos::Instance * instance, ILog* ptrLog);
 
+        void NewTransaction();
 
     private:
         Paxos::Instance * m_pInstance;

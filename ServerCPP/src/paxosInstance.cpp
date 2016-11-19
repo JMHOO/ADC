@@ -42,7 +42,7 @@ namespace Paxos
     
     
     Instance::Instance(ILog* ptrLog) : loop(this, ptrLog), proposal(this, ptrLog),
-            acceptor(this, ptrLog), learner(this, ptrLog), logger(ptrLog)
+            acceptor(this, ptrLog), learner(this, ptrLog), logger(ptrLog), m_ID64(0)
     {
         
     }
@@ -50,6 +50,34 @@ namespace Paxos
     Instance::~Instance()
     {
         delete logger;
+    }
+    
+    uint64_t Instance::GetInstanceID()
+    {
+        return m_ID64;
+    }
+    
+    void Instance::SetInstanceID(const uint64_t id)
+    {
+        m_ID64 = id;
+    }
+    
+    void Instance::NewTransaction()
+    {
+        m_ID64++;
+        proposal.NewTransaction();
+        acceptor.NewTransaction();
+        learner.NewTransaction();
+    }
+    
+    int Instance::NodeCount()
+    {
+        return (int)m_aliveSrvList.size();
+    }
+    
+    int Instance::QuantumCount()
+    {
+        return int(m_aliveSrvList.size()/2 + 1);
     }
     
     void Instance::PushToMessageQueue(IPacket* p)

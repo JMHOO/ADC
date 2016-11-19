@@ -15,4 +15,9 @@ namespace Paxos
     {
         
     }
+    
+    void Acceptor::NewTransaction()
+    {
+        
+    }
 }

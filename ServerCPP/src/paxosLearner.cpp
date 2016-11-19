@@ -14,4 +14,9 @@ namespace Paxos
     {
         
     }
+    
+    void Learner::NewTransaction()
+    {
+        
+    }
 }

@@ -20,6 +20,8 @@ namespace Paxos
     public:
         Learner(Paxos::Instance * instance, ILog* ptrLog);
         
+        void NewTransaction();
+        
     private:
         Paxos::Instance * m_pInstance;
         ILog* logger;

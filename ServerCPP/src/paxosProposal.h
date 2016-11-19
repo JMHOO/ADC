@@ -24,7 +24,7 @@ namespace Paxos
         
         
     public:
-        
+        void NewTransaction();
         void OnPrepareTimeout();
         void OnAcceptTimeout();
 

@@ -11,12 +11,17 @@
 
 namespace Paxos
 {
-    Proposal::Proposal(Paxos::Instance * instance, ILog* ptrLog) : m_pInstance(instance), logger(ptrLog)
+    Proposal::Proposal(Paxos::Instance * instance, ILog* ptrLog) : m_pInstance(instance), logger(ptrLog), counter(instance)
     {
         
     }
     
     Proposal::~Proposal()
+    {
+        
+    }
+    
+    void Proposal::NewTransaction()
     {
         
     }
