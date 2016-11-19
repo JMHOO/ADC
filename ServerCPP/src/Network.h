@@ -35,7 +35,13 @@ namespace ADCS
     
     enum class PackageType { None = 0, KV, Discovery, Paxos };
     
-    typedef std::pair<std::string,int> ServerDesc;
+    typedef struct _server_desc_
+    {
+        int nodeid;
+        int port;
+        std::string address;
+    }ServerDesc;
+    //typedef std::pair<std::string,int> ServerDesc;
     typedef std::vector<ServerDesc> ServerList;
 }
 

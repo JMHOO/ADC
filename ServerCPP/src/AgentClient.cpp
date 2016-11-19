@@ -47,12 +47,13 @@ namespace ADCS
                     for(size_t i = 0; i < jSrvList.size(); i++)
                     {
                         ServerDesc sd;
-                        sd.first = jSrvList[i]["address"];
-                        sd.second = jSrvList[i]["port"];
+                        sd.nodeid = jSrvList[i]["nodeid"];
+                        sd.address = jSrvList[i]["address"];
+                        sd.port = jSrvList[i]["port"];
                         
                         //if(plogger)plogger->Info("ExtAddr: %s:%d, cur:%s:%d", pAgent->m_serverExternalIP.c_str(), pAgent->m_rpcserverPort,
                          //                        sd.first.c_str(), sd.second);
-                        if( sd.first != pAgent->m_serverExternalIP || sd.second != pAgent->m_rpcserverPort)
+                        if( sd.address != pAgent->m_serverExternalIP || sd.port != pAgent->m_rpcserverPort)
                             list.push_back(sd);
                     }
                     CKvCoordinator::GetInstance()->UpdateServerList(list);

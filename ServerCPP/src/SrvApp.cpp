@@ -159,7 +159,7 @@ void CServerApp::ListAllServer()
         
         for(size_t i = 0; i < serverList.size(); i++ )
         {
-            std::cout << "Server: " << serverList[i].first << ":" << serverList[i].second << endl;
+            std::cout << "Server: " << serverList[i].address << ":" << serverList[i].port << endl;
         }
 
     }
