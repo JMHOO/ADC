@@ -29,12 +29,18 @@ public:
     PaxosType GetMessageType();
     uint64_t GetInstanceID();
     uint64_t GetProposalID();
+    uint64_t GetRejectPromiseID();
+    uint64_t GetPreAcceptID();
+    int GetPreAcceptNodeID();
     int GetNodeID();
     std::string GetValue();
     
     void SetMessageType(PaxosType type);
     void SetInstanceID(uint64_t instanceID);
     void SetProposalID(uint64_t proposalID);
+    void SetRejectPromiseID(uint64_t promiseID);
+    void SetPreAcceptID(uint64_t preacceptID);
+    void SetPreAcceptNodeID(int preacceptNodeID);
     void SetNodeID(int nodeID);
     void SetValue(std::string value);
     

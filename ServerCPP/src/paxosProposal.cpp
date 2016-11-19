@@ -11,6 +11,7 @@
 #include "MessageLoop.h"
 #include "paxosProposal.h"
 #include "GLog.h"
+#include <stdlib.h>
 
 namespace Paxos
 {
@@ -21,8 +22,11 @@ namespace Paxos
         
         m_idPrepareTimer = 0;
         m_idAcceptTimer = 0;
+        m_snapInstanceID_forTimeout = 0;
         
         m_state = State::Idle;
+        
+        m_bRejectedByOther = false;
     }
     
     Proposal::~Proposal()
@@ -57,7 +61,7 @@ namespace Paxos
         
         ExitAccept();
         m_state = State::Preparing;
-
+        m_bRejectedByOther = false;
         
         m_otherPreAcceptedID.reset();
         if( bUseNewID)
@@ -78,6 +82,70 @@ namespace Paxos
         m_pInstance->BroadcastMessage(&p);
     }
     
+    
+    void Proposal::OnPrepareResponse(IPacket* p)
+    {
+        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        
+        logger->Info("Proposal::OnPrepareResponse, my proposalid:%lu, receive proposalid:%lu, from node:%d, reject by id:%lu",
+                     m_proposalID, pm->GetProposalID(), pm->GetNodeID(), pm->GetRejectPromiseID());
+        
+        if( m_state != State::Preparing )
+        {
+            // ignore, not preparing
+            return;
+        }
+        
+        if( pm->GetProposalID() != m_proposalID )
+        {
+            // ignore
+            return;
+        }
+        
+        counter.Add(Counter::Kinds::Received, pm->GetNodeID());
+        
+        // check if reject
+        if( pm->GetRejectPromiseID() == 0 )
+        {// no reject id, promised
+            logger->Info("Proposal [Promised] PreAcceptID:%lu, PreAcceptNodeID:%d", pm->GetPreAcceptID(), pm->GetPreAcceptNodeID());
+            
+            counter.Add(Counter::Kinds::Promised, pm->GetNodeID());
+            
+            // add pre accept value
+            IDNumber otherPreacceptID(pm->GetPreAcceptID(), pm->GetPreAcceptNodeID());
+            if( otherPreacceptID.isValid() && otherPreacceptID > m_otherPreAcceptedID)
+            {
+                m_otherPreAcceptedID = otherPreacceptID;
+                m_value = pm->GetValue();
+            }
+        }
+        else
+        {// reject by other
+            logger->Info("Proposal [Reject] Reject by ID: %lu", pm->GetRejectPromiseID());
+            counter.Add(Counter::Kinds::Rejected, pm->GetNodeID());
+            m_bRejectedByOther = true;
+            
+            if (pm->GetRejectPromiseID() > m_otherHighestID)
+            {
+                m_otherHighestID = pm->GetRejectPromiseID();
+            }
+            
+        }
+        
+        if( counter.IsPassed())
+        {
+            // prepare complete
+            Accept();
+        }
+        else if( counter.IsRejected() )
+        {
+            // restart wait random time
+            srand((unsigned int)time(NULL));
+            int x = rand()%30 + 10;
+            AddTimeout(TimeoutType::Proposal_Prepare, x);
+        }
+    }
+
     void Proposal::Accept()
     {
         logger->Info("Proposal::Accept proposal id:%lu, value:%s", m_proposalID, m_value.c_str());
@@ -100,6 +168,60 @@ namespace Paxos
     }
     
     
+    
+    void Proposal::OnAcceptResponse(IPacket * p)
+    {
+        jsonPaxos *pm = dynamic_cast<jsonPaxos*>(p);
+        logger->Info("Proposal::OnAcceptResponse, myproposal id:%lu, proposal id:%lu, from node:%d, reject by ID: %lu",
+                     m_proposalID, pm->GetProposalID(), pm->GetNodeID(), pm->GetRejectPromiseID());
+        
+        if( m_state != State::Accepting )
+        {
+            // ignore, not prosposaling
+            return;
+        }
+        
+        if( pm->GetProposalID() != m_proposalID )
+        {
+            // ignore, proposal id not same
+        }
+        
+        
+        counter.Add(Counter::Kinds::Received, pm->GetNodeID());
+        
+        if( pm->GetRejectPromiseID() == 0 )
+        {
+            logger->Info("Proposal::OnAcceptResponse [Accept]");
+            counter.Add(Counter::Kinds::Promised, pm->GetNodeID());
+        }
+        else
+        {
+            logger->Info("Proposal::OnAcceptResponse [Reject]");
+            counter.Add(Counter::Kinds::Rejected, pm->GetNodeID());
+            
+            // reject by someone
+            m_bRejectedByOther = true;
+            if (pm->GetRejectPromiseID() > m_otherHighestID)
+            {
+                m_otherHighestID = pm->GetRejectPromiseID();
+            }
+        }
+        
+        if( counter.IsPassed())
+        {
+            ExitAccept();
+            // send value to learner
+            //m_poLearner->ProposerSendSuccess(GetInstanceID(), m_oProposerState.GetProposalID());
+        }
+        else if( counter.IsRejected() )
+        {
+            srand((unsigned int)time(NULL));
+            int x = rand()%30 + 10;
+            AddTimeout(TimeoutType::Proposal_Accept, x);
+        }
+    }
+
+    
     void Proposal::AddTimeout(TimeoutType tt, const int nTimeout)
     {
      
@@ -119,6 +241,8 @@ namespace Paxos
         
         loop->AddTimer(nNewTimeout, tt, tt == TimeoutType::Proposal_Prepare ? m_idPrepareTimer : m_idAcceptTimer);
        
+        m_snapInstanceID_forTimeout = m_pInstance->GetInstanceID();
+        
             //m_llTimeoutInstanceID = GetInstanceID();
             //m_iLastPrepareTimeoutMs *= 2;
             //if (m_iLastPrepareTimeoutMs > MAX_PREPARE_TIMEOUTMS)
@@ -131,11 +255,26 @@ namespace Paxos
     void Proposal::OnPrepareTimeout()
     {
         
+        if (m_pInstance->GetInstanceID() != m_snapInstanceID_forTimeout)
+        {
+            logger->Info("Timeout instance id: %lu not same as now instance id: %lu, ignore.",
+                         m_snapInstanceID_forTimeout, m_pInstance->GetInstanceID());
+            return;
+        }
+        
+        Prepare(m_bRejectedByOther);
     }
     
     void Proposal::OnAcceptTimeout()
     {
+        if (m_pInstance->GetInstanceID() != m_snapInstanceID_forTimeout)
+        {
+            logger->Info("Timeout instance id: %lu not same as now instance id: %lu, ignore.",
+                         m_snapInstanceID_forTimeout, m_pInstance->GetInstanceID());
+            return;
+        }
         
+        Prepare(m_bRejectedByOther);
     }
     
     void Proposal::ExitPrepare()

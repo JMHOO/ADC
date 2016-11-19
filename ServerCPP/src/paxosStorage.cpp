@@ -73,7 +73,7 @@ namespace Paxos
 	        std::ofstream outfile (file_path, std::ios::out | std::ios::app);
 	        outfile << data << std::endl;
 	        outfile.close();
-	        logger->Info("Storage Processing: Successfully write data {%s} to storage file.", data);
+	        logger->Info("Storage Processing: Successfully write data {%s} to storage file.", data.c_str());
 	    } else {
 	        logger->Error("Storage Error: default storage file is not exist.");
 	    }

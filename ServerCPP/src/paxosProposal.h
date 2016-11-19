@@ -31,7 +31,9 @@ namespace Paxos
         void ProcessMessage(IPacket* p);
         
         void Prepare(bool bUseNewID = false);
+        void OnPrepareResponse(IPacket* p);
         void Accept();
+        void OnAcceptResponse(IPacket * p);
         void AddTimeout(TimeoutType tt, const int nTimeout = 0);
         
     public:
@@ -48,6 +50,7 @@ namespace Paxos
         
         uint64_t m_proposalID;
         uint64_t m_otherHighestID;
+        uint64_t m_snapInstanceID_forTimeout;
         
         unsigned int m_idPrepareTimer;
         unsigned int m_idAcceptTimer;
@@ -57,6 +60,8 @@ namespace Paxos
         State m_state;
         
         IDNumber m_otherPreAcceptedID;
+        
+        bool m_bRejectedByOther;
         
         void ExitPrepare();
         void ExitAccept();
