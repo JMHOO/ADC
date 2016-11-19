@@ -14,6 +14,7 @@
 #include <string>
 
 class ILog;
+class IPacket;
 
 namespace Paxos
 {
@@ -26,6 +27,8 @@ namespace Paxos
     public:
         Proposal(Paxos::Instance * instance, ILog* ptrLog);
         ~Proposal();
+        
+        void ProcessMessage(IPacket* p);
         
         void Prepare(bool bUseNewID = false);
         void Accept();

@@ -45,6 +45,11 @@ namespace Paxos
         m_proposalID = maxProposalID + 1;
     }
     
+    void Proposal::ProcessMessage(IPacket* p)
+    {
+        
+    }
+    
     void Proposal::Prepare(bool bUseNewID)
     {
         logger->Info("Proposal::Prepare node id:%ld, instance id:%lu, proposal id:%lu", m_pInstance->GetInstanceID(),

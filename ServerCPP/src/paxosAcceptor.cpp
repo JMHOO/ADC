@@ -8,6 +8,7 @@
 
 #include "paxosAcceptor.h"
 #include "GLog.h"
+#include "jsonPaxos.h"
 
 namespace Paxos
 {
@@ -17,6 +18,11 @@ namespace Paxos
     }
     
     void Acceptor::NewTransaction()
+    {
+        
+    }
+    
+    void Acceptor::ProcessMessage(IPacket* p)
     {
         
     }

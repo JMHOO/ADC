@@ -7,6 +7,8 @@
 //
 
 #include "paxosLearner.h"
+#include "jsonPaxos.h"
+#include "GLog.h"
 
 namespace Paxos
 {
@@ -18,5 +20,22 @@ namespace Paxos
     void Learner::NewTransaction()
     {
         
+    }
+    
+    void Learner::ProcessMessage(IPacket* p)
+    {
+        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        PaxosType type = pm->GetMessageType();
+        if( type == PaxosType::ChosenValue)
+        {
+            OnChosenValue(p);
+        }
+    }
+    
+    void Learner::OnChosenValue(IPacket* p)
+    {
+        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        
+        std::string value = pm->GetValue();
     }
 }
