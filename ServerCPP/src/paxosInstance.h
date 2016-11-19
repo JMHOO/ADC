@@ -42,7 +42,8 @@ namespace Paxos
         
         void UpdateServerList(ADCS::ServerList list);
         
-        
+        bool SendMessage(int nNodeID, IPacket* paxosPackage);
+        bool BroadcastMessage(IPacket* paxosPackage);
         
     private:
         MessageLoop loop;
@@ -56,6 +57,8 @@ namespace Paxos
         ADCS::ServerList m_aliveSrvList;
         
         static Instance*   _paxos_instance;
+        
+        bool __send__udp_message__(const char* szServerIP, int port, IPacket* paxosPackage);
     };
 }
 
