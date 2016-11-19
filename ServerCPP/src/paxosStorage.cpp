@@ -57,7 +57,7 @@ namespace Paxos
 	            }
 
 	        }
-	        logger->Info("instanceId " + std::to_string(instanceId) + " is not exist while searching storage file.");
+	        logger->Info("instanceId %lu is not exist while searching storage file.", instanceId);
 	        return "no data available";
 	    } else {
 	    	logger->Error("Storage Error: default storage file is not exist.");
