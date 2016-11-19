@@ -42,6 +42,8 @@ namespace Paxos
         
         void UpdateServerList(ADCS::ServerList list);
         
+        
+        
     private:
         MessageLoop loop;
         

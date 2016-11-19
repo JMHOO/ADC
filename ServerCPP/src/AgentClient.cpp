@@ -29,7 +29,7 @@ namespace ADCS
             bool bSuccess = false;
             // request online rpc server list
             jsonAgentPacket p;
-            p.BuildGetServerListRequest("rpc");
+            p.BuildGetServerListRequest("udp");
             bool bSent = pAgent->__do_send(&p);
             
             IPacket* pRes = pAgent->__do_recv();
@@ -174,7 +174,7 @@ namespace ADCS
         bool bResult = true;
         
         jsonAgentPacket p;
-        p.BuildRegisterRequest(m_serverExternalIP, m_tcpserverPort, m_rpcserverPort);
+        p.BuildRegisterRequest(m_serverExternalIP, m_tcpserverPort, m_rpcserverPort, m_udpserverPort);
         
         __do_send(&p);
         IPacket* pRes = __do_recv();
@@ -201,11 +201,12 @@ namespace ADCS
         return bResult;
     }
     
-    bool CDiscoveryClient::Start(std::string strAgentSrvAddr, std::string strExternalIP, int nTCPServerPort, int nRPCServerPort)
+    bool CDiscoveryClient::Start(std::string strAgentSrvAddr, std::string strExternalIP, int nTCPServerPort, int nRPCServerPort, int nUDPServerPort)
     {
         m_serverExternalIP = strExternalIP;
         m_tcpserverPort = nTCPServerPort;
         m_rpcserverPort = nRPCServerPort;
+        m_udpserverPort = nUDPServerPort;
         
         bool bStarted = false;
         m_tcpClient.SetIP(strAgentSrvAddr.c_str());
