@@ -29,7 +29,7 @@ namespace Paxos
         
         void Prepare(bool bUseNewID = false);
         void Accept();
-        void AddPrepareTimeout(const int nTimeout = 0);
+        void AddTimeout(TimeoutType tt, const int nTimeout = 0);
         
     public:
         void NewTransaction();
