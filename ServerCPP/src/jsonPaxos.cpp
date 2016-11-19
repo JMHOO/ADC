@@ -112,6 +112,16 @@ int jsonPaxos::GetNodeID()
     return nodeid;
 }
 
+std::string jsonPaxos::GetValue()
+{
+    std::string v = "";
+    try {
+        v = m_json_request["value"];
+    } catch (std::domain_error e) {
+        // wrong parameter, drop
+    }
+    return v;
+}
 void jsonPaxos::SetMessageType(PaxosType type)
 {
     unsigned int uiType = (unsigned int)type;
@@ -132,6 +142,11 @@ void jsonPaxos::SetProposalID(uint64_t proposalID)
 void jsonPaxos::SetNodeID(int nodeID)
 {
     m_json_result["nodeid"] = nodeID;
+}
+
+void jsonPaxos::SetValue(std::string v)
+{
+    m_json_result["value"] = v;
 }
 
 bool jsonPaxos::GetResult(char*& pStreamData, unsigned long& ulDataLen)

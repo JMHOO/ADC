@@ -10,6 +10,7 @@
 #define _ADCS__paxosAcceptor_H_
 
 class ILog;
+class IPacket;
 
 namespace Paxos
 {
@@ -19,6 +20,8 @@ namespace Paxos
     public:
         Acceptor(Paxos::Instance * instance, ILog* ptrLog);
 
+        void ProcessMessage(IPacket* p);
+        
         void NewTransaction();
 
     private:

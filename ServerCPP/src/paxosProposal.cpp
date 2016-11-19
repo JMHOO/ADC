@@ -45,6 +45,11 @@ namespace Paxos
         m_proposalID = maxProposalID + 1;
     }
     
+    void Proposal::ProcessMessage(IPacket* p)
+    {
+        
+    }
+    
     void Proposal::Prepare(bool bUseNewID)
     {
         logger->Info("Proposal::Prepare node id:%ld, instance id:%lu, proposal id:%lu", m_pInstance->GetInstanceID(),
@@ -68,40 +73,58 @@ namespace Paxos
         
         counter.NewRound();
         
-        AddPrepareTimeout();
+        AddTimeout(TimeoutType::Proposal_Prepare);
         
         m_pInstance->BroadcastMessage(&p);
     }
     
     void Proposal::Accept()
     {
+        logger->Info("Proposal::Accept proposal id:%lu, value:%s", m_proposalID, m_value.c_str());
         
+        ExitPrepare();
+        m_state = State::Accepting;
+        
+        jsonPaxos p;
+        p.SetMessageType(PaxosType::Accept);
+        p.SetInstanceID(m_pInstance->GetInstanceID());
+        p.SetNodeID(m_pInstance->GetNodeID());
+        p.SetProposalID(m_proposalID);
+        p.SetValue(m_value);
+        
+        counter.NewRound();
+        
+        AddTimeout(TimeoutType::Proposal_Accept);
+        
+        m_pInstance->BroadcastMessage(&p);
     }
     
     
-    void Proposal::AddPrepareTimeout(const int nTimeout)
+    void Proposal::AddTimeout(TimeoutType tt, const int nTimeout)
     {
      
         MessageLoop* loop = m_pInstance->GetMessageLoop();
-        if (m_idPrepareTimer > 0)
+        
+        if (m_idPrepareTimer > 0 && tt == TimeoutType::Proposal_Prepare)
         {
             loop->RemoveTimer(m_idPrepareTimer);
         }
         
-        if (nTimeout > 0)
+        int nNewTimeout = nTimeout;
+        if( nTimeout == 0 )
         {
-            loop->AddTimer(nTimeout, TimeoutType::Proposal_Prepare, m_idPrepareTimer);
+            nNewTimeout = C_DEFAULT_TIMEOUT;
         }
-        else
-        {
-            loop->AddTimer(C_DEFAULT_TIMEOUT, TimeoutType::Proposal_Prepare, m_idPrepareTimer);
+        
+        
+        loop->AddTimer(nNewTimeout, tt, tt == TimeoutType::Proposal_Prepare ? m_idPrepareTimer : m_idAcceptTimer);
+       
             //m_llTimeoutInstanceID = GetInstanceID();
             //m_iLastPrepareTimeoutMs *= 2;
             //if (m_iLastPrepareTimeoutMs > MAX_PREPARE_TIMEOUTMS)
             //{
             //    m_iLastPrepareTimeoutMs = MAX_PREPARE_TIMEOUTMS;
             //}
-        }
         //logger->Info("Proposal::AddPrepareTimeout %d ms", )
     }
     

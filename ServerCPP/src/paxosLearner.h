@@ -11,6 +11,7 @@
 #define _ADCS__paxosLearner_H_
 
 class ILog;
+class IPacket;
 
 namespace Paxos
 {
@@ -20,7 +21,11 @@ namespace Paxos
     public:
         Learner(Paxos::Instance * instance, ILog* ptrLog);
         
+        void ProcessMessage(IPacket* p);
+        
         void NewTransaction();
+        
+        void OnChosenValue(IPacket* p);
         
     private:
         Paxos::Instance * m_pInstance;

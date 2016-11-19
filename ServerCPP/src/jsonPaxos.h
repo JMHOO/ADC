@@ -30,11 +30,13 @@ public:
     uint64_t GetInstanceID();
     uint64_t GetProposalID();
     int GetNodeID();
+    std::string GetValue();
     
     void SetMessageType(PaxosType type);
     void SetInstanceID(uint64_t instanceID);
     void SetProposalID(uint64_t proposalID);
     void SetNodeID(int nodeID);
+    void SetValue(std::string value);
     
 protected:
     virtual bool GetResult(char*& pStreamData, unsigned long& ulDataLen);

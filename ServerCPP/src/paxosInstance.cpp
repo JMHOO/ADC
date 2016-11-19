@@ -97,7 +97,27 @@ namespace Paxos
     
     void Instance::ProcessMessage(IPacket* p)
     {
+        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        PaxosType type = pm->GetMessageType();
+        int nFromNodeid = pm->GetNodeID();
+        logger->Info("Receive Message: instance id:%lu, message type:%d, from nodeid:%d, my nodeid:%d",
+                     m_ID64, (int)type, nFromNodeid, m_nodeid);
         
+        if( type == PaxosType::PrepareResponse || type == PaxosType::AcceptResponse)
+        {
+            // dispatch message to proposal
+            proposal.ProcessMessage(p);
+        }
+        else if( type == PaxosType::Accept || type == PaxosType::Prepare)
+        {
+            // dispatch message to accept
+            acceptor.ProcessMessage(p);
+        }
+        else if( type == PaxosType::ChosenValue)
+        {
+            // dispatch message to learner
+            learner.ProcessMessage(p);
+        }
     }
     
     void Instance::UpdateServerList(ADCS::ServerList list, int nodeid)
