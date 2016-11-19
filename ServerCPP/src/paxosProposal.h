@@ -10,6 +10,7 @@
 #define _ADCS__paxosProposal_H_
 
 #include "paxosCounter.h"
+#include <string>
 
 class ILog;
 
@@ -25,6 +26,7 @@ namespace Paxos
         
     public:
         void NewTransaction();
+        void NewPrepare();
         void OnPrepareTimeout();
         void OnAcceptTimeout();
 
@@ -33,6 +35,11 @@ namespace Paxos
         ILog* logger;
         
         Counter counter;
+        
+        uint64_t m_proposalID;
+        uint64_t m_otherHighestID;
+        
+        std::string m_value;
     };
 }
 

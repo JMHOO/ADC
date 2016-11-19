@@ -23,6 +23,26 @@ class IPacket;
 
 namespace Paxos
 {
+    
+    struct IDNumber
+    {
+    public:
+        IDNumber();
+        IDNumber(uint64_t proposalID, int nodeID);
+        ~IDNumber();
+        
+        bool operator >= (const IDNumber & other) const;
+        bool operator != (const IDNumber & other) const;
+        bool operator == (const IDNumber & other) const;
+        bool operator > (const IDNumber & other) const;
+        
+        const bool isValid() const;
+        void reset();
+        
+        uint64_t m_proposalID;
+        int m_nodeID;
+    };
+    
     class Instance
     {
     public:
