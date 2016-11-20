@@ -98,6 +98,42 @@ uint64_t jsonPaxos::GetProposalID()
     return proposalid;
 }
 
+uint64_t jsonPaxos::GetRejectPromiseID()
+{
+    uint64_t promiseid = 0;
+    try {
+        promiseid = m_json_request["promiseid"];
+    } catch (std::domain_error e) {
+        // wrong parameter
+    }
+    return promiseid;
+}
+
+uint64_t jsonPaxos::GetPreAcceptID()
+{
+    uint64_t preacceptID = 0;
+    try {
+        preacceptID = m_json_request["preacceptid"];
+    } catch (std::domain_error e) {
+        // wrong parameter
+    }
+    return preacceptID;
+}
+
+int jsonPaxos::GetPreAcceptNodeID()
+{
+    int nodeid = 0;
+    try
+    {
+        nodeid = m_json_request["preacceptnodeid"];
+    }
+    catch(std::domain_error e)
+    {
+        // wrong parameter, drop
+    }
+    return nodeid;
+}
+
 int jsonPaxos::GetNodeID()
 {
     int nodeid = 0;
@@ -137,6 +173,21 @@ void jsonPaxos::SetInstanceID(uint64_t instanceID)
 void jsonPaxos::SetProposalID(uint64_t proposalID)
 {
     m_json_result["proposalid"] = proposalID;
+}
+
+void jsonPaxos::SetRejectPromiseID(uint64_t promiseID)
+{
+    m_json_result["promiseid"] = promiseID;
+}
+
+void jsonPaxos::SetPreAcceptID(uint64_t preacceptID)
+{
+    m_json_result["preacceptid"] = preacceptID;
+}
+
+void jsonPaxos::SetPreAcceptNodeID(int preacceptNodeID)
+{
+    m_json_request["preacceptnodeid"] = preacceptNodeID;
 }
 
 void jsonPaxos::SetNodeID(int nodeID)

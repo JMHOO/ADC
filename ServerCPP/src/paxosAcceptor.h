@@ -9,6 +9,8 @@
 #ifndef _ADCS__paxosAcceptor_H_
 #define _ADCS__paxosAcceptor_H_
 
+#include "paxosStorage.h"
+
 class ILog;
 class IPacket;
 
@@ -19,7 +21,8 @@ namespace Paxos
     {
     public:
         Acceptor(Paxos::Instance * instance, ILog* ptrLog);
-
+        bool Initialize();
+        
         void ProcessMessage(IPacket* p);
         
         void NewTransaction();
@@ -28,6 +31,7 @@ namespace Paxos
         Paxos::Instance * m_pInstance;
         ILog* logger;
 
+        Storage m_storage;
     };
 }
 

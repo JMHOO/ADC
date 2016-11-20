@@ -4,12 +4,13 @@
 
 #include "PackageInterface.h"
 #include "json.hpp"
+#include <string>
 
 class jsonkvPacket : public IPacket
 {
 public:
     jsonkvPacket(const char* pData, unsigned int nDataLen, int clientSocket);
-    
+	jsonkvPacket(std::string pData);
     virtual ~jsonkvPacket();
     virtual void Process();
     virtual bool IsValid() const;
