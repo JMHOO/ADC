@@ -3,7 +3,8 @@
 #include <string.h>
 #include <algorithm>
 #include "ErrorCode.h"
-
+#include<iostream>
+using namespace std;
 using namespace nlohmann;
 using namespace ADCS;
 
@@ -23,7 +24,20 @@ jsonkvPacket::jsonkvPacket(const char* pData, unsigned int nDataLen, int clientS
     catch(...)
     { }
 }
-
+jsonkvPacket(std::string pData)
+{
+	try
+    {
+        m_json_request = json::parse(pData);
+    }
+    catch(std::invalid_argument arg)
+    {
+        printf("parser json error: %s", arg.std::exception::what());
+        // paser json error
+    }
+    catch(...)
+    { }
+}
 jsonkvPacket::~jsonkvPacket()
 {
     
