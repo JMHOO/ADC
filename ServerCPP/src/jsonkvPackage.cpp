@@ -24,11 +24,11 @@ jsonkvPacket::jsonkvPacket(const char* pData, unsigned int nDataLen, int clientS
     catch(...)
     { }
 }
-jsonkvPacket(std::string pData)
+jsonkvPacket::jsonkvPacket(std::string pData)
 {
 	try
     {
-        m_json_request = json::parse(pData);
+        m_json_request = json::parse(pData.c_str());
     }
     catch(std::invalid_argument arg)
     {

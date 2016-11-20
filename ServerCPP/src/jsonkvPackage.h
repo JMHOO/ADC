@@ -4,9 +4,8 @@
 
 #include "PackageInterface.h"
 #include "json.hpp"
-#include<iostream>
-#include<string>
-using namespace std;
+#include <string>
+
 class jsonkvPacket : public IPacket
 {
 public:

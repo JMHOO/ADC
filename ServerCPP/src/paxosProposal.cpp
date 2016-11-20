@@ -51,6 +51,7 @@ namespace Paxos
     
     void Proposal::ProcessMessage(IPacket* p)
     {
+        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
         
     }
     
