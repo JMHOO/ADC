@@ -102,8 +102,8 @@ public:
     void clear() {m_queue.clear(); }
     void signal() { m_cond.notify_one(); }
     void broadcast() { m_cond.notify_all(); }
-    void lock() { m_mutex.lock(); }
-    void unlock() { m_mutex.unlock(); }
+    void lock() { m_lock.lock(); }
+    void unlock() { m_lock.unlock(); }
     
     void swap(TSQueue& q)
     {

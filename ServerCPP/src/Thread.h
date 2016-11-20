@@ -19,7 +19,7 @@ namespace ADCS
     public:
         Thread();
         virtual ~Thread();
-        void Start(bool bSystemScope);
+        void Start(bool bSystemScope = false);
         void Join();
         void Detach();
         

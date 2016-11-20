@@ -79,7 +79,7 @@ namespace Paxos
         // set proposal id from acceptor state
         
         
-        loop.Start(true);
+        loop.Start();
         
         return true;
     }
