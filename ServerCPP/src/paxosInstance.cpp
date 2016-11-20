@@ -25,6 +25,12 @@ namespace Paxos
             _paxos_instance = new Instance(new GlobalLog("Paxos", LL_DEBUG));
             if( _paxos_instance == nullptr )
                 return false;
+            if( !_paxos_instance->Initialize() )
+            {
+                delete _paxos_instance;
+                _paxos_instance = nullptr;
+                return false;
+            }
         }
         return true;
     }
@@ -54,6 +60,24 @@ namespace Paxos
     Instance::~Instance()
     {
         delete logger;
+    }
+    
+    bool Instance::Initialize()
+    {
+        if( !acceptor.Initialize() )
+        {
+            logger->Error("Instance::Initialize, initialize acceptor failed.");
+            return false;
+        }
+        
+        logger->Info("Paxos Instance, acceptor OK, now instance ID:%lu", m_ID64);
+        
+        // set proposal id from acceptor state
+        
+        
+        loop.Start(true);
+        
+        return true;
     }
     
     uint64_t Instance::GetInstanceID()

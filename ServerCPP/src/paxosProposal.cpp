@@ -52,7 +52,15 @@ namespace Paxos
     void Proposal::ProcessMessage(IPacket* p)
     {
         jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
-        
+        PaxosType type = pm->GetMessageType();
+        if( type == PaxosType::PrepareResponse )
+        {
+            OnPrepareResponse(p);
+        }
+        else if( type == PaxosType::AcceptResponse)
+        {
+            OnAcceptResponse(p);
+        }
     }
     
     void Proposal::Prepare(bool bUseNewID)

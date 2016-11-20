@@ -36,6 +36,7 @@ namespace Paxos
         Instance(ILog* ptrLog);
         ~Instance();
         
+        bool Initialize();
         
         uint64_t    GetInstanceID();
         void        SetInstanceID(const uint64_t id);
