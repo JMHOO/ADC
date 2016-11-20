@@ -100,7 +100,7 @@ void MessageLoop::Process(const int nWaitTimeoutMS)
         delete p;
     }
     
-    //m_Instance->CheckNewValue();
+    m_pInstance->CheckForNewProposeValue();
 }
 
 bool MessageLoop::AddTimer(const int nTimeoutMS, const TimeoutType type, unsigned int& id)

@@ -10,6 +10,7 @@
 #include "paxosInstance.h"
 #include "jsonPaxos.h"
 #include "UDPClient.h"
+#include "jsonkvPackage.h"
 
 namespace Paxos
 {
@@ -55,6 +56,9 @@ namespace Paxos
             acceptor(this, ptrLog), learner(this, ptrLog), logger(ptrLog), m_ID64(0)
     {
         m_bCommitting = false;
+        m_idCommitTimer = 0;
+        m_strResult = "";
+        m_strRequestValue = "";
     }
     
     Instance::~Instance()
@@ -107,6 +111,8 @@ namespace Paxos
         acceptor.NewTransaction();
         learner.NewTransaction();
         m_bCommitting = false;
+        m_strResult = "";
+        m_strRequestValue = "";
     }
     
     int Instance::NodeCount()
@@ -166,7 +172,9 @@ namespace Paxos
             case TimeoutType::Proposal_Prepare:
                 proposal.OnPrepareTimeout();
                 break;
-                
+            case TimeoutType::Commit:
+                OnCommitTimeout();
+                break;
             default:
                 break;
         }
@@ -179,31 +187,58 @@ namespace Paxos
     
     void Instance::OnCommitComplete(std::string strOPJson)
     {
+        logger->Info("PaxosInstance, one transaction complete, chosen value: %s", strOPJson.c_str());
+        
+        if( learner.IsLearned() )
+        {
+            jsonkvPacket kvp(strOPJson);
+            kvp.Process();
+            m_strResult = kvp.GetResult();
+        }
         m_bCommitting = false;
     }
     
-    // client call
-    void Instance::ProposeNewValue(const std::string value)
+    void Instance::OnCommitTimeout()
+    {
+        proposal.ExitAccept();
+        proposal.ExitPrepare();
+        
+        m_bCommitting = false;
+    }
+    
+    // called by Client
+    std::string Instance::ProposeNewValue(const std::string value)
     {
         m_bCommitting = true;
         m_strRequestValue = value;
+        
+        // transfer call to message loop thread
         loop.AddNotify();
         
-        // should set a timeout
+        // a timeout
+        loop.AddTimer(10000, TimeoutType::Commit, m_idCommitTimer);
         
+        // wait until commit complete or timeout
         while( m_bCommitting )
         {
             m_sLocker.WaitTime(10);
         }
         
-        // transfer value to kvserver
+        if( m_idCommitTimer > 0 )
+        {
+            loop.RemoveTimer(m_idCommitTimer);
+        }
         
+        std::string strResult = m_strResult;
         
+        NewTransaction();
         
+        return strResult;
     }
     
+    // called by message loop
     void Instance::CheckForNewProposeValue()
-    {// call ed by message loop
+    {
         if( !m_bCommitting )
         {
             return;

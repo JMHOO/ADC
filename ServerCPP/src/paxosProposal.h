@@ -42,6 +42,8 @@ namespace Paxos
         void NewPrepare();
         void OnPrepareTimeout();
         void OnAcceptTimeout();
+        void ExitPrepare();
+        void ExitAccept();
 
     private:
         Paxos::Instance * m_pInstance;
@@ -63,9 +65,8 @@ namespace Paxos
         IDNumber m_otherPreAcceptedID;
         
         bool m_bRejectedByOther;
+        bool m_bCanSkipPrepare;
         
-        void ExitPrepare();
-        void ExitAccept();
     };
 }
 

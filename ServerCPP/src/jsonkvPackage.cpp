@@ -3,8 +3,8 @@
 #include <string.h>
 #include <algorithm>
 #include "ErrorCode.h"
-#include<iostream>
-using namespace std;
+#include "paxosInstance.h"
+
 using namespace nlohmann;
 using namespace ADCS;
 
@@ -84,9 +84,21 @@ json jsonkvPacket::__process_one_operation__(json jrequest)
     
     std::string kvOperator = jrequest["operate"];
     std::transform(kvOperator.begin(),kvOperator.end(),kvOperator.begin(), ::tolower);
+    
+    // operation comes from client, need to propose
+    if( m_clientsocket > 0 && (kvOperator == "put" || kvOperator == "delete") )
+    {
+        std::string strJSON = m_json_request.dump();
+        std::string strResultJSON = PaxosInstance->ProposeNewValue(strJSON);
+        
+        json jResultPaxos = json::parse(strResultJSON.c_str());
+        
+        return jResultPaxos;
+    }
+    
     if( kvOperator == "put")
     {
-        ErrorCode::KVStore code = kvserver->SetValue(m_clientsocket, jrequest["key"], jrequest["value"]);
+        ErrorCode::KVStore code = kvserver->SetValue(jrequest["key"], jrequest["value"]);
         if( code == ErrorCode::KVStore::Success )
         {
             jresult["result"]["message"] = "put success";
@@ -114,7 +126,7 @@ json jsonkvPacket::__process_one_operation__(json jrequest)
     }
     else if(kvOperator == "delete")
     {
-        ErrorCode::KVStore code = kvserver->Delete(m_clientsocket, jrequest["key"]);
+        ErrorCode::KVStore code = kvserver->Delete(jrequest["key"]);
         if( code == ErrorCode::KVStore::Success )
         {
             jresult["result"]["message"] = "Delete Success";
@@ -170,4 +182,9 @@ bool jsonkvPacket::GetResult(char*& pStreamData, unsigned long& ulDataLen)
     memcpy(pStreamData, strResult.c_str(), ulDataLen);
     
     return true;
+}
+
+std::string jsonkvPacket::GetResult()
+{
+    return m_json_result.dump();
 }

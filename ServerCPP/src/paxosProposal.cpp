@@ -27,6 +27,7 @@ namespace Paxos
         m_state = State::Idle;
         
         m_bRejectedByOther = false;
+        m_bCanSkipPrepare = false;
     }
     
     Proposal::~Proposal()
@@ -66,14 +67,14 @@ namespace Paxos
     bool Proposal::StartNewValue(const std::string & sValue)
     {
 
-        //if (m_bCanSkipPrepare && !m_bRejectedByOther)
-        //{
-            // skip prepare
-        //    Accept();
-        //}
-        //else
+        if (m_bCanSkipPrepare && !m_bRejectedByOther)
         {
-            //if not reject by someone, no need to increase ballot
+            //Skip prepare
+            Accept();
+        }
+        else
+        {
+            //if not reject by someone, no need to increase proposal ID
             Prepare(m_bRejectedByOther);
         }
         
@@ -88,6 +89,7 @@ namespace Paxos
         ExitAccept();
         m_state = State::Preparing;
         m_bRejectedByOther = false;
+        m_bCanSkipPrepare = false;
         
         m_otherPreAcceptedID.reset();
         if( bUseNewID)
@@ -161,13 +163,14 @@ namespace Paxos
         if( counter.IsPassed())
         {
             // prepare complete
+            m_bCanSkipPrepare = true;
             Accept();
         }
         else if( counter.IsRejected() )
         {
             // restart wait random time
             srand((unsigned int)time(NULL));
-            int x = rand()%30 + 10;
+            int x = rand()%10 + 10;
             AddTimeout(TimeoutType::Proposal_Prepare, x);
         }
     }

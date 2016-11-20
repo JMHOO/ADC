@@ -47,6 +47,7 @@ IPacket* IPacket::CreatePackage(const char* sdata, unsigned int uiDataLen, int c
 
 IPacket::IPacket() : m_type(ADCS::PackageType::None)
 {
+    m_clientsocket = 0;
     memset(&m_header, 0, ADCS::LENGTH_PACKHEADER);
 }
 

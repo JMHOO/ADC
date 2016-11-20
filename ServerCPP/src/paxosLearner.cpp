@@ -30,6 +30,11 @@ namespace Paxos
         m_learnedValue = "";
 	}
 
+    bool Learner::IsLearned() const
+    {
+        return m_bIsLearned;
+    }
+    
 	void Learner::ProcessMessage(IPacket* p)
 	{
 		jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);

@@ -2,8 +2,8 @@
 //  paxosStorage.h
 //  ServerCPP
 //
-//  Created by Jiaming on 11/15/16.
-//  Copyright © 2016 Jiaming. All rights reserved.
+//  Created by Bin on 11/15/16.
+//  Copyright © 2016 Bin. All rights reserved.
 //
 
 #ifndef _ADCS__paxosStorage_H_

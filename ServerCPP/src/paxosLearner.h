@@ -31,6 +31,7 @@ namespace Paxos
         
         void ProposalChosenValue(const uint64_t lInstanceID, const uint64_t lProposalID);
         void OnChosenValue(jsonPaxos* p);
+        bool IsLearned() const;
         
     private:
         Paxos::Instance * m_pInstance;

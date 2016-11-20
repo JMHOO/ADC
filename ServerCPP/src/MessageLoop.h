@@ -126,6 +126,7 @@ enum class TimeoutType
     None,
     Proposal_Prepare,
     Proposal_Accept,
+    Commit,
 };
 
 
