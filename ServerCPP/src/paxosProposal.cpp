@@ -63,6 +63,23 @@ namespace Paxos
         }
     }
     
+    bool Proposal::StartNewValue(const std::string & sValue)
+    {
+
+        //if (m_bCanSkipPrepare && !m_bRejectedByOther)
+        //{
+            // skip prepare
+        //    Accept();
+        //}
+        //else
+        {
+            //if not reject by someone, no need to increase ballot
+            Prepare(m_bRejectedByOther);
+        }
+        
+        return true;
+    }
+    
     void Proposal::Prepare(bool bUseNewID)
     {
         logger->Info("Proposal::Prepare node id:%ld, instance id:%lu, proposal id:%lu", m_pInstance->GetInstanceID(),

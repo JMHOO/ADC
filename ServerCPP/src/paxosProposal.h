@@ -30,6 +30,7 @@ namespace Paxos
         
         void ProcessMessage(IPacket* p);
         
+        bool StartNewValue(const std::string & sValue);
         void Prepare(bool bUseNewID = false);
         void OnPrepareResponse(IPacket* p);
         void Accept();

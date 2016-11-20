@@ -11,10 +11,12 @@
 
 #include "GLog.h"
 #include "Network.h"
+#include "MutexLock.h"
 #include "MessageLoop.h"
 #include "paxosProposal.h"
 #include "paxosAcceptor.h"
 #include "paxosLearner.h"
+
 
 
 #define PaxosInstance Paxos::Instance::GetInstance()
@@ -38,6 +40,9 @@ namespace Paxos
         
         bool Initialize();
         
+        void ProposeNewValue(const std::string value);
+        void CheckForNewProposeValue();
+        
         uint64_t    GetInstanceID();
         void        SetInstanceID(const uint64_t id);
         void        NewTransaction();
@@ -60,7 +65,7 @@ namespace Paxos
         
         void ProposalChosenValue(const uint64_t lProposalID);
         
-        void ExecuteKVOperation(std::string strOPJson);
+        void OnCommitComplete(std::string strValue);
         
     private:
         MessageLoop loop;
@@ -78,6 +83,11 @@ namespace Paxos
         uint64_t m_ID64;
         
         int m_nodeid;
+        
+        CMutexLock m_sLocker;
+        
+        bool m_bCommitting;
+        std::string m_strRequestValue;
         
         bool __send__udp_message__(const char* szServerIP, int port, IPacket* paxosPackage);
     };

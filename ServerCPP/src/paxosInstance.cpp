@@ -54,7 +54,7 @@ namespace Paxos
     Instance::Instance(ILog* ptrLog) : loop(this, ptrLog), proposal(this, ptrLog),
             acceptor(this, ptrLog), learner(this, ptrLog), logger(ptrLog), m_ID64(0)
     {
-        
+        m_bCommitting = false;
     }
     
     Instance::~Instance()
@@ -106,6 +106,7 @@ namespace Paxos
         proposal.NewTransaction();
         acceptor.NewTransaction();
         learner.NewTransaction();
+        m_bCommitting = false;
     }
     
     int Instance::NodeCount()
@@ -176,9 +177,39 @@ namespace Paxos
         learner.ProposalChosenValue(m_ID64, lProposalID);
     }
     
-    void Instance::ExecuteKVOperation(std::string strOPJson)
+    void Instance::OnCommitComplete(std::string strOPJson)
     {
+        m_bCommitting = false;
+    }
+    
+    // client call
+    void Instance::ProposeNewValue(const std::string value)
+    {
+        m_bCommitting = true;
+        m_strRequestValue = value;
+        loop.AddNotify();
         
+        // should set a timeout
+        
+        while( m_bCommitting )
+        {
+            m_sLocker.WaitTime(10);
+        }
+        
+        // transfer value to kvserver
+        
+        
+        
+    }
+    
+    void Instance::CheckForNewProposeValue()
+    {// call ed by message loop
+        if( !m_bCommitting )
+        {
+            return;
+        }
+        
+        proposal.StartNewValue(m_strRequestValue);
     }
     
     bool Instance::SendMessage(int nNodeID, IPacket* paxosPackage)

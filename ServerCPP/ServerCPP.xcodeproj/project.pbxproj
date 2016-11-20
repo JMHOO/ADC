@@ -31,6 +31,7 @@
 		BF76A26D1DC3F93F0001D0B1 /* TCPClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF76A26A1DC3F93F0001D0B1 /* TCPClient.cpp */; };
 		BF76A2701DC3F9F80001D0B1 /* AgentClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF76A26F1DC3F9F80001D0B1 /* AgentClient.cpp */; };
 		BF8770A11DE0D35D0086B59C /* paxosFoundation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF8770A01DE0D35D0086B59C /* paxosFoundation.cpp */; };
+		BF8770A41DE181FF0086B59C /* MutexLock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF8770A31DE181FF0086B59C /* MutexLock.cpp */; };
 		BF9CE8A71DDAB41300A902C9 /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8A61DDAB41300A902C9 /* Thread.cpp */; };
 		BF9CE8AA1DDACD0900A902C9 /* MessageLoop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8A91DDACD0900A902C9 /* MessageLoop.cpp */; };
 		BF9CE8AE1DDB9ED800A902C9 /* jsonPaxos.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF9CE8AC1DDB9ED800A902C9 /* jsonPaxos.cpp */; };
@@ -110,6 +111,8 @@
 		BF76A26F1DC3F9F80001D0B1 /* AgentClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AgentClient.cpp; path = src/AgentClient.cpp; sourceTree = "<group>"; };
 		BF87709F1DE0D3530086B59C /* paxosFoundation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = paxosFoundation.h; path = src/paxosFoundation.h; sourceTree = "<group>"; };
 		BF8770A01DE0D35D0086B59C /* paxosFoundation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = paxosFoundation.cpp; path = src/paxosFoundation.cpp; sourceTree = "<group>"; };
+		BF8770A21DE181EC0086B59C /* MutexLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MutexLock.h; path = src/MutexLock.h; sourceTree = "<group>"; };
+		BF8770A31DE181FF0086B59C /* MutexLock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MutexLock.cpp; path = src/MutexLock.cpp; sourceTree = "<group>"; };
 		BF9CE8A51DDAB40500A902C9 /* Thread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Thread.h; path = src/Thread.h; sourceTree = "<group>"; };
 		BF9CE8A61DDAB41300A902C9 /* Thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Thread.cpp; path = src/Thread.cpp; sourceTree = "<group>"; };
 		BF9CE8A81DDACCC000A902C9 /* MessageLoop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MessageLoop.h; path = src/MessageLoop.h; sourceTree = "<group>"; };
@@ -228,6 +231,8 @@
 				BF20597F1DACA31B00B11921 /* Utility.h */,
 				BF9CE8A51DDAB40500A902C9 /* Thread.h */,
 				BF9CE8A61DDAB41300A902C9 /* Thread.cpp */,
+				BF8770A21DE181EC0086B59C /* MutexLock.h */,
+				BF8770A31DE181FF0086B59C /* MutexLock.cpp */,
 			);
 			name = Framework;
 			sourceTree = "<group>";
@@ -351,6 +356,7 @@
 				BF9CE8AA1DDACD0900A902C9 /* MessageLoop.cpp in Sources */,
 				BF7160641DB2C81B00F09E59 /* KVServer.cpp in Sources */,
 				BF2059811DACA31B00B11921 /* main.cpp in Sources */,
+				BF8770A41DE181FF0086B59C /* MutexLock.cpp in Sources */,
 				BF9CE8B11DDBA0AC00A902C9 /* paxosInstance.cpp in Sources */,
 				BF76A26D1DC3F93F0001D0B1 /* TCPClient.cpp in Sources */,
 				BF7160451DB1A79000F09E59 /* TCPSyncIOServer.cpp in Sources */,

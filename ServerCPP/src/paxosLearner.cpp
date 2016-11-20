@@ -93,7 +93,7 @@ namespace Paxos
         
         
         // set value to kvserver
-        m_pInstance->ExecuteKVOperation(m_learnedValue);
+        m_pInstance->OnCommitComplete(m_learnedValue);
     }
 
 }
