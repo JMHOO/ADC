@@ -12,6 +12,7 @@
 #include <fcntl.h>								//-- for open()
 #include <sys/resource.h>						//-- for getrlimit()
 #include <sys/time.h>
+#include <inttypes.h>
 #include "Utility.h"
 
 

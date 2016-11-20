@@ -21,12 +21,12 @@ namespace Paxos
     
     bool IDNumber::operator >= (const IDNumber & other) const
     {
-        return ProposalID == other.ProposalID ? (NodeID >= other.NodeID) : (ProposalID >= other.NodeID);
+        return ProposalID == other.ProposalID ? (NodeID >= other.NodeID) : (ProposalID >= other.ProposalID);
     }
     
     bool IDNumber::operator > (const IDNumber & other) const
     {
-        return ProposalID == other.ProposalID ? (NodeID > other.NodeID) : (ProposalID > other.NodeID);
+        return ProposalID == other.ProposalID ? (NodeID > other.NodeID) : (ProposalID > other.ProposalID);
     }
     
     bool IDNumber::operator != (const IDNumber & other) const
