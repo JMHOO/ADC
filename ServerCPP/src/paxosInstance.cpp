@@ -95,6 +95,11 @@ namespace Paxos
         return m_nodeid;
     }
     
+    Acceptor& Instance::GetAcceptor()
+    {
+        return acceptor;
+    }
+    
     void Instance::NewTransaction()
     {
         m_ID64++;
@@ -164,6 +169,16 @@ namespace Paxos
             default:
                 break;
         }
+    }
+    
+    void Instance::ProposalChosenValue(const uint64_t lProposalID)
+    {
+        learner.ProposalChosenValue(m_ID64, lProposalID);
+    }
+    
+    void Instance::ExecuteKVOperation(std::string strOPJson)
+    {
+        
     }
     
     bool Instance::SendMessage(int nNodeID, IPacket* paxosPackage)

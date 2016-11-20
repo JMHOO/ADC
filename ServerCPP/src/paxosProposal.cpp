@@ -220,7 +220,7 @@ namespace Paxos
         {
             ExitAccept();
             // send value to learner
-            //m_poLearner->ProposerSendSuccess(GetInstanceID(), m_oProposerState.GetProposalID());
+            m_pInstance->ProposalChosenValue(m_proposalID);
         }
         else if( counter.IsRejected() )
         {

@@ -10,7 +10,12 @@
 #ifndef _ADCS__paxosLearner_H_
 #define _ADCS__paxosLearner_H_
 
+#include <string>
+#include "paxosFoundation.h"
+
 class ILog;
+class IPacket;
+class jsonPaxos;
 
 namespace Paxos
 {
@@ -24,19 +29,17 @@ namespace Paxos
         
         void NewTransaction();
         
-        void OnChosenValue(IPacket* p);
-        //confirm learn
-		 int SendLearnValue(
-            const nodeid_t iSendNodeID, 
-            const uint64_t llLearnInstanceID, 
-            const IDNumber & oLearnedBallot,
-            const std::string & sLearnedValue,
-            const bool bNeedAck = true);
-
-         void OnSendLearnValue(jsonPaxos & ojsonPaxos);
+        void ProposalChosenValue(const uint64_t lInstanceID, const uint64_t lProposalID);
+        void OnChosenValue(jsonPaxos* p);
+        
     private:
         Paxos::Instance * m_pInstance;
         ILog* logger;
+        
+        bool m_bIsLearned;
+        std::string m_learnedValue;
+        
+        void LearnValue(uint64_t lInstanceID, IDNumber& learnedID, const std::string& learnedValue);
 
     };
 }

@@ -42,6 +42,7 @@ namespace Paxos
         void        SetInstanceID(const uint64_t id);
         void        NewTransaction();
         int         GetNodeID();
+        Acceptor&   GetAcceptor();
         
         int NodeCount();
         int QuantumCount();
@@ -56,6 +57,10 @@ namespace Paxos
         bool BroadcastMessage(IPacket* paxosPackage);
         
         MessageLoop* GetMessageLoop(){ return &loop; }
+        
+        void ProposalChosenValue(const uint64_t lProposalID);
+        
+        void ExecuteKVOperation(std::string strOPJson);
         
     private:
         MessageLoop loop;

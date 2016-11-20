@@ -45,6 +45,16 @@ namespace Paxos
         
     }
     
+    IDNumber& Acceptor::GetAcceptedID()
+    {
+        return m_acceptedID;
+    }
+    
+    std::string Acceptor::GetAcceptedValue() const
+    {
+        return m_acceptedValue;
+    }
+    
     void Acceptor::ProcessMessage(IPacket* p)
     {
         jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);

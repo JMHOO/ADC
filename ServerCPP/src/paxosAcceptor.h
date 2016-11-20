@@ -28,6 +28,9 @@ namespace Paxos
         void ProcessMessage(IPacket* p);
         
         void NewTransaction();
+        
+        IDNumber& GetAcceptedID();
+        std::string GetAcceptedValue() const;
 
     private:
         Paxos::Instance * m_pInstance;

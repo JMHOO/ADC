@@ -6,30 +6,28 @@
 //  Copyright © 2016 Jiaming. All rights reserved.
 //
 
+#include <string>
 #include "paxosLearner.h"
 #include "jsonPaxos.h"
+#include "paxosInstance.h"
 #include "paxosAcceptor.h"
-#include "paxosCounter.h"
-#include "paxosFoundation.h"
-#include "paxosInstance.h"
-#include "string.h"
-#include "paxosInstance.h"
-#include "jsonPaxos.h"
-#include "MessageLoop.h"
-#include "paxosProposal.h"
+#include "paxosStorage.h"
 #include "GLog.h"
 #include "jsonkvPackage.h"
-#include<iostream>
+
 using namespace std;
+
 namespace Paxos
 {
 	Learner::Learner(Paxos::Instance * instance, ILog* ptrLog) : m_pInstance(instance), logger(ptrLog)
 	{
 		m_pInstance = (Instance *)instance;
 	}
+    
 	void Learner::NewTransaction()
 	{
-
+        m_bIsLearned = false;
+        m_learnedValue = "";
 	}
 
 	void Learner::ProcessMessage(IPacket* p)
@@ -38,42 +36,64 @@ namespace Paxos
 		PaxosType type = pm->GetMessageType();
 		if( type == PaxosType::ChosenValue)
 		{
-			OnChosenValue(p);
+			OnChosenValue(pm);
 		}
 	}
 
-	void Learner::OnChosenValue(IPacket* p)
+    void Learner::ProposalChosenValue(const uint64_t lInstanceID, const uint64_t lProposalID)
+    {
+        jsonPaxos p;
+        p.SetMessageType(PaxosType::ChosenValue);
+        p.SetInstanceID(lInstanceID);
+        p.SetNodeID(m_pInstance->GetNodeID());
+        p.SetProposalID(lProposalID);
+        
+        m_pInstance->BroadcastMessage(&p);
+    }
+    
+	void Learner::OnChosenValue(jsonPaxos* p)
 	{
-		jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        Acceptor& acceptor = m_pInstance->GetAcceptor();
+        logger->Info("Learner::OnChosenValue, now instance id:%lu, Message[instance id:%lu, proposal id:%lu, from node:%d] accepted proposal id:%lu, accepted node id:%d",
+                     m_pInstance->GetInstanceID(), p->GetInstanceID(), p->GetProposalID(), p->GetNodeID(), acceptor.GetAcceptedID().ProposalID, acceptor.GetAcceptedID().NodeID);
+        
+        if (p->GetInstanceID() != m_pInstance->GetInstanceID() )
+        {
+            logger->Info("Learner::OnChosenValue, instance id not same, ignore message");
+            return;
+        }
+        
+        if( !acceptor.GetAcceptedID().isValid())
+        {
+            logger->Info("Learner::OnChosenValue, have not accepted any proposal, ignore message");
+            return;
+        }
+        
+        IDNumber idFrom(p->GetProposalID(), p->GetNodeID());
+        if( idFrom != acceptor.GetAcceptedID() )
+        {
+            logger->Info("Learner::OnChosenValue, accepted ID not same as this one, ignore message");
+            return;
+        }
+        
+        
+        //learn value
+        LearnValue(p->GetInstanceID(), idFrom, acceptor.GetAcceptedValue());
+    }
+    
+    void Learner::LearnValue(uint64_t lInstanceID, IDNumber& learnedID, const std::string& learnedValue)
+    {
+        Storage s(logger);
+        s.Init();
+        
+        s.write(lInstanceID, learnedID.ProposalID, learnedValue);
+        
+        m_learnedValue = learnedValue;
+        m_bIsLearned = true;
+        
+        
+        // set value to kvserver
+        m_pInstance->ExecuteKVOperation(m_learnedValue);
+    }
 
-		std::string value = pm->GetValue();
-	}
-	int Learner :: SendLearnValue(
-		const nodeid_t iSendNodeID,
-		const uint64_t llLearnInstanceID,
-		const IDNumber & oLearnedBallot,
-		const std::string & sLearnedValue,
-		const bool bNeedAck)
-	{
-		//
-		jsonPaxos ojsonPaxos;
-		ojsonPaxos.SetMessageType(PaxosType::ChosenValue);
-		ojsonPaxos.SetNodeID(m_pInstance->GetNodeID);
-		ojsonPaxos.SetValue(sLearnedValue);
-		ojsonPaxos.SetProposalID(oLearnedBallot.m_proposalID);
-		ojsonPaxos.SetInstanceID(llLearnInstanceID);
-
-
-		return m_pInstance->SendMessage(iSendNodeID,&ojsonPaxos);
-
-	}
-	void Learner :: OnSendLearnValue(jsonPaxos & ojsonPaxos)
-	{
-		//learn value
-		//IDNumber oBallot(ojsonPaxos.GetProposalID(), oPaxosMsg.proposalnodeid());
-
-		jsonkvPacket jsonkvOperator(ojsonPaxos.GetValue());
-		jsonkvOperator.Process();
-
-	}
 }
