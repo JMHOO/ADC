@@ -86,6 +86,7 @@ namespace Paxos
         unsigned int    m_idCommitTimer;
         std::string     m_strRequestValue;
         std::string     m_strResult;
+        uint64_t        m_commitingInstanceID;
         
         static Instance* _paxos_instance;
 

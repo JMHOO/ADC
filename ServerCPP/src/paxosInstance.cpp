@@ -59,6 +59,7 @@ namespace Paxos
         m_idCommitTimer = 0;
         m_strResult = "";
         m_strRequestValue = "";
+        m_commitingInstanceID = (uint64_t)-1;
     }
     
     Instance::~Instance()
@@ -113,6 +114,7 @@ namespace Paxos
         m_bCommitting = false;
         m_strResult = "";
         m_strRequestValue = "";
+        m_commitingInstanceID = (uint64_t)-1;
     }
     
     int Instance::NodeCount()
@@ -210,6 +212,7 @@ namespace Paxos
     std::string Instance::ProposeNewValue(const std::string value)
     {
         m_bCommitting = true;
+        m_commitingInstanceID = (uint64_t)-1;
         m_strRequestValue = value;
         
         // transfer call to message loop thread
@@ -239,12 +242,12 @@ namespace Paxos
     // called by message loop
     void Instance::CheckForNewProposeValue()
     {
-        if( !m_bCommitting )
+        // check if new commit
+        if( m_commitingInstanceID == (uint64_t)-1 && m_strRequestValue != "" )
         {
-            return;
+            m_commitingInstanceID = m_ID64;
+            proposal.StartNewValue(m_strRequestValue);
         }
-        
-        proposal.StartNewValue(m_strRequestValue);
     }
     
     bool Instance::SendMessage(int nNodeID, IPacket* paxosPackage)
