@@ -27,6 +27,7 @@ namespace Paxos
         m_state = State::Idle;
         
         m_bRejectedByOther = false;
+        m_bCanSkipPrepare = false;
     }
     
     Proposal::~Proposal()
@@ -51,7 +52,7 @@ namespace Paxos
     
     void Proposal::ProcessMessage(IPacket* p)
     {
-        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        jsonPaxos* pm = (jsonPaxos*)p;
         PaxosType type = pm->GetMessageType();
         if( type == PaxosType::PrepareResponse )
         {
@@ -63,14 +64,34 @@ namespace Paxos
         }
     }
     
+    bool Proposal::StartNewValue(const std::string & sValue)
+    {
+        logger->Info("Proposal::Start New Value: %s", sValue.c_str());
+        
+        m_value = sValue;
+        if (m_bCanSkipPrepare && !m_bRejectedByOther)
+        {
+            //Skip prepare
+            Accept();
+        }
+        else
+        {
+            //if not reject by someone, no need to increase proposal ID
+            Prepare(m_bRejectedByOther);
+        }
+        
+        return true;
+    }
+    
     void Proposal::Prepare(bool bUseNewID)
     {
-        logger->Info("Proposal::Prepare node id:%ld, instance id:%lu, proposal id:%lu", m_pInstance->GetInstanceID(),
-                     m_pInstance->GetNodeID(), m_proposalID);
+        logger->Info("Proposal::Prepare node id:%ld, instance id:%lu, proposal id:%lu", m_pInstance->GetNodeID(),
+                     m_pInstance->GetInstanceID(), m_proposalID);
         
         ExitAccept();
         m_state = State::Preparing;
         m_bRejectedByOther = false;
+        m_bCanSkipPrepare = false;
         
         m_otherPreAcceptedID.reset();
         if( bUseNewID)
@@ -94,9 +115,9 @@ namespace Paxos
     
     void Proposal::OnPrepareResponse(IPacket* p)
     {
-        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        jsonPaxos* pm = (jsonPaxos*)p;
         
-        logger->Info("Proposal::OnPrepareResponse, my proposalid:%lu, receive proposalid:%lu, from node:%d, reject by id:%lu",
+        logger->Info("Proposal::OnPrepareResponse, my proposalid:%lu, received proposalid:%lu, from node:%d, reject by id:%lu",
                      m_proposalID, pm->GetProposalID(), pm->GetNodeID(), pm->GetRejectPromiseID());
         
         if( m_state != State::Preparing )
@@ -143,7 +164,9 @@ namespace Paxos
         
         if( counter.IsPassed())
         {
+            logger->Info("Proposal::OnPrepare, majority passed, begin accept and I'm leader now.");
             // prepare complete
+            m_bCanSkipPrepare = true;
             Accept();
         }
         else if( counter.IsRejected() )
@@ -151,6 +174,7 @@ namespace Paxos
             // restart wait random time
             srand((unsigned int)time(NULL));
             int x = rand()%30 + 10;
+            logger->Info("Proposal::OnPrepare, majority reject, wait %d ms to restart", x);
             AddTimeout(TimeoutType::Proposal_Prepare, x);
         }
     }
@@ -180,7 +204,7 @@ namespace Paxos
     
     void Proposal::OnAcceptResponse(IPacket * p)
     {
-        jsonPaxos *pm = dynamic_cast<jsonPaxos*>(p);
+        jsonPaxos* pm = (jsonPaxos*)p;
         logger->Info("Proposal::OnAcceptResponse, myproposal id:%lu, proposal id:%lu, from node:%d, reject by ID: %lu",
                      m_proposalID, pm->GetProposalID(), pm->GetNodeID(), pm->GetRejectPromiseID());
         
@@ -200,12 +224,12 @@ namespace Paxos
         
         if( pm->GetRejectPromiseID() == 0 )
         {
-            logger->Info("Proposal::OnAcceptResponse [Accept]");
+            logger->Info("Proposal::OnAccept [Accept]");
             counter.Add(Counter::Kinds::Promised, pm->GetNodeID());
         }
         else
         {
-            logger->Info("Proposal::OnAcceptResponse [Reject]");
+            logger->Info("Proposal::OnAccept [Reject]");
             counter.Add(Counter::Kinds::Rejected, pm->GetNodeID());
             
             // reject by someone
@@ -218,14 +242,18 @@ namespace Paxos
         
         if( counter.IsPassed())
         {
+            logger->Info("Proposal::OnAccept, majority passed, notify learner.");
             ExitAccept();
             // send value to learner
-            //m_poLearner->ProposerSendSuccess(GetInstanceID(), m_oProposerState.GetProposalID());
+            m_pInstance->ProposalChosenValue(m_proposalID);
         }
         else if( counter.IsRejected() )
         {
             srand((unsigned int)time(NULL));
             int x = rand()%30 + 10;
+            
+            logger->Info("Proposal::OnAccept, majority reject, wait %d ms to restart", x);
+            
             AddTimeout(TimeoutType::Proposal_Accept, x);
         }
     }

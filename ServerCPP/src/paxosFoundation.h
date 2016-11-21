@@ -29,8 +29,8 @@ namespace Paxos
         const bool isValid() const;
         void reset();
         
-        uint64_t m_proposalID;
-        int m_nodeID;
+        uint64_t ProposalID;
+        int NodeID;
     };
 
 }

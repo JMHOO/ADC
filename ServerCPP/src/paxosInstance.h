@@ -11,10 +11,12 @@
 
 #include "GLog.h"
 #include "Network.h"
+#include "MutexLock.h"
 #include "MessageLoop.h"
 #include "paxosProposal.h"
 #include "paxosAcceptor.h"
 #include "paxosLearner.h"
+
 
 
 #define PaxosInstance Paxos::Instance::GetInstance()
@@ -38,10 +40,14 @@ namespace Paxos
         
         bool Initialize();
         
+        std::string ProposeNewValue(const std::string value);
+        void CheckForNewProposeValue();
+        
         uint64_t    GetInstanceID();
         void        SetInstanceID(const uint64_t id);
         void        NewTransaction();
         int         GetNodeID();
+        Acceptor&   GetAcceptor();
         
         int NodeCount();
         int QuantumCount();
@@ -57,23 +63,33 @@ namespace Paxos
         
         MessageLoop* GetMessageLoop(){ return &loop; }
         
+        void ProposalChosenValue(const uint64_t lProposalID);
+        
+        void OnCommitComplete(std::string strValue);
+        void OnCommitTimeout();
+        
     private:
         MessageLoop loop;
         
         Proposal proposal;
         Acceptor acceptor;
-        Learner learner;
-        
-        ILog*  logger;
+        Learner  learner;
+        ILog*    logger;
         
         ADCS::ServerList m_aliveSrvList;
         
+        uint64_t    m_ID64;     // Instance ID
+        int         m_nodeid;
+
+        CMutexLock      m_sLocker;
+        bool            m_bCommitting;
+        unsigned int    m_idCommitTimer;
+        std::string     m_strRequestValue;
+        std::string     m_strResult;
+        uint64_t        m_commitingInstanceID;
+        
         static Instance* _paxos_instance;
-        
-        uint64_t m_ID64;
-        
-        int m_nodeid;
-        
+
         bool __send__udp_message__(const char* szServerIP, int port, IPacket* paxosPackage);
     };
 }

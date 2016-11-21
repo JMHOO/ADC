@@ -13,6 +13,10 @@
 #include "SrvApp.h"
 #include "cmdline.h"
 
+#include "Thread.h"
+#include "MessageLoop.h"
+#include "paxosInstance.h"
+
 //#include <jsonrpccpp/client/connectors/httpclient.h>
 //#include "CKvJSONRPCClient.h"
 
@@ -22,6 +26,7 @@ CServerApp g_servers;
 typedef int (*TestFunc)(int, const char* [] );
 int ShowHelp( int argc, const char* argv[] );
 int ListAllAliveServer(int argc, const char * argv[]);
+int TestPaxos(int argc, const char * argv[]);
 
 struct CTestEntry
 {
@@ -32,7 +37,8 @@ struct CTestEntry
 
 CTestEntry g_Entries[] = {
     { "help", (char*)"", ShowHelp },
-    { "listserver", "List all online server", ListAllAliveServer }
+    { "listserver", "List all online server", ListAllAliveServer },
+    { "testpaxos", "paxos unit test", TestPaxos}
 };
 
 const int g_EntriesNumber = sizeof(g_Entries)/sizeof(CTestEntry);
@@ -57,6 +63,73 @@ int ShowHelp( int argc, const char * argv[] )
 int ListAllAliveServer(int argc, const char * argv[])
 {
     g_servers.ListAllServer();
+    return 0;
+}
+
+class TestThread : public ADCS::Thread{
+    virtual void Run(){
+        while(true){
+                TSQueue<string> q;
+            
+                //q.lock();
+                //q.add("one");
+                //q.unlock();
+            
+                string b;
+                bool bSucc = q.front(b, 1000);
+            
+                if (!bSucc)
+                {
+                    //q.unlock();
+                }
+                else
+                {
+                    q.pop();
+                    //q.unlock();
+                }
+            
+                cout << b << endl;
+            Sleep(100);
+        }
+    }
+};
+
+
+//GlobalLog log("test", LL_DEBUG);
+//Paxos::Instance instance(&log);
+//MessageLoop loop(&instance, &log);
+//TestThread ttt1, ttt2;
+
+int TestPaxos(int argc, const char * argv[])
+{
+    //TSQueue<string> q;
+    
+    //q.lock();
+    //q.add("one");
+    //q.unlock();
+    
+//    q.lock();
+//    string b;
+//    bool bSucc = q.front(b, 1000);
+//    
+//    if (!bSucc)
+//    {
+//        q.unlock();
+//    }
+//    else
+//    {
+//        q.pop();
+//        q.unlock();
+//    }
+//
+//    cout << b << endl;
+
+    
+    //ttt1.Start();
+    //ttt2.Start();
+    //loop.Start();
+    
+    //loop.AddNotify();
     return 0;
 }
 

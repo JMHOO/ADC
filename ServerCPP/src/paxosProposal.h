@@ -30,6 +30,7 @@ namespace Paxos
         
         void ProcessMessage(IPacket* p);
         
+        bool StartNewValue(const std::string & sValue);
         void Prepare(bool bUseNewID = false);
         void OnPrepareResponse(IPacket* p);
         void Accept();
@@ -41,6 +42,8 @@ namespace Paxos
         void NewPrepare();
         void OnPrepareTimeout();
         void OnAcceptTimeout();
+        void ExitPrepare();
+        void ExitAccept();
 
     private:
         Paxos::Instance * m_pInstance;
@@ -62,9 +65,8 @@ namespace Paxos
         IDNumber m_otherPreAcceptedID;
         
         bool m_bRejectedByOther;
+        bool m_bCanSkipPrepare;
         
-        void ExitPrepare();
-        void ExitAccept();
     };
 }
 

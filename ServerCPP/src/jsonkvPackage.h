@@ -15,6 +15,8 @@ public:
     virtual void Process();
     virtual bool IsValid() const;
     
+    std::string GetResult();
+    
 protected:
     virtual bool GetResult(char*& pStreamData, unsigned long& ulDataLen);
     

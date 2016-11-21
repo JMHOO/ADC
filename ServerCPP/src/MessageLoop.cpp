@@ -9,6 +9,7 @@
 #include "MessageLoop.h"
 #include "PackageInterface.h"
 #include "paxosInstance.h"
+#include "jsonPaxos.h"
 #include "Utility.h"
 #include "GLog.h"
 
@@ -45,24 +46,26 @@ void MessageLoop::Run()
 
 void MessageLoop::AddNotify()
 {
-    m_messageQueue.lock();
+    //m_messageQueue.lock();
     m_messageQueue.add(nullptr);
-    m_messageQueue.unlock();
+    //m_messageQueue.unlock();
 }
 
 int MessageLoop::AddMessage(IPacket* packet)
 {
-    m_messageQueue.lock();
+    //m_messageQueue.lock();
     
     if ((int)m_messageQueue.size() > MAX_QUEUE_LENGTH)
     {
         //logger->Error("too many message in the waitting list, skip msg");
-        m_messageQueue.unlock();
+        //m_messageQueue.unlock();
         return -2;
     }
     
-    m_messageQueue.add(new IPacket(*packet));
-    m_messageQueue.unlock();
+    jsonPaxos* pm = dynamic_cast<jsonPaxos*>(packet);
+    
+    m_messageQueue.add(new jsonPaxos(*pm));
+    //m_messageQueue.unlock();
     
     return 0;
 }
@@ -80,17 +83,17 @@ void MessageLoop::Process(const int nWaitTimeoutMS)
 {
     IPacket* p = nullptr;
     
-    m_messageQueue.lock();
+    //m_messageQueue.lock();
     bool bSucc = m_messageQueue.front(p, nWaitTimeoutMS);
     
     if (!bSucc)
     {
-        m_messageQueue.unlock();
+        //m_messageQueue.unlock();
     }
     else
     {
         m_messageQueue.pop();
-        m_messageQueue.unlock();
+        //m_messageQueue.unlock();
         
         if (p != nullptr )
         {
@@ -100,7 +103,7 @@ void MessageLoop::Process(const int nWaitTimeoutMS)
         delete p;
     }
     
-    //m_Instance->CheckNewValue();
+    m_pInstance->CheckForNewProposeValue();
 }
 
 bool MessageLoop::AddTimer(const int nTimeoutMS, const TimeoutType type, unsigned int& id)

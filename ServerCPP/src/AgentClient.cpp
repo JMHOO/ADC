@@ -55,7 +55,7 @@ namespace ADCS
                         
                         //if(plogger)plogger->Info("ExtAddr: %s:%d, cur:%s:%d", pAgent->m_serverExternalIP.c_str(), pAgent->m_rpcserverPort,
                          //                        sd.first.c_str(), sd.second);
-                        if( sd.address != pAgent->m_serverExternalIP || sd.port != pAgent->m_udpserverPort)
+                        //if( sd.address != pAgent->m_serverExternalIP || sd.port != pAgent->m_udpserverPort)
                             list.push_back(sd);
                         
                         if( sd.address == pAgent->m_serverExternalIP && sd.port == pAgent->m_udpserverPort)

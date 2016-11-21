@@ -8,6 +8,7 @@
 
 #include "Thread.h"
 #include <errno.h>
+#include <signal.h>
 
 namespace ADCS{
     

@@ -10,6 +10,7 @@
 #include "paxosInstance.h"
 #include "jsonPaxos.h"
 #include "UDPClient.h"
+#include "jsonkvPackage.h"
 
 namespace Paxos
 {
@@ -54,7 +55,11 @@ namespace Paxos
     Instance::Instance(ILog* ptrLog) : loop(this, ptrLog), proposal(this, ptrLog),
             acceptor(this, ptrLog), learner(this, ptrLog), logger(ptrLog), m_ID64(0)
     {
-        
+        m_bCommitting = false;
+        m_idCommitTimer = 0;
+        m_strResult = "";
+        m_strRequestValue = "";
+        m_commitingInstanceID = (uint64_t)-1;
     }
     
     Instance::~Instance()
@@ -70,12 +75,12 @@ namespace Paxos
             return false;
         }
         
-        logger->Info("Paxos Instance, acceptor OK, now instance ID:%lu", m_ID64);
+        logger->Info("Instance::Initialize, load acceptor OK, now instance ID:%lu", m_ID64);
         
         // set proposal id from acceptor state
         
         
-        loop.Start(true);
+        loop.Start();
         
         return true;
     }
@@ -95,12 +100,21 @@ namespace Paxos
         return m_nodeid;
     }
     
+    Acceptor& Instance::GetAcceptor()
+    {
+        return acceptor;
+    }
+    
     void Instance::NewTransaction()
     {
         m_ID64++;
         proposal.NewTransaction();
         acceptor.NewTransaction();
         learner.NewTransaction();
+        m_bCommitting = false;
+        m_strResult = "";
+        m_strRequestValue = "";
+        m_commitingInstanceID = (uint64_t)-1;
     }
     
     int Instance::NodeCount()
@@ -121,7 +135,7 @@ namespace Paxos
     
     void Instance::ProcessMessage(IPacket* p)
     {
-        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        jsonPaxos* pm = (jsonPaxos*)p;
         PaxosType type = pm->GetMessageType();
         int nFromNodeid = pm->GetNodeID();
         logger->Info("Receive Message: instance id:%lu, message type:%d, from nodeid:%d, my nodeid:%d",
@@ -160,9 +174,81 @@ namespace Paxos
             case TimeoutType::Proposal_Prepare:
                 proposal.OnPrepareTimeout();
                 break;
-                
+            case TimeoutType::Commit:
+                OnCommitTimeout();
+                break;
             default:
                 break;
+        }
+    }
+    
+    void Instance::ProposalChosenValue(const uint64_t lProposalID)
+    {
+        learner.ProposalChosenValue(m_ID64, lProposalID);
+    }
+    
+    void Instance::OnCommitComplete(std::string strOPJson)
+    {
+        logger->Info("PaxosInstance, one transaction complete, chosen value: %s", strOPJson.c_str());
+        
+        if( learner.IsLearned() )
+        {
+            jsonkvPacket kvp(strOPJson);
+            kvp.Process();
+            m_strResult = kvp.GetResult();
+        }
+        m_bCommitting = false;
+    }
+    
+    void Instance::OnCommitTimeout()
+    {
+        proposal.ExitAccept();
+        proposal.ExitPrepare();
+        
+        logger->Info("PaxosInstance, commit timeout, no value chosen!");
+        
+        m_bCommitting = false;
+    }
+    
+    // called by Client
+    std::string Instance::ProposeNewValue(const std::string value)
+    {
+        m_bCommitting = true;
+        m_commitingInstanceID = (uint64_t)-1;
+        m_strRequestValue = value;
+        
+        // transfer call to message loop thread
+        loop.AddNotify();
+        
+        // a timeout
+        loop.AddTimer(10000, TimeoutType::Commit, m_idCommitTimer);
+        
+        // wait until commit complete or timeout
+        while( m_bCommitting )
+        {
+            m_sLocker.WaitTime(10);
+        }
+        
+        if( m_idCommitTimer > 0 )
+        {
+            loop.RemoveTimer(m_idCommitTimer);
+        }
+        
+        std::string strResult = m_strResult;
+        
+        NewTransaction();
+        
+        return strResult;
+    }
+    
+    // called by message loop
+    void Instance::CheckForNewProposeValue()
+    {
+        // check if new commit
+        if( m_commitingInstanceID == (uint64_t)-1 && m_strRequestValue != "" )
+        {
+            m_commitingInstanceID = m_ID64;
+            proposal.StartNewValue(m_strRequestValue);
         }
     }
     

@@ -1,4 +1,4 @@
-//
+﻿//
 //  paxosLearner.h
 //  ServerCPP
 //
@@ -10,8 +10,12 @@
 #ifndef _ADCS__paxosLearner_H_
 #define _ADCS__paxosLearner_H_
 
+#include <string>
+#include "paxosFoundation.h"
+
 class ILog;
 class IPacket;
+class jsonPaxos;
 
 namespace Paxos
 {
@@ -25,11 +29,18 @@ namespace Paxos
         
         void NewTransaction();
         
-        void OnChosenValue(IPacket* p);
+        void ProposalChosenValue(const uint64_t lInstanceID, const uint64_t lProposalID);
+        void OnChosenValue(jsonPaxos* p);
+        bool IsLearned() const;
         
     private:
         Paxos::Instance * m_pInstance;
         ILog* logger;
+        
+        bool m_bIsLearned;
+        std::string m_learnedValue;
+        
+        void LearnValue(uint64_t lInstanceID, IDNumber& learnedID, const std::string& learnedValue);
 
     };
 }

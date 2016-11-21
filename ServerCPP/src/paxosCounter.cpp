@@ -7,6 +7,7 @@
 //
 
 #include "paxosCounter.h"
+#include <algorithm>
 #include "paxosInstance.h"
 
 namespace Paxos

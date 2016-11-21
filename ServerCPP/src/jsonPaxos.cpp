@@ -8,7 +8,20 @@ using namespace ADCS;
 
 jsonPaxos::jsonPaxos()
 {
+}
+
+jsonPaxos::jsonPaxos(const jsonPaxos& rhs)
+{
+    m_header = rhs.m_header;
+    m_clientsocket = rhs.m_clientsocket;
     
+    m_data.length = rhs.m_data.length;
+    m_data.data = new char[m_data.length];
+    memcpy(m_data.data, rhs.m_data.data, m_data.length);
+    
+    m_json_request = rhs.m_json_request;
+    m_json_result = rhs.m_json_result;
+    m_paxosType = rhs.m_paxosType;
 }
 
 jsonPaxos::jsonPaxos(const char* pData, unsigned int nDataLen, int clientSocket) : IPacket(pData, nDataLen, clientSocket)
@@ -161,6 +174,7 @@ std::string jsonPaxos::GetValue()
 void jsonPaxos::SetMessageType(PaxosType type)
 {
     unsigned int uiType = (unsigned int)type;
+    m_json_result["jsonpaxos"] = "1.0";
     m_json_result["type"] = uiType;
     m_paxosType = type;
 }

@@ -11,42 +11,42 @@
 namespace Paxos
 {
     
-    IDNumber::IDNumber() : m_proposalID(0), m_nodeID(0)
+    IDNumber::IDNumber() : ProposalID(0), NodeID(0)
     { }
     
-    IDNumber::IDNumber(uint64_t proposalID, int nodeID) : m_proposalID(proposalID), m_nodeID(nodeID)
+    IDNumber::IDNumber(uint64_t proposalID, int nodeID) : ProposalID(proposalID), NodeID(nodeID)
     { }
     
     IDNumber::~IDNumber() { }
     
     bool IDNumber::operator >= (const IDNumber & other) const
     {
-        return m_proposalID == other.m_proposalID ? (m_nodeID >= other.m_nodeID) : (m_proposalID >= other.m_proposalID);
+        return ProposalID == other.ProposalID ? (NodeID >= other.NodeID) : (ProposalID >= other.ProposalID);
     }
     
     bool IDNumber::operator > (const IDNumber & other) const
     {
-        return m_proposalID == other.m_proposalID ? (m_nodeID > other.m_nodeID) : (m_proposalID > other.m_proposalID);
+        return ProposalID == other.ProposalID ? (NodeID > other.NodeID) : (ProposalID > other.ProposalID);
     }
     
     bool IDNumber::operator != (const IDNumber & other) const
     {
-        return m_proposalID != other.m_proposalID || m_nodeID != other.m_nodeID;
+        return ProposalID != other.ProposalID || NodeID != other.NodeID;
     }
     
     bool IDNumber::operator == (const IDNumber & other) const
     {
-        return m_proposalID == other.m_proposalID && m_nodeID == other.m_nodeID;
+        return ProposalID == other.ProposalID && NodeID == other.NodeID;
     }
     
     const bool IDNumber::isValid() const
     {
-        return m_proposalID > 0;
+        return ProposalID > 0;
     }
     
     void IDNumber::reset()
     {
-        m_proposalID = 0;
-        m_nodeID = 0;
+        ProposalID = 0;
+        NodeID = 0;
     }
 }

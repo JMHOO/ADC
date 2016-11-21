@@ -20,6 +20,7 @@ class jsonPaxos : public IPacket
 public:
     jsonPaxos();
     jsonPaxos(const char* pData, unsigned int nDataLen, int clientSocket);
+    jsonPaxos(const jsonPaxos& rhs);
     
     virtual ~jsonPaxos();
     virtual void Process();
