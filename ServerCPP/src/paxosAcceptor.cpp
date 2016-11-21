@@ -22,9 +22,9 @@ namespace Paxos
     bool Acceptor::Initialize()
     {
         uint64_t lInstanceID = m_storage.GetMaxInstanceID();
-        if( lInstanceID == -1 )
+        if( lInstanceID == 0 )
         {// no records exist in file
-            lInstanceID = 0;
+            lInstanceID = 1;
             return true;
         }
         

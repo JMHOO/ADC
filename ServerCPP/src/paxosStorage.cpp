@@ -84,7 +84,7 @@ namespace Paxos
     
     uint64_t Storage::GetMaxInstanceID()
     {
-        uint64_t id = 1;
+        uint64_t id = 0;
         if(IsFileExist(storage_file) == true) {
             std::ifstream storage(storage_file);
             for (std::string line; std::getline(storage, line);) {
