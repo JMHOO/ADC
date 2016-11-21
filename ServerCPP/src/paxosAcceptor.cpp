@@ -147,6 +147,7 @@ namespace Paxos
             m_acceptedID = fromID;
             m_acceptedValue = pm->GetValue();
             
+            logger->Info("        Accepted value: %s, raw data: %s", m_acceptedValue.c_str(), pm->GetResult().c_str());
             WriteStates();
         }
         else

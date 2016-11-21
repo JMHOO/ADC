@@ -229,3 +229,8 @@ bool jsonPaxos::GetResult(char*& pStreamData, unsigned long& ulDataLen)
     
     return true;
 }
+
+std::string jsonPaxos::GetResult()
+{
+    return m_json_result.dump();
+}

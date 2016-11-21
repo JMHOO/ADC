@@ -45,6 +45,8 @@ public:
     void SetNodeID(int nodeID);
     void SetValue(std::string value);
     
+    std::string GetResult();
+    
 protected:
     virtual bool GetResult(char*& pStreamData, unsigned long& ulDataLen);
     
