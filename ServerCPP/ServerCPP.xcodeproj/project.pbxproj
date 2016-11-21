@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BF0227AB1DE29DCF007B3EE1 /* base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0227A91DE29DCF007B3EE1 /* base64.cpp */; };
 		BF2059801DACA31B00B11921 /* GLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF20597A1DACA31B00B11921 /* GLog.cpp */; };
 		BF2059811DACA31B00B11921 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF20597C1DACA31B00B11921 /* main.cpp */; };
 		BF2059821DACA31B00B11921 /* Utility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF20597E1DACA31B00B11921 /* Utility.cpp */; };
@@ -58,6 +59,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BF0227A91DE29DCF007B3EE1 /* base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = base64.cpp; path = src/base64.cpp; sourceTree = "<group>"; };
+		BF0227AA1DE29DCF007B3EE1 /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = base64.h; path = src/base64.h; sourceTree = "<group>"; };
 		BF2059641DAC9D1000B11921 /* ServerCPP */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ServerCPP; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF20597A1DACA31B00B11921 /* GLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GLog.cpp; path = src/GLog.cpp; sourceTree = "<group>"; };
 		BF20597B1DACA31B00B11921 /* GLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLog.h; path = src/GLog.h; sourceTree = "<group>"; };
@@ -223,6 +226,8 @@
 		BF7160541DB2816600F09E59 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				BF0227A91DE29DCF007B3EE1 /* base64.cpp */,
+				BF0227AA1DE29DCF007B3EE1 /* base64.h */,
 				BF2059871DACB4EA00B11921 /* ThreadPool.cpp */,
 				BF2059861DACB40A00B11921 /* ThreadPool.h */,
 				BF20597A1DACA31B00B11921 /* GLog.cpp */,
@@ -361,6 +366,7 @@
 				BF76A26D1DC3F93F0001D0B1 /* TCPClient.cpp in Sources */,
 				BF7160451DB1A79000F09E59 /* TCPSyncIOServer.cpp in Sources */,
 				BF76A2681DC3C9030001D0B1 /* jsonAgentPackage.cpp in Sources */,
+				BF0227AB1DE29DCF007B3EE1 /* base64.cpp in Sources */,
 				BF71603F1DB08B6A00F09E59 /* UDPSyncIOServer.cpp in Sources */,
 				BF76A2621DC3C0E80001D0B1 /* AgentServProcessor.cpp in Sources */,
 				BF9CE8BE1DDC0F9C00A902C9 /* paxosStorage.cpp in Sources */,

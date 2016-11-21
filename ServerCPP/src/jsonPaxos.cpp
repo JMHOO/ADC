@@ -2,6 +2,7 @@
 #include <string.h>
 #include <algorithm>
 #include "ErrorCode.h"
+#include "base64.h"
 
 using namespace nlohmann;
 using namespace ADCS;
@@ -169,7 +170,7 @@ std::string jsonPaxos::GetValue()
     } catch (std::domain_error e) {
         // wrong parameter, drop
     }
-    return v;
+    return Base64::decode(v);
 }
 void jsonPaxos::SetMessageType(PaxosType type)
 {
@@ -211,7 +212,7 @@ void jsonPaxos::SetNodeID(int nodeID)
 
 void jsonPaxos::SetValue(std::string v)
 {
-    m_json_result["value"] = v;
+    m_json_result["value"] = Base64::encode(v);
 }
 
 bool jsonPaxos::GetResult(char*& pStreamData, unsigned long& ulDataLen)
