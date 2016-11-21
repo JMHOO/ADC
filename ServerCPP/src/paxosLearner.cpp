@@ -64,8 +64,10 @@ namespace Paxos
         
         if (p->GetInstanceID() != m_pInstance->GetInstanceID() )
         {
-            logger->Info("Learner::OnChosenValue, instance id not same, ignore message");
-            return;
+            logger->Warning("Learner::OnChosenValue, instance id not same, we are falling behind, adjusting....");
+            
+            //logger->Info("Learner::OnChosenValue, instance id not same, ignore message");
+        //    return;
         }
         
         if( !acceptor.GetAcceptedID().isValid())
