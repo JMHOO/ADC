@@ -110,16 +110,14 @@ namespace Paxos
      
     bool Storage::WriteState(const uint64_t promisedProposalID, const int promisedNodeID, const uint64_t acceptedProposalID, const int acceptedNodeID, const std::string value)
     {
-        if(IsFileExist(accepter_file) == true) {
-            std::string data = std::to_string(promisedProposalID) + " " + std::to_string(promisedNodeID) + " " + std::to_string(acceptedProposalID) + " " + std::to_string(acceptedNodeID) + " " + value;
-            std::ofstream outfile (accepter_file, std::ios::out | std::ios::app);
-            outfile << data << std::endl;
-            outfile.close();
-            return true;
-        } else {
-            std::cout << "file not exist, please run Init() and create file " << std::endl;
-            return false;
+        if(IsFileExist(accepter_file) != true) {
+            CreateFile(accepter_file);
         }
+        std::string data = std::to_string(promisedProposalID) + " " + std::to_string(promisedNodeID) + " " + std::to_string(acceptedProposalID) + " " + std::to_string(acceptedNodeID) + " " + value;
+        std::ofstream outfile (accepter_file);
+        outfile << data << std::endl;
+        outfile.close();
+        return true;
     }
 
     bool Storage::ReadState(uint64_t promisedProposalID, int& promisedNodeID, uint64_t& acceptedProposalID, int& acceptedNodeID, std::string& value)
