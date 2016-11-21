@@ -29,7 +29,7 @@ public:
     
 private:
     std::mutex m_Mutex;
-    std::unique_lock<std::mutex> m_Lock;
+    //std::unique_lock<std::mutex> m_Lock;
     std::condition_variable m_Cond;
 };
 

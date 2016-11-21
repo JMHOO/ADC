@@ -71,21 +71,21 @@ class TestThread : public ADCS::Thread{
         while(true){
                 TSQueue<string> q;
             
-                q.lock();
+                //q.lock();
                 //q.add("one");
-                q.unlock();
+                //q.unlock();
             
                 string b;
                 bool bSucc = q.front(b, 1000);
             
                 if (!bSucc)
                 {
-                    q.unlock();
+                    //q.unlock();
                 }
                 else
                 {
                     q.pop();
-                    q.unlock();
+                    //q.unlock();
                 }
             
                 cout << b << endl;

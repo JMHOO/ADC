@@ -21,30 +21,33 @@ using namespace std;
 template <class T>
 class TSQueue {
 public:
-    TSQueue() : m_lock(m_mutex)
+    TSQueue()// : m_lock(m_mutex)
     {
         m_size = 0;
-        m_lock.unlock();
+        //m_lock.unlock();
     }
     
     T& front()
     {
-        while (empty()) { m_cond.wait(m_lock); }
+        std::unique_lock<std::mutex> lock(m_mutex);
+        while (empty()) { m_cond.wait(lock); }
         return m_queue.front();
     }
     
     size_t front(T& value)
     {
-        while (empty()) { m_cond.wait(m_lock); }
+        std::unique_lock<std::mutex> lock(m_mutex);
+        while (empty()) { m_cond.wait(lock); }
         value = m_queue.front();
         return m_size;
     }
     
     bool front(T& t, int timeoutMS)
     {
+        std::unique_lock<std::mutex> lock(m_mutex);
         while (empty())
         {
-            if (m_cond.wait_for(m_lock, std::chrono::milliseconds(timeoutMS)) == std::cv_status::timeout)
+            if (m_cond.wait_for(lock, std::chrono::milliseconds(timeoutMS)) == std::cv_status::timeout)
             {
                 return false;
             }
@@ -55,9 +58,10 @@ public:
     
     size_t pop(T* values, size_t n)
     {
+        std::unique_lock<std::mutex> lock(m_mutex);
         while (empty())
         {
-            m_cond.wait(m_lock);
+            m_cond.wait(lock);
         }
         
         size_t i = 0;
@@ -80,6 +84,7 @@ public:
     
     size_t add(const T& t, bool signal = true, bool back = true)
     {
+        std::unique_lock<std::mutex> lock(m_mutex);
         if (back)
         {
             m_queue.push_back(t);
@@ -88,6 +93,8 @@ public:
         {
             m_queue.push_front(t);
         }
+        
+        lock.unlock();
         
         if (signal)
         {
@@ -102,8 +109,8 @@ public:
     void clear() {m_queue.clear(); }
     void signal() { m_cond.notify_one(); }
     void broadcast() { m_cond.notify_all(); }
-    void lock() { m_lock.lock(); }
-    void unlock() { m_lock.unlock(); }
+    //void lock() { m_mutex.lock(); }
+    //void unlock() { m_mutex.unlock(); }
     
     void swap(TSQueue& q)
     {
@@ -115,7 +122,7 @@ public:
     
 protected:
     std::mutex m_mutex;
-    std::unique_lock<std::mutex> m_lock;
+    //std::unique_lock<std::mutex> m_lock;
     std::condition_variable m_cond;
     deque<T> m_queue;
     size_t m_size;

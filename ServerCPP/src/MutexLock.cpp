@@ -9,9 +9,9 @@
 #include "MutexLock.h"
 
 
-CMutexLock :: CMutexLock() : m_Lock(m_Mutex)
+CMutexLock :: CMutexLock()// : m_Lock(m_Mutex)
 {
-    m_Lock.unlock();
+    //m_Lock.unlock();
 }
 
 CMutexLock::~CMutexLock()
@@ -31,7 +31,8 @@ void CMutexLock::UnLock()
 
 void CMutexLock::Wait()
 {
-    m_Cond.wait(m_Lock);
+    std::unique_lock<std::mutex> lock(m_Mutex);
+    m_Cond.wait(lock);
 }
 
 void CMutexLock::Interupt()
@@ -41,5 +42,6 @@ void CMutexLock::Interupt()
 
 bool CMutexLock :: WaitTime(const int iTimeMs)
 {
-    return m_Cond.wait_for(m_Lock, std::chrono::milliseconds(iTimeMs)) != std::cv_status::timeout;
+    std::unique_lock<std::mutex> lock(m_Mutex);
+    return m_Cond.wait_for(lock, std::chrono::milliseconds(iTimeMs)) != std::cv_status::timeout;
 }
