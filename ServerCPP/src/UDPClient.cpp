@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 #include "UDPClient.h"
 
 CUDPClient::CUDPClient(): socketid(0), port(0), bConnected(false)
@@ -30,6 +31,23 @@ bool CUDPClient::Connect()
     servAddr.sin_family = AF_INET;
     servAddr.sin_addr.s_addr = inet_addr(sIP);
     servAddr.sin_port = htons( port );
+    
+    if( servAddr.sin_addr.s_addr == INADDR_NONE )
+    {
+        // try dns resolve
+        char ip[32] = {0};
+        
+        struct hostent *host;
+        struct in_addr **addr_list;
+        host = gethostbyname(sIP);
+        addr_list = (struct in_addr **)host->h_addr_list;
+        
+        strcpy(ip, inet_ntoa(*addr_list[0]));
+        
+        servAddr.sin_addr.s_addr = inet_addr(ip);
+        if( servAddr.sin_addr.s_addr == INADDR_NONE )
+            return false;
+    }
     
     if( servAddr.sin_addr.s_addr == INADDR_NONE )
         return false;
@@ -73,7 +91,8 @@ int CUDPClient::RecvInfo( char* szInfo, int iLen )
 
 bool CUDPClient::Close()
 {
-    close( socketid );
+    if( socketid > 0 )
+        close( socketid );
     socketid = 0;
     return true;
 }
