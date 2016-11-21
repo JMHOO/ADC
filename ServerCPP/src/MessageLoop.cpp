@@ -9,6 +9,7 @@
 #include "MessageLoop.h"
 #include "PackageInterface.h"
 #include "paxosInstance.h"
+#include "jsonPaxos.h"
 #include "Utility.h"
 #include "GLog.h"
 
@@ -61,7 +62,9 @@ int MessageLoop::AddMessage(IPacket* packet)
         return -2;
     }
     
-    m_messageQueue.add(new IPacket(*packet));
+    jsonPaxos* pm = dynamic_cast<jsonPaxos*>(packet);
+    
+    m_messageQueue.add(new jsonPaxos(*pm));
     //m_messageQueue.unlock();
     
     return 0;
