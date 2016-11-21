@@ -59,12 +59,15 @@ namespace Paxos
 	void Learner::OnChosenValue(jsonPaxos* p)
 	{
         Acceptor& acceptor = m_pInstance->GetAcceptor();
-        logger->Info("Learner::OnChosenValue, now instance id:%lu, Message[instance id:%lu, proposal id:%lu, from node:%d] accepted proposal id:%lu, accepted node id:%d",
-                     m_pInstance->GetInstanceID(), p->GetInstanceID(), p->GetProposalID(), p->GetNodeID(), acceptor.GetAcceptedID().ProposalID, acceptor.GetAcceptedID().NodeID);
         
-        if (p->GetInstanceID() != m_pInstance->GetInstanceID() )
+        uint64_t lInstanceID = p->GetInstanceID();
+        logger->Info("Learner::OnChosenValue, now instance id:%lu, Message[instance id:%lu, proposal id:%lu, from node:%d] accepted proposal id:%lu, accepted node id:%d",
+                     m_pInstance->GetInstanceID(), lInstanceID, p->GetProposalID(), p->GetNodeID(), acceptor.GetAcceptedID().ProposalID, acceptor.GetAcceptedID().NodeID);
+        
+        if (lInstanceID != m_pInstance->GetInstanceID() )
         {
-            logger->Warning("Learner::OnChosenValue, instance id not same, we are falling behind, adjusting....");
+            logger->Warning("Learner::OnChosenValue, instance id not same, we are falling behind, adjust instance id to :%lu", lInstanceID);
+            m_pInstance->SetInstanceID(p->GetInstanceID());
             
             //logger->Info("Learner::OnChosenValue, instance id not same, ignore message");
         //    return;
