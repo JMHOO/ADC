@@ -133,7 +133,7 @@ namespace Paxos
     
     void Instance::ProcessMessage(IPacket* p)
     {
-        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        jsonPaxos* pm = (jsonPaxos*)p;
         PaxosType type = pm->GetMessageType();
         int nFromNodeid = pm->GetNodeID();
         logger->Info("Receive Message: instance id:%lu, message type:%d, from nodeid:%d, my nodeid:%d",

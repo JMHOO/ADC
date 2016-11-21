@@ -57,7 +57,7 @@ namespace Paxos
     
     void Acceptor::ProcessMessage(IPacket* p)
     {
-        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        jsonPaxos* pm = (jsonPaxos*)p;
         PaxosType type = pm->GetMessageType();
         if( type == PaxosType::Prepare)
         {
@@ -77,7 +77,7 @@ namespace Paxos
     
     void Acceptor::OnRecvPrepare(IPacket* p)
     {
-        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        jsonPaxos* pm = (jsonPaxos*)p;
         
         int nToNodeID = pm->GetNodeID();
         
@@ -122,7 +122,7 @@ namespace Paxos
     
     void Acceptor::OnRecvAccept(IPacket* p)
     {
-        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        jsonPaxos* pm = (jsonPaxos*)p;
         
         int nToNodeID = pm->GetNodeID();
         

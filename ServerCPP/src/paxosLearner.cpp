@@ -37,7 +37,7 @@ namespace Paxos
     
 	void Learner::ProcessMessage(IPacket* p)
 	{
-		jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+		jsonPaxos* pm = (jsonPaxos*)p;
 		PaxosType type = pm->GetMessageType();
 		if( type == PaxosType::ChosenValue)
 		{

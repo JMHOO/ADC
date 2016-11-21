@@ -52,7 +52,7 @@ namespace Paxos
     
     void Proposal::ProcessMessage(IPacket* p)
     {
-        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        jsonPaxos* pm = (jsonPaxos*)p;
         PaxosType type = pm->GetMessageType();
         if( type == PaxosType::PrepareResponse )
         {
@@ -83,8 +83,8 @@ namespace Paxos
     
     void Proposal::Prepare(bool bUseNewID)
     {
-        logger->Info("Proposal::Prepare node id:%ld, instance id:%lu, proposal id:%lu", m_pInstance->GetInstanceID(),
-                     m_pInstance->GetNodeID(), m_proposalID);
+        logger->Info("Proposal::Prepare node id:%ld, instance id:%lu, proposal id:%lu", m_pInstance->GetNodeID(),
+                     m_pInstance->GetInstanceID(), m_proposalID);
         
         ExitAccept();
         m_state = State::Preparing;
@@ -113,7 +113,7 @@ namespace Paxos
     
     void Proposal::OnPrepareResponse(IPacket* p)
     {
-        jsonPaxos* pm = dynamic_cast<jsonPaxos*>(p);
+        jsonPaxos* pm = (jsonPaxos*)p;
         
         logger->Info("Proposal::OnPrepareResponse, my proposalid:%lu, receive proposalid:%lu, from node:%d, reject by id:%lu",
                      m_proposalID, pm->GetProposalID(), pm->GetNodeID(), pm->GetRejectPromiseID());
@@ -200,7 +200,7 @@ namespace Paxos
     
     void Proposal::OnAcceptResponse(IPacket * p)
     {
-        jsonPaxos *pm = dynamic_cast<jsonPaxos*>(p);
+        jsonPaxos* pm = (jsonPaxos*)p;
         logger->Info("Proposal::OnAcceptResponse, myproposal id:%lu, proposal id:%lu, from node:%d, reject by ID: %lu",
                      m_proposalID, pm->GetProposalID(), pm->GetNodeID(), pm->GetRejectPromiseID());
         
