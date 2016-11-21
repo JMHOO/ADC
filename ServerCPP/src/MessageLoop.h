@@ -134,6 +134,8 @@ enum class TimeoutType
     Proposal_Prepare,
     Proposal_Accept,
     Commit,
+    Simulate_Alive,
+    Simulate_Idle,
 };
 
 

@@ -31,6 +31,11 @@ namespace Paxos
         
         IDNumber& GetAcceptedID();
         std::string GetAcceptedValue() const;
+        
+        
+        // simulate fail of acceptor only !!!
+        void Stop();
+        void Start();
 
     private:
         Paxos::Instance * m_pInstance;
@@ -40,6 +45,10 @@ namespace Paxos
         IDNumber m_acceptedID;
         std::string m_acceptedValue;
         Storage m_storage;
+        
+        
+        // simulate fail of acceptor only !!!
+        bool m_bStarted;
         
         bool WriteStates();
         void OnRecvPrepare(IPacket* p);

@@ -26,7 +26,7 @@ private:
     std::string         m_discoverySrvAddr;
     
 public:
-    bool Start(unsigned short usPort, std::string sMode, std::string serverExternalAddr, std::string discoveryServerAddr);
+    bool Start(unsigned short usPort, std::string sMode, std::string serverExternalAddr, std::string discoveryServerAddr, std::string simulation);
     bool Stop();
     
     void ListAllServer();

@@ -14,7 +14,7 @@
 
 const char kvserver_cluster[INTERAL_SERVER_COUNT][16] = { "tcp", "udp", "rpc" };
 
-bool CServerApp::Start(unsigned short usPort, std::string sMode,  std::string serverExternalAddr, std::string discoveryServerAddr)
+bool CServerApp::Start(unsigned short usPort, std::string sMode,  std::string serverExternalAddr, std::string discoveryServerAddr, std::string simulation)
 {
     m_runmode = sMode;
     m_serverExternalAddr = serverExternalAddr;
@@ -67,7 +67,8 @@ bool CServerApp::Start(unsigned short usPort, std::string sMode,  std::string se
         }
         
         // initialize paxos instance
-        if( !Paxos::Instance::Create() )
+        bool bSimulateionFailed = simulation == "true";
+        if( !Paxos::Instance::Create(bSimulateionFailed) )
         {
             // ......
         }

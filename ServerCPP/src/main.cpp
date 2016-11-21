@@ -26,7 +26,6 @@ CServerApp g_servers;
 typedef int (*TestFunc)(int, const char* [] );
 int ShowHelp( int argc, const char* argv[] );
 int ListAllAliveServer(int argc, const char * argv[]);
-int TestPaxos(int argc, const char * argv[]);
 
 struct CTestEntry
 {
@@ -37,8 +36,7 @@ struct CTestEntry
 
 CTestEntry g_Entries[] = {
     { "help", (char*)"", ShowHelp },
-    { "listserver", "List all online server", ListAllAliveServer },
-    { "testpaxos", "paxos unit test", TestPaxos}
+    { "listserver", "List all online server", ListAllAliveServer }
 };
 
 const int g_EntriesNumber = sizeof(g_Entries)/sizeof(CTestEntry);
@@ -66,72 +64,6 @@ int ListAllAliveServer(int argc, const char * argv[])
     return 0;
 }
 
-class TestThread : public ADCS::Thread{
-    virtual void Run(){
-        while(true){
-                TSQueue<string> q;
-            
-                //q.lock();
-                //q.add("one");
-                //q.unlock();
-            
-                string b;
-                bool bSucc = q.front(b, 1000);
-            
-                if (!bSucc)
-                {
-                    //q.unlock();
-                }
-                else
-                {
-                    q.pop();
-                    //q.unlock();
-                }
-            
-                cout << b << endl;
-            Sleep(100);
-        }
-    }
-};
-
-
-//GlobalLog log("test", LL_DEBUG);
-//Paxos::Instance instance(&log);
-//MessageLoop loop(&instance, &log);
-//TestThread ttt1, ttt2;
-
-int TestPaxos(int argc, const char * argv[])
-{
-    //TSQueue<string> q;
-    
-    //q.lock();
-    //q.add("one");
-    //q.unlock();
-    
-//    q.lock();
-//    string b;
-//    bool bSucc = q.front(b, 1000);
-//    
-//    if (!bSucc)
-//    {
-//        q.unlock();
-//    }
-//    else
-//    {
-//        q.pop();
-//        q.unlock();
-//    }
-//
-//    cout << b << endl;
-
-    
-    //ttt1.Start();
-    //ttt2.Start();
-    //loop.Start();
-    
-    //loop.AddNotify();
-    return 0;
-}
 
 int main(int argc, const char * argv[]) {
     
@@ -151,6 +83,7 @@ int main(int argc, const char * argv[]) {
     cmdParser.add<int>("port", 'p', "Base port number for KV Server, should be ranged in 1000 and 65535, automatically increased by different kinds of server instance. For example:Base port number = 15000, then 15000 will assigen to TCP Server, 15001 for UDP Server and 15002 for RPC Server", false, 15001, cmdline::range(1000, 65535));
     cmdParser.add<std::string>("external",'e', "KV Server's external IP address or domain which will send to discovery server, the address then will be connected by client.", false, "127.0.0.1");
     cmdParser.add<std::string>("discovery", 'd', "Discovery server address, default=uw.umx.io", false, "uw.umx.io");
+    cmdParser.add<std::string>("simulatefail", 's', "Simulate acceptor fail.", false, "false");
     
     cmdParser.parse_check(argc, argv);
     
@@ -158,6 +91,7 @@ int main(int argc, const char * argv[]) {
     std::string sMode = cmdParser.get<string>("mode");
     std::string sExternalIP = cmdParser.get<string>("external");
     std::string sAgentSrvAddr = cmdParser.get<string>("discovery");
+    std::string sSimulation = cmdParser.get<string>("simulatefail");
     
     if( sMode == "kvserver" && sExternalIP == "127.0.0.1" )
     {
@@ -175,7 +109,7 @@ int main(int argc, const char * argv[]) {
     cout << "--- type 'exit' to exit." << endl;
     
     // Server collection: TCP Server, UDP Server, RPC Server and Discovery Server
-    if( !g_servers.Start(nPort, sMode, sExternalIP, sAgentSrvAddr) )
+    if( !g_servers.Start(nPort, sMode, sExternalIP, sAgentSrvAddr, sSimulation) )
     {
         cout << "Failed to start all server, exit." << endl;
         return 0;

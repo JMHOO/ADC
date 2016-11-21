@@ -45,6 +45,20 @@ namespace Paxos
         
     }
     
+    void Acceptor::Stop()
+    {
+        logger->Warning("Acceptor shuting down......");
+        m_bStarted = false;
+        NewTransaction();
+    }
+    
+    void Acceptor::Start()
+    {
+        logger->Warning("Acceptor starting.....");
+        m_bStarted = true;
+        Initialize();
+    }
+    
     IDNumber& Acceptor::GetAcceptedID()
     {
         return m_acceptedID;
@@ -57,6 +71,9 @@ namespace Paxos
     
     void Acceptor::ProcessMessage(IPacket* p)
     {
+        if( !m_bStarted )       // simulate acceptor failed
+            return;
+        
         jsonPaxos* pm = (jsonPaxos*)p;
         PaxosType type = pm->GetMessageType();
         if( type == PaxosType::Prepare)

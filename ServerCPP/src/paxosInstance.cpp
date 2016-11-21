@@ -18,7 +18,7 @@ namespace Paxos
     
     Instance* Instance::_paxos_instance = nullptr;
     
-    bool Instance::Create()
+    bool Instance::Create(bool bSimulateFailed)
     {
         if( _paxos_instance == nullptr )
         {
@@ -26,6 +26,10 @@ namespace Paxos
             _paxos_instance = new Instance(new GlobalLog("Paxos", LL_DEBUG));
             if( _paxos_instance == nullptr )
                 return false;
+            
+            if( bSimulateFailed)
+                _paxos_instance->SimulateFailed();
+            
             if( !_paxos_instance->Initialize() )
             {
                 delete _paxos_instance;
@@ -81,6 +85,15 @@ namespace Paxos
         
         
         loop.Start();
+        
+        if( m_bSimulateFailed )
+        {
+            srand((unsigned int)time(NULL));
+            int x = rand()%30 + 10;
+            logger->Info("PaxosInstance simulate acceptor failed, wait %d seconds to shut down acceptor", x);
+            unsigned int idTimer;
+            loop.AddTimer(x*1000, TimeoutType::Simulate_Alive, idTimer);
+        }
         
         return true;
     }
@@ -177,9 +190,38 @@ namespace Paxos
             case TimeoutType::Commit:
                 OnCommitTimeout();
                 break;
+            case TimeoutType::Simulate_Alive:
+                ShutdownAcceptor();
+                break;
+            case TimeoutType::Simulate_Idle:
+                RestartAcceptor();
+                break;
             default:
                 break;
         }
+    }
+    
+    void Instance::ShutdownAcceptor()
+    {
+        acceptor.Stop();
+
+        srand((unsigned int)time(NULL));
+        int x = rand()%30 + 10;
+        logger->Info("PaxosInstance simulate acceptor failed, wait %d seconds to restart acceptor", x);
+        unsigned int idTimer;
+        loop.AddTimer(x*1000, TimeoutType::Simulate_Idle, idTimer);
+        
+    }
+    
+    void Instance::RestartAcceptor()
+    {
+        acceptor.Start();
+
+        srand((unsigned int)time(NULL));
+        int x = rand()%30 + 10;
+        logger->Info("PaxosInstance simulate acceptor failed, wait %d seconds to shut down acceptor", x);
+        unsigned int idTimer;
+        loop.AddTimer(x*1000, TimeoutType::Simulate_Alive, idTimer);
     }
     
     void Instance::ProposalChosenValue(const uint64_t lProposalID)
@@ -218,6 +260,8 @@ namespace Paxos
         m_commitingInstanceID = (uint64_t)-1;
         m_strRequestValue = value;
         
+        logger->Info("PaxosInstance, server propose new value: %s", value.c_str());
+        
         // transfer call to message loop thread
         loop.AddNotify();
         
@@ -251,6 +295,11 @@ namespace Paxos
             m_commitingInstanceID = m_ID64;
             proposal.StartNewValue(m_strRequestValue);
         }
+    }
+    
+    void Instance::SimulateFailed()
+    {
+        m_bSimulateFailed = true;
     }
     
     bool Instance::SendMessage(int nNodeID, IPacket* paxosPackage)

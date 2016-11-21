@@ -29,7 +29,7 @@ namespace Paxos
     class Instance
     {
     public:
-        static bool        Create();
+        static bool        Create(bool bSimulateFailed);
         static void        Destory();
         static Instance*   GetInstance();
         
@@ -68,6 +68,8 @@ namespace Paxos
         void OnCommitComplete(std::string strValue);
         void OnCommitTimeout();
         
+        void SimulateFailed();
+        
     private:
         MessageLoop loop;
         
@@ -89,6 +91,11 @@ namespace Paxos
         uint64_t        m_commitingInstanceID;
         
         static Instance* _paxos_instance;
+        
+        
+        bool m_bSimulateFailed;
+        void ShutdownAcceptor();
+        void RestartAcceptor();
 
         bool __send__udp_message__(const char* szServerIP, int port, IPacket* paxosPackage);
     };
