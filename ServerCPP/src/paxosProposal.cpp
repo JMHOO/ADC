@@ -66,7 +66,9 @@ namespace Paxos
     
     bool Proposal::StartNewValue(const std::string & sValue)
     {
-
+        logger->Info("Proposal::Start New Value: %s", sValue.c_str());
+        
+        m_value = sValue;
         if (m_bCanSkipPrepare && !m_bRejectedByOther)
         {
             //Skip prepare

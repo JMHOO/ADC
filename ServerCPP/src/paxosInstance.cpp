@@ -205,6 +205,8 @@ namespace Paxos
         proposal.ExitAccept();
         proposal.ExitPrepare();
         
+        logger->Info("PaxosInstance, commit timeout, no value chosen!");
+        
         m_bCommitting = false;
     }
     
