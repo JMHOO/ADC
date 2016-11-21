@@ -32,7 +32,7 @@ jsonkvPacket::jsonkvPacket(std::string pData)
     }
     catch(std::invalid_argument arg)
     {
-        printf("parser json error: %s", arg.std::exception::what());
+        printf("parser json error: %s, rawdata: %s", arg.std::exception::what(), pData.c_str());
         // paser json error
     }
     catch(...)
@@ -91,8 +91,19 @@ json jsonkvPacket::__process_one_operation__(json jrequest)
         std::string strJSON = m_json_request.dump();
         std::string strResultJSON = PaxosInstance->ProposeNewValue(strJSON);
         
-        json jResultPaxos = json::parse(strResultJSON.c_str());
+        json jResultPaxos;
         
+        try
+        {
+            json::parse(strResultJSON.c_str());
+        }
+        catch(...)
+        {
+            printf("parser json error, rawdata: %s", strResultJSON.c_str());
+            // paser json error
+        }
+        
+        printf("KV Result: %s \n", strResultJSON.c_str());
         return jResultPaxos;
     }
     

@@ -196,6 +196,7 @@ namespace Paxos
             jsonkvPacket kvp(strOPJson);
             kvp.Process();
             m_strResult = kvp.GetResult();
+            logger->Info("PaxosInstance, KV operation compelete, result:%s", m_strResult.c_str());
         }
         m_bCommitting = false;
     }

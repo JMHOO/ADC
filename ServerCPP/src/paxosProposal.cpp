@@ -137,7 +137,7 @@ namespace Paxos
         // check if reject
         if( pm->GetRejectPromiseID() == 0 )
         {// no reject id, promised
-            logger->Info("Proposal [Promised] PreAcceptID:%lu, PreAcceptNodeID:%d", pm->GetPreAcceptID(), pm->GetPreAcceptNodeID());
+            logger->Info("    Proposal [Promised] PreAcceptID:%lu, PreAcceptNodeID:%d", pm->GetPreAcceptID(), pm->GetPreAcceptNodeID());
             
             counter.Add(Counter::Kinds::Promised, pm->GetNodeID());
             
@@ -147,11 +147,12 @@ namespace Paxos
             {
                 m_otherPreAcceptedID = otherPreacceptID;
                 m_value = pm->GetValue();
+                logger->Info("   Use other accepted value: %s", m_value.c_str());
             }
         }
         else
         {// reject by other
-            logger->Info("Proposal [Reject] Reject by ID: %lu", pm->GetRejectPromiseID());
+            logger->Info("    Proposal [Reject] Reject by ID: %lu", pm->GetRejectPromiseID());
             counter.Add(Counter::Kinds::Rejected, pm->GetNodeID());
             m_bRejectedByOther = true;
             

@@ -170,7 +170,9 @@ std::string jsonPaxos::GetValue()
     } catch (std::domain_error e) {
         // wrong parameter, drop
     }
-    return Base64::decode(v);
+    std::string vout = "";
+    Base64::Decode(v, &vout);
+    return vout;
 }
 void jsonPaxos::SetMessageType(PaxosType type)
 {
@@ -212,7 +214,9 @@ void jsonPaxos::SetNodeID(int nodeID)
 
 void jsonPaxos::SetValue(std::string v)
 {
-    m_json_result["value"] = Base64::encode(v);
+    std::string vout = "";
+    Base64::Encode(v, &vout);
+    m_json_result["value"] = vout;
 }
 
 bool jsonPaxos::GetResult(char*& pStreamData, unsigned long& ulDataLen)

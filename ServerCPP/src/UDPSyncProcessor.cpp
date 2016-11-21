@@ -54,9 +54,15 @@ bool UDPServerProcessor::Execute( void * pdata )
     }
     
     // now we have package, deal with it.
-    if( m_logger)m_logger->Info("UDP Server: got message from client:%s -- %s", inet_ntoa(pConnParam->ClientIP.sin_addr), pConnParam->Buffer+sizeof(ADCS::PACK_HEADER));
     bool bRet = true;
     ADCS::PACK_HEADER *pHeader = (ADCS::PACK_HEADER*)pConnParam->Buffer;
+    
+    unsigned int nMessageLength = ntohl(pHeader->Length) - sizeof(ADCS::PACK_HEADER);
+    char* pszValue = new char[nMessageLength + 1];
+    memcpy(pszValue, pConnParam->Buffer+sizeof(ADCS::PACK_HEADER), nMessageLength);
+    if( m_logger)m_logger->Info("UDP Server: got message from client:%s -- %s", inet_ntoa(pConnParam->ClientIP.sin_addr), pszValue);
+    delete[] pszValue;
+    
     IPacket* packet = IPacket::CreatePackage(pConnParam->Buffer, ntohl(pHeader->Length), pConnParam->socketid);
     if( packet )
     {
