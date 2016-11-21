@@ -95,7 +95,7 @@ json jsonkvPacket::__process_one_operation__(json jrequest)
         
         try
         {
-            json::parse(strResultJSON.c_str());
+            jResultPaxos = json::parse(strResultJSON.c_str());
         }
         catch(...)
         {
