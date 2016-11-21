@@ -24,14 +24,14 @@ namespace Paxos
         uint64_t lInstanceID = m_storage.GetMaxInstanceID();
         if( lInstanceID == 0 )
         {// no records exist in file
-            lInstanceID = 1;
+            lInstanceID = 0;
             return true;
         }
         
         // read states from file
         m_storage.ReadState(m_promisedID.ProposalID, m_promisedID.NodeID, m_acceptedID.ProposalID, m_acceptedID.NodeID, m_acceptedValue);
         
-        logger->Info("Acceptor initialized, instance id:%lu, promised node id:%d, promised proposal id:%lu, accepted node id:%d, accepted proposal id:%lu, value: %s",
+        logger->Info("Acceptor initialized from file, instance id:%lu, promised node id:%d, promised proposal id:%lu, accepted node id:%d, accepted proposal id:%lu, value: %s",
                      lInstanceID, m_promisedID.NodeID, m_promisedID.ProposalID, m_acceptedID.NodeID, m_acceptedID.ProposalID, m_acceptedValue.c_str());
         
         m_pInstance->SetInstanceID(lInstanceID);
@@ -94,7 +94,7 @@ namespace Paxos
         
         if (fromID >= m_promisedID)
         {
-            logger->Info("Acceptor prepare [Promise] current info[Promised node=%d, proposal id=%lu], [PreAccepted node=%d, proposal id=%lu",
+            logger->Info("    Acceptor [Promise] current info[Promised node=%d, proposal id=%lu], [PreAccepted node=%d, proposal id=%lu]",
                          m_promisedID.NodeID, m_promisedID.ProposalID, m_acceptedID.NodeID, m_acceptedID.ProposalID);
             
             response.SetPreAcceptID(m_acceptedID.ProposalID);
@@ -111,7 +111,7 @@ namespace Paxos
         }
         else
         {
-            logger->Info("Acceptor prepare [Reject] current info[Promised node=%d, proposal id=%lu",
+            logger->Info("    Acceptor [Reject] current info[Promised node=%d, proposal id=%lu",
                          m_promisedID.NodeID, m_promisedID.ProposalID);
             
             response.SetRejectPromiseID(m_promisedID.ProposalID);
@@ -140,7 +140,7 @@ namespace Paxos
         IDNumber fromID(pm->GetProposalID(), pm->GetNodeID());
         if (fromID >= m_promisedID)
         {
-            logger->Info("Acceptor accept [Promise] current info[Promised node=%d, proposal id=%lu], [PreAccepted node=%d, proposal id=%lu",
+            logger->Info("    Acceptor [Promise] current info[Promised node=%d, proposal id=%lu], [PreAccepted node=%d, proposal id=%lu]",
                          m_promisedID.NodeID, m_promisedID.ProposalID, m_acceptedID.NodeID, m_acceptedID.ProposalID);
 
             m_promisedID = fromID;
@@ -151,7 +151,7 @@ namespace Paxos
         }
         else
         {
-            logger->Info("Acceptor accept [Reject] current info[Promised node=%d, proposal id=%lu",
+            logger->Info("    Acceptor [Reject] current info[Promised node=%d, proposal id=%lu]",
                          m_promisedID.NodeID, m_promisedID.ProposalID);
             
             response.SetRejectPromiseID(m_promisedID.ProposalID);

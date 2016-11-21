@@ -75,7 +75,7 @@ namespace Paxos
             return false;
         }
         
-        logger->Info("Paxos Instance, acceptor OK, now instance ID:%lu", m_ID64);
+        logger->Info("Instance::Initialize, load acceptor OK, now instance ID:%lu", m_ID64);
         
         // set proposal id from acceptor state
         

@@ -96,7 +96,7 @@ namespace Paxos
         m_learnedValue = learnedValue;
         m_bIsLearned = true;
         
-        
+        logger->Info("Learner, learned value: %s", learnedValue.c_str());
         // set value to kvserver
         m_pInstance->OnCommitComplete(m_learnedValue);
     }

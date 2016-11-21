@@ -115,7 +115,7 @@ namespace Paxos
     {
         jsonPaxos* pm = (jsonPaxos*)p;
         
-        logger->Info("Proposal::OnPrepareResponse, my proposalid:%lu, receive proposalid:%lu, from node:%d, reject by id:%lu",
+        logger->Info("Proposal::OnPrepareResponse, my proposalid:%lu, received proposalid:%lu, from node:%d, reject by id:%lu",
                      m_proposalID, pm->GetProposalID(), pm->GetNodeID(), pm->GetRejectPromiseID());
         
         if( m_state != State::Preparing )
@@ -162,6 +162,7 @@ namespace Paxos
         
         if( counter.IsPassed())
         {
+            logger->Info("Proposal::OnPrepare, majority passed, begin accept and I'm leader now.");
             // prepare complete
             m_bCanSkipPrepare = true;
             Accept();
@@ -170,7 +171,8 @@ namespace Paxos
         {
             // restart wait random time
             srand((unsigned int)time(NULL));
-            int x = rand()%10 + 10;
+            int x = rand()%30 + 10;
+            logger->Info("Proposal::OnPrepare, majority reject, wait %d ms to restart", x);
             AddTimeout(TimeoutType::Proposal_Prepare, x);
         }
     }
@@ -220,12 +222,12 @@ namespace Paxos
         
         if( pm->GetRejectPromiseID() == 0 )
         {
-            logger->Info("Proposal::OnAcceptResponse [Accept]");
+            logger->Info("Proposal::OnAccept [Accept]");
             counter.Add(Counter::Kinds::Promised, pm->GetNodeID());
         }
         else
         {
-            logger->Info("Proposal::OnAcceptResponse [Reject]");
+            logger->Info("Proposal::OnAccept [Reject]");
             counter.Add(Counter::Kinds::Rejected, pm->GetNodeID());
             
             // reject by someone
@@ -238,6 +240,7 @@ namespace Paxos
         
         if( counter.IsPassed())
         {
+            logger->Info("Proposal::OnAccept, majority passed, notify learner.");
             ExitAccept();
             // send value to learner
             m_pInstance->ProposalChosenValue(m_proposalID);
@@ -246,6 +249,9 @@ namespace Paxos
         {
             srand((unsigned int)time(NULL));
             int x = rand()%30 + 10;
+            
+            logger->Info("Proposal::OnAccept, majority reject, wait %d ms to restart", x);
+            
             AddTimeout(TimeoutType::Proposal_Accept, x);
         }
     }
